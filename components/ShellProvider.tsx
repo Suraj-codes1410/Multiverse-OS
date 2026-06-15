@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Terminal } from 'lucide-react';
+import CliTerminal from '@/components/CliTerminal';
 
 // Shell System status types
 export type SystemStatus = 'nominal' | 'booting' | 'warning' | 'critical';
@@ -72,8 +74,8 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         return;
       }
 
-      // Shortcut: Backtick / Tilde (`) to toggle CLI overlay
-      if (e.key === '`') {
+      // Shortcut: Ctrl + Backtick (`) to toggle CLI overlay
+      if (e.ctrlKey && (e.key === '`' || e.code === 'Backquote')) {
         e.preventDefault();
         toggleCli();
       }
@@ -125,22 +127,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         id="shell-overlay-region"
         className="fixed inset-0 pointer-events-none z-[9990] font-mono text-xs"
       >
-        {isCliOpen && (
-          <div className="absolute inset-0 bg-[#030407]/90 pointer-events-auto flex items-center justify-center p-4">
-            <div className="border border-accent-cyan bg-bg-panel/95 rounded p-6 max-w-md w-full shadow-[0_0_30px_rgba(0,242,254,0.15)]">
-              <div className="text-accent-cyan font-bold mb-2">&gt; MULTIVERSE CLI [OFFLINE]</div>
-              <div className="text-text-secondary leading-relaxed mb-4">
-                The terminal interface is not active in this phase. Run shell commands in future updates.
-              </div>
-              <button
-                onClick={() => setCliOpen(false)}
-                className="px-3 py-1 border border-accent-cyan/35 text-accent-cyan hover:bg-accent-cyan/10 transition-colors rounded"
-              >
-                Close CLI
-              </button>
-            </div>
-          </div>
-        )}
+        <CliTerminal isOpen={isCliOpen} onClose={() => setCliOpen(false)} />
 
         {isOracleOpen && (
           <div className="absolute inset-0 bg-[#030407]/90 pointer-events-auto flex items-center justify-center p-4">
@@ -165,6 +152,16 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         id="shell-utility-region"
         className="fixed bottom-4 right-4 pointer-events-none z-[9980] flex flex-col items-end gap-2 font-mono text-[10px]"
       >
+        {/* Floating Terminal Action Button */}
+        <button
+          onClick={toggleCli}
+          className="pointer-events-auto flex items-center justify-center w-10 h-10 rounded-full border border-accent-cyan/35 bg-[#0a0c16]/90 text-accent-cyan hover:bg-accent-cyan/15 hover:border-accent-cyan hover:shadow-[0_0_12px_rgba(0,242,254,0.35)] transition-all duration-300 cursor-pointer"
+          title="Toggle Terminal CLI (Ctrl + `)"
+          aria-label="Toggle Terminal CLI"
+        >
+          <Terminal className="w-4 h-4" />
+        </button>
+
         <div className="pointer-events-auto bg-bg-panel/85 border border-border-subtle hover:border-accent-cyan/25 px-3 py-1.5 rounded-md text-text-secondary flex items-center gap-3 shadow-md backdrop-blur-sm transition-all duration-300">
           <span className="flex h-1.5 w-1.5 relative">
             <span
@@ -182,7 +179,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
           <span className="text-border-subtle">|</span>
           <button
             onClick={toggleAudio}
-            className="hover:text-accent-cyan transition-colors"
+            className="hover:text-accent-cyan transition-colors cursor-pointer"
             title="Toggle Audio settings"
           >
             {isAudioMuted ? 'AUDIO: MUTED' : 'AUDIO: ACTIVE'}

@@ -1,0 +1,23 @@
+{
+  "username": "Suraj-codes1410",
+  "syncRepositories": [
+    {
+      "name": "patient-management-service",
+      "featured": true,
+      "portfolioVisible": true,
+      "highlighted": true
+    },
+    {
+      "name": "sahai",
+      "featured": true,
+      "portfolioVisible": true,
+      "highlighted": false
+    },
+    {
+      "name": "orbitair",
+      "featured": true,
+      "portfolioVisible": true,
+      "highlighted": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "backend-architect",
+    "name": "Backend Architect",
+    "description": "A high-dimensional node focused on low-latency microservices, consensus protocols, and heavy data systems.",
+    "status": "locked"
+  },
+  {
+    "id": "ai-engineer",
+    "name": "AI Engineer",
+    "description": "An autonomous cognitive layer managing large language model embeddings, tool loops, and neural reasoning.",
+    "status": "locked"
+  },
+  {
+    "id": "product-builder",
+    "name": "Product Builder",
+    "description": "A developer-focused galaxy combining elegant design systems with rich interactive SaaS experiences.",
+    "status": "locked"
+  },
+  {
+    "id": "open-source-galaxy",
+    "name": "Open Source Galaxy",
+    "description": "A constellation of shared developer tools, open libraries, and active community repositories.",
+    "status": "locked"
+  },
+  {
+    "id": "future-universe",
+    "name": "Future Universe",
+    "description": "An unexplored system reserved for future experimental computations and architectural protocols.",
+    "status": "locked"
+  }
+]

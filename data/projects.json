@@ -1,0 +1,86 @@
+[
+  {
+    "id": "patient-management-service",
+    "title": "Patient Management Service",
+    "subtitle": "Hospital Billing & Microservices System",
+    "description": "Architected a hospital billing system as independently deployable microservices using Spring Boot. Enabled asynchronous event streaming via Kafka and low-latency RPC via gRPC. Containerized services using Docker. Implemented authentication and role-based access control using Spring Security.",
+    "featured": true,
+    "source": "manual",
+    "problem": "Hospital billing platforms require high reliability, role-based isolation, and asynchronous coordination to process complex transactions without blocking client operations.",
+    "solution": "Divided the hospital system domains into separate microservices using Spring Boot, using gRPC for low-latency internal communication and Kafka event streams for asynchronous transaction updates. Containerized each service under Docker and secured endpoints via Spring Security authentication.",
+    "architecture": "Hospital Gateway -> Spring Security Filter -> Core Microservices (gRPC & REST) -> Kafka Event Streams -> Relational Database Clusters.",
+    "techStack": ["Java", "Spring Boot", "Kafka", "gRPC", "Docker", "Spring Security"],
+    "challenges": [
+      "Maintaining database transaction consistency across multiple microservices without double-charging billing channels.",
+      "Securing internal gRPC communication channels while keeping request overhead low."
+    ],
+    "results": [
+      "Decoupled patient management and billing into independently scalable deployable units.",
+      "Reduced system-wide latency by using binary gRPC communication instead of REST."
+    ],
+    "lessons": [
+      "Event-driven state synchronization requires careful outbox pattern designs to prevent event duplicates.",
+      "Spring Security filter chains must be explicitly configured on gateways to ensure unified CORS and RBAC controls."
+    ],
+    "githubUrl": "https://github.com/Suraj-codes1410/patient-management-service",
+    "liveUrl": "",
+    "status": "Completed",
+    "year": "2025"
+  },
+  {
+    "id": "sahai",
+    "title": "SAHAI — Mental Health & Lifestyle Platform",
+    "subtitle": "Smart India Hackathon 2025 National Participant",
+    "description": "Built a full-stack mental health platform with real-time chat, appointment booking, and community discussion forums. Designed RAG-powered services backed by Pinecone vector database. Built scalable backend services supporting multiple concurrent features.",
+    "featured": true,
+    "source": "manual",
+    "problem": "Accessing reliable, contextual mental wellness resources and therapist appointment systems is often slow, disjointed, and lacks immediate support.",
+    "solution": "Engineered a wellness platform using Django and FastAPI. Integrated a Pinecone-backed retrieval-augmented generation (RAG) assistant for instant support and configured WebSockets to handle real-time chat rooms between users and therapists.",
+    "architecture": "React Frontend -> FastAPI (RAG Agent) & Django (Core App) -> Pinecone Vector Store & MySQL Database.",
+    "techStack": ["Django", "FastAPI", "React", "WebSockets", "MySQL", "Pinecone"],
+    "challenges": [
+      "Handling multiple concurrent chat room WebSocket connections without degrading backend performance.",
+      "Structuring prompt templates to prevent the RAG LLM from hallucinating medical claims."
+    ],
+    "results": [
+      "Selected as a National Participant in the Smart India Hackathon 2025.",
+      "Supported real-time therapist scheduling, community forums, and a sub-second response wellness AI chat."
+    ],
+    "lessons": [
+      "WebSockets require resilient connection lifecycle handlers to prevent resource leakage on client disconnections.",
+      "Pinecone vector search latency is heavily dependent on embedding chunk sizes; optimized chunking is crucial."
+    ],
+    "githubUrl": "https://github.com/Suraj-codes1410/sahai",
+    "liveUrl": "",
+    "status": "Hackathon Project",
+    "year": "2025"
+  },
+  {
+    "id": "orbitair",
+    "title": "ORBITAIR — AI-Powered AQI Forecasting",
+    "subtitle": "NASA Space Apps Challenge 2025 — Top 5 in India",
+    "description": "Developed a FastAPI backend with TimescaleDB for geospatial AQI forecasting. Integrated NASA TEMPO, EPA/OpenAQ, and NOAA data feeds. Built a forecasting pipeline achieving 98% prediction accuracy. Created a React and Leaflet dashboard for pollution visualization and explainable AI outputs.",
+    "featured": true,
+    "source": "manual",
+    "problem": "Aggregating geospatial data from NASA TEMPO satellites, NOAA feeds, and EPA sensors in real-time, and forecasting AQI with spatial accuracy, is computationally resource-intensive.",
+    "solution": "Built a FastAPI time-series backend backed by TimescaleDB to index high-volume geographical points. Created a forecasting pipeline that parses sensor datasets and trains models to predict AQI, rendering outcomes on a Leaflet map.",
+    "architecture": "FastAPI -> TimescaleDB Time-Series Indexes -> AQI ML Forecasting Engine -> React + Leaflet UI.",
+    "techStack": ["FastAPI", "TimescaleDB", "React", "Leaflet"],
+    "challenges": [
+      "Handling dynamic time-series data ingest pipelines without causing write-locks on the databases.",
+      "Mapping complex multi-dimensional geospatial metrics onto a responsive 2D Leaflet canvas."
+    ],
+    "results": [
+      "Ranked Top 5 in India in the NASA Space Apps Challenge 2025 (competing against 823 teams).",
+      "Achieved a 98% time-series prediction accuracy rate on forecast AQI index points."
+    ],
+    "lessons": [
+      "TimescaleDB hypertable partitioning is highly effective for running geospatial queries on large datasets.",
+      "Explainable AI outputs are critical for helping city planners trust predictive environmental models."
+    ],
+    "githubUrl": "https://github.com/Suraj-codes1410/orbitair",
+    "liveUrl": "",
+    "status": "Award Winner",
+    "year": "2025"
+  }
+]

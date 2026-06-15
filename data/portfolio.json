@@ -1,0 +1,50 @@
+{
+  "name": "Suraj Samanta",
+  "title": "Backend Developer | AI Engineer | Distributed Systems Enthusiast",
+  "tagline": "Computer Science undergraduate passionate about backend engineering, distributed systems, and scalable API development.",
+  "bio": "Computer Science undergraduate passionate about backend engineering, distributed systems, and scalable API development using Java, Spring Boot, and Python. Built production-grade projects involving Kafka, gRPC, WebSockets, Docker, and microservices through competitive hackathons.",
+  "email": "samantasuraj1410@gmail.com",
+  "phone": "+91-7703841584",
+  "github": "https://github.com/Suraj-codes1410",
+  "linkedin": "https://linkedin.com/in/suraj-samanta",
+  "resume": "/resume.pdf",
+  "location": "New Delhi, India",
+  "education": {
+    "degree": "B.Tech in Computer Science Engineering",
+    "institution": "Dr. Akhilesh Das Gupta Institute of Professional Studies",
+    "location": "New Delhi",
+    "cgpa": "9.4 / 10.0",
+    "currentYear": "2nd Year",
+    "expectedGraduation": "2027"
+  },
+  "futureGoals": [
+    "Scale microservice architectures using event-driven communication protocols",
+    "Deepen knowledge in advanced distributed database engines and sharding systems",
+    "Architect and deploy low-latency, containerized AI pipelines",
+    "Contribute to key open-source projects in the Java and Python backend ecosystems"
+  ],
+  "interests": [
+    "Backend Systems",
+    "Distributed Consensus",
+    "Civic Tech Innovations",
+    "AI-Powered GIS Platforms",
+    "Competitive Hackathons"
+  ],
+  "socialLinks": [
+    {
+      "platform": "GitHub",
+      "url": "https://github.com/Suraj-codes1410",
+      "icon": "github"
+    },
+    {
+      "platform": "LinkedIn",
+      "url": "https://linkedin.com/in/suraj-samanta",
+      "icon": "linkedin"
+    },
+    {
+      "platform": "Email",
+      "url": "mailto:samantasuraj1410@gmail.com",
+      "icon": "mail"
+    }
+  ]
+}
