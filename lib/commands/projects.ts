@@ -3,7 +3,7 @@ import { getProjects } from '@/lib/data';
 
 export const projectsCommand: Command = {
   name: 'projects',
-  aliases: ['work', 'portfolio', 'repos'],
+  aliases: ['work', 'portfolio'],
   description: 'Displays portfolio projects and details.',
   execute: async (args) => {
     const projects = await getProjects();

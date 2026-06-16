@@ -14,6 +14,8 @@ import { homeCommand } from './home';
 import { recruiterCommand } from './recruiter';
 import { openCommand } from './open';
 import { projectCommand } from './project';
+import { reposCommand } from './repos';
+import { repoCommand } from './repo';
 
 // Register core commands on module load
 registry.register(helpCommand);
@@ -31,6 +33,8 @@ registry.register(homeCommand);
 registry.register(recruiterCommand);
 registry.register(openCommand);
 registry.register(projectCommand);
+registry.register(reposCommand);
+registry.register(repoCommand);
 
 export * from './types';
 export * from './registry';
@@ -51,7 +55,9 @@ export {
   homeCommand,
   recruiterCommand,
   openCommand,
-  projectCommand
+  projectCommand,
+  reposCommand,
+  repoCommand
 };
 
 
