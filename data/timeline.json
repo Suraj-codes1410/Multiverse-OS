@@ -1,0 +1,62 @@
+[
+  {
+    "id": "edu-commence",
+    "title": "Commenced B.Tech in Computer Science Engineering",
+    "date": "August 2023",
+    "year": "2023",
+    "type": "education",
+    "description": "Began B.Tech in CSE at Dr. Akhilesh Das Gupta Institute of Professional Studies, New Delhi.",
+    "relatedLink": "",
+    "icon": "book-open"
+  },
+  {
+    "id": "project-patient-mgmt",
+    "title": "Patient Management Service Developed",
+    "date": "January 2025",
+    "year": "2025",
+    "type": "project",
+    "description": "Architected a hospital billing microservices system using Spring Boot, Kafka, and gRPC.",
+    "relatedLink": "/project/patient-management-service",
+    "icon": "briefcase"
+  },
+  {
+    "id": "hackathon-sih",
+    "title": "Smart India Hackathon Finalist (SAHAI)",
+    "date": "September 2025",
+    "year": "2025",
+    "type": "hackathon",
+    "description": "Selected to represent the institute at the SIH National Finals for building SAHAI, a mental health & lifestyle platform.",
+    "relatedLink": "/project/sahai",
+    "icon": "award"
+  },
+  {
+    "id": "hackathon-nasa",
+    "title": "NASA Space Apps Challenge — Top 5 in India (ORBITAIR)",
+    "date": "October 2025",
+    "year": "2025",
+    "type": "hackathon",
+    "description": "Ranked in the national top 5 out of 823 teams for developing ORBITAIR, an AI-powered geospatial AQI forecasting engine.",
+    "relatedLink": "/project/orbitair",
+    "icon": "award"
+  },
+  {
+    "id": "hackathon-smart-delhi",
+    "title": "Smart Delhi Ideathon — Civic Prize Winner",
+    "date": "November 2025",
+    "year": "2025",
+    "type": "achievement",
+    "description": "Awarded the Civic Prize and ranked in the top 5 for developing civic tech solutions resolving local municipal challenges.",
+    "relatedLink": "",
+    "icon": "award"
+  },
+  {
+    "id": "edu-graduation",
+    "title": "Expected B.Tech Graduation",
+    "date": "May 2027",
+    "year": "2027",
+    "type": "education",
+    "description": "Expected graduation from Dr. Akhilesh Das Gupta Institute of Professional Studies with an ongoing CGPA of 9.4.",
+    "relatedLink": "",
+    "icon": "graduation-cap"
+  }
+]

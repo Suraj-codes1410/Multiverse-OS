@@ -95,3 +95,15 @@ export interface GitHubRepository {
   updatedAt: string;
   createdAt: string;
 }
+
+export interface TimelineMilestone {
+  id: string;
+  title: string;
+  date: string;
+  year: string;
+  type: 'project' | 'hackathon' | 'achievement' | 'education' | 'milestone';
+  description: string;
+  relatedLink?: string;
+  icon?: string;
+}
+

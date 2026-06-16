@@ -13,7 +13,9 @@ export default function Navbar() {
 
   // Close mobile menu on route change
   useEffect(() => {
-    setIsOpen(false);
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 0);
   }, [pathname]);
 
   const navLinks = [
@@ -21,6 +23,7 @@ export default function Navbar() {
     { name: 'About', href: '/about' },
     { name: 'Skills', href: '/skills' },
     { name: 'Projects', href: '/projects' },
+    { name: 'Timeline', href: '/timeline' },
     { name: 'Contact', href: '/contact' },
   ];
 

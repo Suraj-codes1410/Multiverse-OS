@@ -5,8 +5,9 @@ import universesData from '@/data/universes.json';
 import experienceData from '@/data/experience.json';
 import achievementsData from '@/data/achievements.json';
 import githubConfig from '@/data/github-config.json';
+import timelineData from '@/data/timeline.json';
 
-import { Portfolio, Project, Skill, Universe, Experience, Achievement } from '../types';
+import { Portfolio, Project, Skill, Universe, Experience, Achievement, TimelineMilestone } from '../types';
 import { getRepositories } from '../github/github';
 
 export function getPortfolio(): Portfolio {
@@ -95,4 +96,8 @@ export async function getProjectById(id: string): Promise<Project | undefined> {
 export async function getFeaturedProjects(): Promise<Project[]> {
   const all = await getProjects();
   return all.filter(p => p.featured);
+}
+
+export function getTimeline(): TimelineMilestone[] {
+  return timelineData as TimelineMilestone[];
 }

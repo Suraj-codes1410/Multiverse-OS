@@ -19,6 +19,7 @@ export const openCommand: Command = {
           'Targets:',
           '  projects           - Navigates to projects portfolio page.',
           '  skills             - Navigates to technical skills page.',
+          '  timeline           - Navigates to career timeline page.',
           '  contact            - Navigates to contact form page.',
           '  recruiter          - Navigates to recruiter dashboard.',
           '  orbitair           - Navigates to Orbitair project briefing.',
@@ -51,6 +52,11 @@ export const openCommand: Command = {
       case 'dashboard':
         context.navigate('/recruiter');
         return { output: 'Navigating to recruiter intelligence system...', success: true };
+      case 'timeline':
+      case 'chrono':
+      case 'history':
+        context.navigate('/timeline');
+        return { output: 'Navigating to chronological career datastream...', success: true };
       case 'orbitair':
         context.navigate('/project/orbitair');
         return { output: 'Navigating to ORBITAIR project file...', success: true };
