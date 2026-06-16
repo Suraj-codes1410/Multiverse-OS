@@ -91,7 +91,7 @@ export default function ContactPage() {
                     Looking for a CV/Resume?
                   </h3>
                   <p className="text-xs text-text-secondary leading-relaxed">
-                    Download the latest version of Suraj Samanta's technical resume containing detailed histories, architectures, and academic credentials.
+                    Download the latest version of Suraj Samanta&apos;s technical resume containing detailed histories, architectures, and academic credentials.
                   </p>
                 </div>
                 <Button href={portfolio.resume} target="_blank" variant="outline" size="sm" className="whitespace-nowrap flex-shrink-0">

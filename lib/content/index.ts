@@ -9,6 +9,8 @@ import timelineData from '@/data/timeline.json';
 
 import { Portfolio, Project, Skill, Universe, Experience, Achievement, TimelineMilestone } from '../types';
 import { getRepositories } from '../github/github';
+import { getReadmeContent } from '../github/readme';
+import { generateRepositoryIntelligence } from '../github/intelligence';
 
 export function getPortfolio(): Portfolio {
   return portfolioData as Portfolio;
@@ -36,9 +38,11 @@ export async function getProjects(): Promise<Project[]> {
   const repos = await getRepositories();
 
   // Enrich manually curated projects with GitHub repository statistics if they match
-  const enrichedManuals = manuals.map(project => {
+  const enrichedManuals = await Promise.all(manuals.map(async (project) => {
     const matchingRepo = repos.find(repo => repo.name.toLowerCase() === project.id.toLowerCase());
     if (matchingRepo) {
+      const readme = await getReadmeContent(matchingRepo.name);
+      const intelligence = generateRepositoryIntelligence(matchingRepo, readme);
       return {
         ...project,
         githubUrl: project.githubUrl || matchingRepo.htmlUrl,
@@ -46,23 +50,29 @@ export async function getProjects(): Promise<Project[]> {
         techStack: Array.from(new Set([
           ...project.techStack, 
           ...(matchingRepo.language ? [matchingRepo.language] : [])
-        ]))
+        ])),
+        githubRepository: matchingRepo,
+        readme,
+        intelligence
       };
     }
     return project;
-  });
+  }));
 
   const manualIds = manuals.map(m => m.id.toLowerCase());
   const pureGithubProjects: Project[] = [];
 
   // Synchronize any pure GitHub projects that aren't defined manually
-  repos.forEach(repo => {
+  for (const repo of repos) {
     const isManual = manualIds.includes(repo.name.toLowerCase());
     const config = githubConfig.syncRepositories.find(
-      (r: any) => r.name.toLowerCase() === repo.name.toLowerCase()
+      (r: { name: string; featured?: boolean; portfolioVisible?: boolean; highlighted?: boolean }) => r.name.toLowerCase() === repo.name.toLowerCase()
     );
 
     if (!isManual && config && config.portfolioVisible) {
+      const readme = await getReadmeContent(repo.name);
+      const intelligence = generateRepositoryIntelligence(repo, readme);
+      
       pureGithubProjects.push({
         id: repo.name.toLowerCase(),
         title: repo.name,
@@ -80,10 +90,13 @@ export async function getProjects(): Promise<Project[]> {
         githubUrl: repo.htmlUrl,
         liveUrl: repo.homepage || '',
         status: 'Synced',
-        year: new Date(repo.createdAt).getFullYear().toString()
+        year: new Date(repo.createdAt).getFullYear().toString(),
+        githubRepository: repo,
+        readme,
+        intelligence
       });
     }
-  });
+  }
 
   return [...enrichedManuals, ...pureGithubProjects];
 }

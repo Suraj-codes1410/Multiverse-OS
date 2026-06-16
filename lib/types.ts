@@ -28,6 +28,15 @@ export interface Portfolio {
   socialLinks: SocialLink[]; // Keep for navbar/footer rendering
 }
 
+export interface RepositoryIntelligence {
+  projectType: string;
+  technologies: string[];
+  keyConcepts: string[];
+  projectCategory: string;
+  complexityIndicators: string[];
+  activityLevel: 'High' | 'Medium' | 'Low' | 'Stable Archive';
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -46,6 +55,10 @@ export interface Project {
   liveUrl: string;
   status: string;
   year: string;
+  // Connected GitHub Metadata (Phase 3.5.7)
+  githubRepository?: GitHubRepository;
+  readme?: string;
+  intelligence?: RepositoryIntelligence;
 }
 
 export interface Skill {

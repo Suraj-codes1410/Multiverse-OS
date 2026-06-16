@@ -1,13 +1,4 @@
-import { GitHubRepository } from '../types';
-
-export interface RepositoryIntelligence {
-  projectType: string;
-  technologies: string[];
-  keyConcepts: string[];
-  projectCategory: string;
-  complexityIndicators: string[];
-  activityLevel: 'High' | 'Medium' | 'Low' | 'Stable Archive';
-}
+import { GitHubRepository, RepositoryIntelligence } from '../types';
 
 /**
  * Generates repository intelligence metrics using deterministic rules only.

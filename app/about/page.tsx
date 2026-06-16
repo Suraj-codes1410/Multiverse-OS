@@ -3,7 +3,6 @@ import { BookOpen, Target, BrainCircuit, Terminal, Briefcase } from 'lucide-reac
 import Container from '@/components/Container';
 import Section from '@/components/Section';
 import Card from '@/components/Card';
-import Badge from '@/components/Badge';
 import TimelineItem from '@/components/TimelineItem';
 import { getPortfolio, getExperience } from '@/lib/data';
 

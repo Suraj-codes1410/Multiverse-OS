@@ -2,9 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<'button'> {
   href?: string;
   target?: string;
   rel?: string;
@@ -59,7 +59,7 @@ export default function Button({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={combinedStyles}
-      {...(props as any)}
+      {...props}
     >
       {children}
     </motion.button>

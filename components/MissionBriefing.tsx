@@ -9,7 +9,9 @@ import {
   ArrowLeft, 
   Activity, 
   Lock, 
-  Layers 
+  Layers,
+  GitBranch,
+  Sparkles
 } from 'lucide-react';
 import { GithubIcon } from '@/components/Icons';
 import Container from '@/components/Container';
@@ -18,6 +20,7 @@ import Badge from '@/components/Badge';
 import Button from '@/components/Button';
 import { Project } from '@/lib/types';
 import Link from 'next/link';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface MissionBriefingProps {
   project: Project;
@@ -188,6 +191,82 @@ export default function MissionBriefing({ project }: MissionBriefingProps) {
                 </div>
               </div>
             </Card>
+
+            {/* Section 05: Linked GitHub Repository Information */}
+            {project.githubRepository && (
+              <Card hoverable={false} className="border-border-subtle bg-bg-panel/30">
+                <div className="flex items-center justify-between mb-4 border-b border-border-subtle/50 pb-2 select-none">
+                  <div className="flex items-center gap-2">
+                    <GitBranch className="w-4 h-4 text-accent-cyan" />
+                    <h2 className="text-xs font-mono uppercase tracking-wider text-text-primary">
+                      05_LINKED_GITHUB_REPOSITORY_DOSSIER
+                    </h2>
+                  </div>
+                  <Link href={`/github/${project.githubRepository.name}`} className="text-xs font-mono text-accent-cyan hover:underline flex items-center gap-0.5">
+                    VIEW_FULL_EXPLORER_FILE →
+                  </Link>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Repo Overview stats */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono">
+                    <div className="bg-bg-primary/40 border border-border-subtle p-3 rounded-lg">
+                      <span className="text-text-secondary block mb-0.5">REPO_NAME:</span>
+                      <a href={project.githubRepository.htmlUrl} target="_blank" rel="noopener noreferrer" className="text-accent-cyan font-bold hover:underline flex items-center gap-1">
+                        {project.githubRepository.name} <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                    <div className="bg-bg-primary/40 border border-border-subtle p-3 rounded-lg">
+                      <span className="text-text-secondary block mb-0.5">STARS / FORKS:</span>
+                      <span className="text-text-primary font-bold">{project.githubRepository.starsCount} ★ / {project.githubRepository.forksCount} ⑂</span>
+                    </div>
+                    <div className="bg-bg-primary/40 border border-border-subtle p-3 rounded-lg">
+                      <span className="text-text-secondary block mb-0.5">ACTIVITY_LEVEL:</span>
+                      <span className="text-success-green font-bold uppercase">{project.intelligence?.activityLevel || 'STABLE'}</span>
+                    </div>
+                  </div>
+
+                  {/* Repository Intelligence */}
+                  {project.intelligence && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Concepts */}
+                      <div className="bg-bg-primary/25 border border-border-subtle/60 p-4 rounded-lg text-xs leading-normal">
+                        <span className="text-accent-cyan font-mono text-[10px] block uppercase mb-2 font-bold">&gt; Core Concepts</span>
+                        <ul className="space-y-1">
+                          {project.intelligence.keyConcepts.map((concept, idx) => (
+                            <li key={idx} className="flex items-center gap-1.5 text-text-secondary">
+                              <Sparkles className="w-3 h-3 text-accent-cyan flex-shrink-0" /> {concept}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Complexity */}
+                      <div className="bg-bg-primary/25 border border-border-subtle/60 p-4 rounded-lg text-xs leading-normal">
+                        <span className="text-accent-purple font-mono text-[10px] block uppercase mb-2 font-bold">&gt; Complexity Indicators</span>
+                        <ul className="space-y-1">
+                          {project.intelligence.complexityIndicators.map((indicator, idx) => (
+                            <li key={idx} className="flex items-center gap-1.5 text-text-secondary">
+                              <Activity className="w-3.5 h-3.5 text-accent-purple flex-shrink-0" /> {indicator}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* README Expose (Scrollable box) */}
+                  {project.readme && (
+                    <div>
+                      <h3 className="text-xs font-mono text-text-secondary uppercase mb-2 select-none">&gt; Live README.md Documentation</h3>
+                      <div className="p-4 bg-bg-primary/30 border border-border-subtle rounded-lg max-h-[300px] overflow-y-auto select-text">
+                        <MarkdownRenderer content={project.readme} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
 
           </div>
 
