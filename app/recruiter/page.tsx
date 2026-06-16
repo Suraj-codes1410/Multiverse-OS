@@ -1,6 +1,6 @@
 import React from 'react';
 import RecruiterDashboard from '@/components/RecruiterDashboard';
-import { getPortfolio, getFeaturedProjects, getSkills, getExperience, getAchievements } from '@/lib/data';
+import { getPortfolio, getFeaturedProjects, getSkills, getExperience, getAchievements, getProjects } from '@/lib/data';
 
 export const metadata = {
   title: 'Recruiter Dashboard | Suraj Samanta',
@@ -13,6 +13,7 @@ export default async function RecruiterPage() {
   const skills = getSkills();
   const experience = getExperience();
   const achievements = getAchievements();
+  const allProjects = await getProjects();
 
   return (
     <RecruiterDashboard
@@ -21,6 +22,7 @@ export default async function RecruiterPage() {
       skills={skills}
       experience={experience}
       achievements={achievements}
+      allProjects={allProjects}
     />
   );
 }
