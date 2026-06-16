@@ -26,12 +26,25 @@ export default function BootSequence({
 
   const stepDuration = durationMs / messages.length;
 
+  const triggerFadeOut = () => {
+    setIsFadingOut(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('multiverse_boot_completed', 'true');
+    }
+    // Allow animation to complete before unmounting
+    setTimeout(() => {
+      setIsDismissed(true);
+    }, 500);
+  };
+
   useEffect(() => {
     // Check session storage on mount
     if (typeof window !== 'undefined') {
       const isCompleted = sessionStorage.getItem('multiverse_boot_completed');
       if (isCompleted === 'true') {
-        setIsDismissed(true);
+        setTimeout(() => {
+          setIsDismissed(true);
+        }, 0);
         return;
       }
     }
@@ -63,17 +76,6 @@ export default function BootSequence({
     };
   }, [messages.length, stepDuration]);
 
-  const triggerFadeOut = () => {
-    setIsFadingOut(true);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('multiverse_boot_completed', 'true');
-    }
-    // Allow animation to complete before unmounting
-    setTimeout(() => {
-      setIsDismissed(true);
-    }, 500);
-  };
-
   if (isDismissed) {
     return null;
   }
@@ -93,6 +95,7 @@ export default function BootSequence({
   return (
     <div
       id="boot-overlay"
+      suppressHydrationWarning={true}
       className={`fixed inset-0 z-[9999] flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#030407] font-mono text-xs sm:text-sm text-accent-cyan transition-opacity duration-500 select-none ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
