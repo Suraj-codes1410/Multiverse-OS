@@ -25,6 +25,7 @@ export default function Navbar() {
     { name: 'Projects', href: '/projects' },
     { name: 'GitHub', href: '/github' },
     { name: 'Timeline', href: '/timeline' },
+    { name: 'Explorer', href: '/knowledge' },
     { name: 'Contact', href: '/contact' },
   ];
 

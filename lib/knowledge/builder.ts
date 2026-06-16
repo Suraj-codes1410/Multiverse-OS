@@ -282,6 +282,31 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
           }
         });
       }
+
+      // Link repository node to achievements associated with this project context
+      achievements.forEach(ach => {
+        const achId = makeId('achievement', ach.title);
+        
+        const titleMatches = ach.title.toLowerCase().includes(project.title.toLowerCase()) || 
+                             ach.title.toLowerCase().includes(project.id.toLowerCase());
+        const descMatches = ach.description.toLowerCase().includes(project.title.toLowerCase()) || 
+                            ach.description.toLowerCase().includes(project.id.toLowerCase());
+                            
+        if (titleMatches || descMatches) {
+          graph.addRelationship({
+            sourceId: repoId,
+            targetId: achId,
+            type: 'RELATED_TO',
+            properties: { description: `Repository contains source code for achievement: ${ach.title}` }
+          });
+          graph.addRelationship({
+            sourceId: achId,
+            targetId: repoId,
+            type: 'RELATED_TO',
+            properties: { description: `Achievement references code repository: ${repoName}` }
+          });
+        }
+      });
     }
   });
 
@@ -303,7 +328,7 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
     }
   });
 
-  // 4. Achievements <-> Projects / Timeline Events (ACHIEVED_AT / RELATED_TO)
+  // 4. Achievements <-> Projects / Timeline Events / Technologies (ACHIEVED_AT / RELATED_TO)
   achievements.forEach(ach => {
     const achId = makeId('achievement', ach.title);
 
@@ -328,6 +353,49 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
           targetId: projectId,
           type: 'RELATED_TO',
           properties: { description: `Achievement was earned in project: ${project.title}` }
+        });
+
+        // Inherit project technologies/skills to the achievement relationship
+        if (project.techStack) {
+          project.techStack.forEach(tech => {
+            const skillId = makeId('skill', tech);
+            if (graph.getNode(skillId)) {
+              graph.addRelationship({
+                sourceId: achId,
+                targetId: skillId,
+                type: 'RELATED_TO',
+                properties: { description: `Achievement involved technology via project context: ${tech}` }
+              });
+            }
+          });
+        }
+        if (project.intelligence && project.intelligence.technologies) {
+          project.intelligence.technologies.forEach(tech => {
+            const skillId = makeId('skill', tech);
+            if (graph.getNode(skillId)) {
+              graph.addRelationship({
+                sourceId: achId,
+                targetId: skillId,
+                type: 'RELATED_TO',
+                properties: { description: `Achievement involved technology via project repository intelligence: ${tech}` }
+              });
+            }
+          });
+        }
+      }
+    });
+
+    // Connect achievements directly to skills/technologies mentioned in achievements text
+    skills.forEach(skill => {
+      const skillId = makeId('skill', skill.name);
+      const skillMentioned = ach.title.toLowerCase().includes(skill.name.toLowerCase()) || 
+                             ach.description.toLowerCase().includes(skill.name.toLowerCase());
+      if (skillMentioned) {
+        graph.addRelationship({
+          sourceId: achId,
+          targetId: skillId,
+          type: 'RELATED_TO',
+          properties: { description: `Achievement text references technology: ${skill.name}` }
         });
       }
     });
