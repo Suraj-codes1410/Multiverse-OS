@@ -44,7 +44,8 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
       result = result.filter(r => 
         r.name.toLowerCase().includes(query) || 
         (r.description && r.description.toLowerCase().includes(query)) ||
-        r.topics.some(t => t.toLowerCase().includes(query))
+        r.topics.some(t => t.toLowerCase().includes(query)) ||
+        (r.language && r.language.toLowerCase().includes(query))
       );
     }
 
@@ -167,7 +168,14 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
       {/* Results Telemetry Header */}
       <div className="flex items-center justify-between text-xs font-mono text-text-secondary select-none">
         <span>FETCHED_REPOSITORIES_STREAM: <strong className="text-accent-cyan">{filteredAndSortedRepos.length}</strong></span>
-        <span>INDEXING_STATUS: <span className="text-success-green font-bold">STABLE</span></span>
+        <span>
+          INDEXING_STATUS:{' '}
+          {searchQuery.trim() !== '' ? (
+            <span className="text-accent-cyan font-bold animate-pulse">QUERY_MATCHING</span>
+          ) : (
+            <span className="text-success-green font-bold">STABLE</span>
+          )}
+        </span>
       </div>
 
       {/* Grid of Repository Cards */}

@@ -23,12 +23,14 @@ import Badge from './Badge';
 import Container from './Container';
 import Button from './Button';
 import { GitHubRepository } from '@/lib/types';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface GithubRepoDetailProps {
   repo: GitHubRepository;
+  readme: string;
 }
 
-export default function GithubRepoDetail({ repo }: GithubRepoDetailProps) {
+export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps) {
   const [oracleQuery, setOracleQuery] = useState('');
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
 
@@ -195,29 +197,31 @@ export default function GithubRepoDetail({ repo }: GithubRepoDetailProps) {
               </div>
             </Card>
 
-            {/* README Intelligence Section (Extension Point) */}
+            {/* README Preview & Documentation */}
             <Card hoverable={false} className="border-accent-cyan/15 bg-bg-panel/60">
               <div className="flex items-center justify-between mb-4 border-b border-border-subtle/40 pb-2 select-none">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-accent-cyan" />
                   <h3 className="text-xs font-mono uppercase tracking-widest text-text-primary">
-                    README_INTELLIGENCE
+                    README_DOCUMENTATION_PREVIEW
                   </h3>
                 </div>
-                <Badge color="default" variant="solid" className="text-[8px]">OFFLINE</Badge>
+                <Badge color="green" variant="outline" className="text-[8px]">LIVE_DATA</Badge>
               </div>
 
               <div className="space-y-4">
-                <div className="p-4 bg-bg-primary/40 border border-border-subtle/80 rounded-lg text-xs leading-relaxed text-text-secondary space-y-2">
-                  <div className="flex items-center gap-2 text-accent-cyan font-mono font-bold">
-                    <AlertTriangle className="w-4 h-4 animate-pulse" /> EXTENSION_SLOT_PREPARED
+                <div className="p-5 bg-bg-primary/30 border border-border-subtle/70 rounded-lg max-h-[500px] overflow-y-auto">
+                  <MarkdownRenderer content={readme} />
+                </div>
+                
+                <div className="p-3 bg-bg-primary/10 border border-border-subtle/40 rounded-lg font-mono text-[9px] text-text-secondary leading-relaxed flex gap-2">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-accent-cyan" />
                   </div>
-                  <p>
-                    The README Markdown parsing parser is currently offline for this release. 
-                  </p>
-                  <p>
-                    In Phase 4, the repository parser will retrieve, structure, and render the repository&apos;s live README with syntax-highlighted code blocks, architecture diagrams, and custom metadata extraction.
-                  </p>
+                  <div>
+                    <span className="text-accent-cyan font-bold block mb-0.5">EXTENSION_SLOT: AGENTIC_COMPATIBILITY</span>
+                    <span>This raw README stream is exposed inside the portfolio. In Phase 4, the ORACLE system will build vector embeddings of these markdown nodes to permit natural language queries on repository codebase contexts.</span>
+                  </div>
                 </div>
               </div>
             </Card>

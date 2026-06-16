@@ -1,6 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { getRepositoryByName } from '@/lib/github/github';
+import { getReadmeContent } from '@/lib/github/readme';
 import GithubRepoDetail from '@/components/GithubRepoDetail';
 
 interface PageProps {
@@ -26,5 +27,7 @@ export default async function RepositoryDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <GithubRepoDetail repo={repo} />;
+  const readme = await getReadmeContent(repo.name);
+
+  return <GithubRepoDetail repo={repo} readme={readme} />;
 }
