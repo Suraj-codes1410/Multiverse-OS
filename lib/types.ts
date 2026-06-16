@@ -107,6 +107,7 @@ export interface GitHubRepository {
   topics: string[];
   updatedAt: string;
   createdAt: string;
+  classifications?: string[];
 }
 
 export interface TimelineMilestone {

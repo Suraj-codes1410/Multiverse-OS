@@ -17,6 +17,7 @@ import Card from './Card';
 import Badge from './Badge';
 import { GitHubRepository } from '@/lib/types';
 import Link from 'next/link';
+import { classifyRepository } from '@/lib/github/classification';
 
 interface GithubRepoCardProps {
   repo: GitHubRepository;
@@ -25,6 +26,8 @@ interface GithubRepoCardProps {
 export default function GithubRepoCard({ repo }: GithubRepoCardProps) {
   const [showIntelligence, setShowIntelligence] = useState(false);
   const [showReadmeSlot, setShowReadmeSlot] = useState(false);
+  
+  const classifications = repo.classifications || classifyRepository(repo);
 
   // Format the last updated date
   const updatedDate = new Date(repo.updatedAt).toLocaleDateString('en-US', {
@@ -75,9 +78,20 @@ export default function GithubRepoCard({ repo }: GithubRepoCardProps) {
         </div>
 
         {/* Description */}
-        <p className="text-xs text-text-secondary leading-relaxed mb-4 line-clamp-3 min-h-[48px]">
+        <p className="text-xs text-text-secondary leading-relaxed mb-3 line-clamp-3 min-h-[48px]">
           {repo.description || 'No description provided.'}
         </p>
+
+        {/* Classifications */}
+        {classifications && classifications.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {classifications.map((cat) => (
+              <Badge key={cat} color="purple" variant="solid" className="text-[8px] py-0.5 px-1.5 uppercase font-bold tracking-wider">
+                {cat}
+              </Badge>
+            ))}
+          </div>
+        )}
 
         {/* Topics */}
         {repo.topics && repo.topics.length > 0 && (

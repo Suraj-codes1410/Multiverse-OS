@@ -11,6 +11,7 @@ import { Portfolio, Project, Skill, Universe, Experience, Achievement, TimelineM
 import { getRepositories } from '../github/github';
 import { getReadmeContent } from '../github/readme';
 import { generateRepositoryIntelligence } from '../github/intelligence';
+import { classifyRepository } from '../github/classification';
 
 export function getPortfolio(): Portfolio {
   return portfolioData as Portfolio;
@@ -43,6 +44,7 @@ export async function getProjects(): Promise<Project[]> {
     if (matchingRepo) {
       const readme = await getReadmeContent(matchingRepo.name);
       const intelligence = generateRepositoryIntelligence(matchingRepo, readme);
+      const classifications = classifyRepository(matchingRepo, intelligence);
       return {
         ...project,
         githubUrl: project.githubUrl || matchingRepo.htmlUrl,
@@ -51,7 +53,10 @@ export async function getProjects(): Promise<Project[]> {
           ...project.techStack, 
           ...(matchingRepo.language ? [matchingRepo.language] : [])
         ])),
-        githubRepository: matchingRepo,
+        githubRepository: {
+          ...matchingRepo,
+          classifications
+        },
         readme,
         intelligence
       };
@@ -72,6 +77,7 @@ export async function getProjects(): Promise<Project[]> {
     if (!isManual && config && config.portfolioVisible) {
       const readme = await getReadmeContent(repo.name);
       const intelligence = generateRepositoryIntelligence(repo, readme);
+      const classifications = classifyRepository(repo, intelligence);
       
       pureGithubProjects.push({
         id: repo.name.toLowerCase(),
@@ -91,7 +97,10 @@ export async function getProjects(): Promise<Project[]> {
         liveUrl: repo.homepage || '',
         status: 'Synced',
         year: new Date(repo.createdAt).getFullYear().toString(),
-        githubRepository: repo,
+        githubRepository: {
+          ...repo,
+          classifications
+        },
         readme,
         intelligence
       });

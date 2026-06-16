@@ -366,6 +366,22 @@ export default function KnowledgeExplorerClient({
                       {Object.entries(selectedNode.properties).map(([key, val]) => {
                         if (key === 'description' || key === 'originalData' || val === undefined || val === null || val === '') return null;
                         
+                        // Handle classifications array
+                        if (key === 'classifications' && Array.isArray(val)) {
+                          return (
+                            <div key={key} className="bg-bg-primary/30 border border-border-subtle/50 p-2.5 rounded-lg col-span-1 sm:col-span-2">
+                              <span className="text-text-secondary block text-[9px] uppercase select-none mb-1.5 font-bold">Classifications:</span>
+                              <div className="flex flex-wrap gap-1">
+                                {val.map((cat: string) => (
+                                  <Badge key={cat} color="purple" variant="solid" className="text-[9px] py-0.5 px-1.5 uppercase font-bold tracking-wider">
+                                    {cat}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+
                         // Handle links
                         if (key === 'url' && typeof val === 'string') {
                           return (

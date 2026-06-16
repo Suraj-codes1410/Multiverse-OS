@@ -25,6 +25,7 @@ import Button from './Button';
 import { GitHubRepository } from '@/lib/types';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { generateRepositoryIntelligence } from '@/lib/github/intelligence';
+import { classifyRepository } from '@/lib/github/classification';
 
 interface GithubRepoDetailProps {
   repo: GitHubRepository;
@@ -36,6 +37,7 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
   
   const intelligence = generateRepositoryIntelligence(repo, readme);
+  const classifications = repo.classifications || classifyRepository(repo, intelligence);
 
   // Format dates
   const createdDate = new Date(repo.createdAt).toLocaleDateString('en-US', {
@@ -141,6 +143,19 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
                     {repo.description || 'No description provided for this repository.'}
                   </p>
                 </div>
+
+                {classifications && classifications.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-mono text-text-secondary uppercase mb-2">Engine Classifications</h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {classifications.map((cat) => (
+                        <Badge key={cat} color="purple" variant="solid" className="text-[10px] uppercase font-bold tracking-wider">
+                          {cat}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {repo.topics && repo.topics.length > 0 && (
                   <div>

@@ -1,6 +1,8 @@
 import { getPortfolio, getSkills, getExperience, getAchievements, getProjects, getTimeline } from '../data';
 import { getRepositories } from '../github/github';
 import { KnowledgeGraph } from './graph';
+import { classifyRepository } from '../github/classification';
+import { GitHubRepository } from '../types';
 
 export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
   const graph = new KnowledgeGraph();
@@ -471,6 +473,21 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
           properties: { description: `Education timeline event linked to academic program` }
         });
       }
+    }
+  });
+
+  // 8. Post-processing: Re-classify repositories using the complete Knowledge Graph context!
+  const repoNodes = graph.getNodesByType('Repository');
+  repoNodes.forEach(node => {
+    const repo = node.properties.originalData as GitHubRepository;
+    if (repo) {
+      const matchingProject = projects.find(p => p.githubRepository?.name.toLowerCase() === repo.name.toLowerCase());
+      const intel = matchingProject?.intelligence;
+      
+      const finalClassifications = classifyRepository(repo, intel, graph);
+      
+      node.properties.classifications = finalClassifications;
+      repo.classifications = finalClassifications;
     }
   });
 
