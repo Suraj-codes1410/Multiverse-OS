@@ -303,9 +303,35 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
     }
   });
 
-  // 4. Achievements <-> Timeline Events (ACHIEVED_AT)
+  // 4. Achievements <-> Projects / Timeline Events (ACHIEVED_AT / RELATED_TO)
   achievements.forEach(ach => {
     const achId = makeId('achievement', ach.title);
+
+    // Connect achievements to projects dynamically based on text matches
+    projects.forEach(project => {
+      const projectId = makeId('project', project.id);
+      
+      const titleMatches = ach.title.toLowerCase().includes(project.title.toLowerCase()) || 
+                           ach.title.toLowerCase().includes(project.id.toLowerCase());
+      const descMatches = ach.description.toLowerCase().includes(project.title.toLowerCase()) || 
+                          ach.description.toLowerCase().includes(project.id.toLowerCase());
+                          
+      if (titleMatches || descMatches) {
+        graph.addRelationship({
+          sourceId: projectId,
+          targetId: achId,
+          type: 'RELATED_TO',
+          properties: { description: `Project is associated with achievement: ${ach.title}` }
+        });
+        graph.addRelationship({
+          sourceId: achId,
+          targetId: projectId,
+          type: 'RELATED_TO',
+          properties: { description: `Achievement was earned in project: ${project.title}` }
+        });
+      }
+    });
+
     timeline.forEach(event => {
       const eventId = makeId('timeline', event.id);
       const isMatch = event.title.toLowerCase().includes(ach.title.toLowerCase()) ||
