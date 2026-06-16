@@ -10,11 +10,13 @@ import {
   Cpu, 
   BookOpen, 
   Terminal,
-  AlertCircle
+  AlertCircle,
+  ArrowRight
 } from 'lucide-react';
 import Card from './Card';
 import Badge from './Badge';
 import { GitHubRepository } from '@/lib/types';
+import Link from 'next/link';
 
 interface GithubRepoCardProps {
   repo: GitHubRepository;
@@ -56,9 +58,11 @@ export default function GithubRepoCard({ repo }: GithubRepoCardProps) {
         <div className="flex items-start justify-between gap-4 mb-2">
           <div className="flex items-center gap-2">
             <GitBranch className="w-4 h-4 text-accent-cyan flex-shrink-0" />
-            <h3 className="text-sm font-bold text-text-primary hover:text-accent-cyan transition-colors truncate max-w-[200px]" title={repo.name}>
-              {repo.name}
-            </h3>
+            <Link href={`/github/${repo.name}`} className="focus:outline-none group/title">
+              <h3 className="text-sm font-bold text-text-primary group-hover/title:text-accent-cyan transition-colors truncate max-w-[180px]" title={repo.name}>
+                {repo.name}
+              </h3>
+            </Link>
           </div>
           <div className="flex items-center gap-1.5 font-mono text-[10px] text-text-secondary select-none">
             <span className="flex items-center gap-0.5" title={`${repo.starsCount} stars`}>
@@ -77,7 +81,7 @@ export default function GithubRepoCard({ repo }: GithubRepoCardProps) {
 
         {/* Topics */}
         {repo.topics && repo.topics.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-4">
+          <div className="flex flex-wrap gap-1 mb-3">
             {repo.topics.slice(0, 4).map((topic) => (
               <Badge key={topic} color="default" className="text-[9px] py-0">
                 {topic}
@@ -85,6 +89,12 @@ export default function GithubRepoCard({ repo }: GithubRepoCardProps) {
             ))}
           </div>
         )}
+
+        <div className="mb-4">
+          <Link href={`/github/${repo.name}`} className="text-[10px] font-mono text-accent-cyan hover:underline inline-flex items-center gap-0.5 select-none focus:outline-none">
+            EXPLORE_DOSSIER <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
       </div>
 
       <div>
