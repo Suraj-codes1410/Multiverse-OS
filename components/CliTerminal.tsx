@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { commandHandler } from '@/lib/commands';
 
 interface HistoryLine {
   type: 'input' | 'output';
@@ -14,6 +16,7 @@ interface CliTerminalProps {
 }
 
 export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
+  const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [history, setHistory] = useState<HistoryLine[]>([
     { type: 'output', text: 'Multiverse OS [Version 2.1.0-GENESIS]' },
@@ -56,7 +59,7 @@ export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const command = inputValue.trim();
     if (!command) return;
@@ -65,10 +68,41 @@ export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
     setHistory((prev) => [
       ...prev,
       { type: 'input', text: command },
-      { type: 'output', text: 'SYSTEM: CLI execution mode is offline.' },
     ]);
 
     setInputValue('');
+
+    try {
+      const result = await commandHandler.handle(command, {
+        clearTerminal: () => {
+          setHistory([]);
+        },
+        navigate: (path: string) => {
+          router.push(path);
+          onClose();
+        }
+      });
+
+      const output = result.output;
+      if (output) {
+        if (Array.isArray(output)) {
+          setHistory((prev) => [
+            ...prev,
+            ...output.map((text: string) => ({ type: 'output' as const, text })),
+          ]);
+        } else {
+          setHistory((prev) => [
+            ...prev,
+            { type: 'output', text: output },
+          ]);
+        }
+      }
+    } catch (err) {
+      setHistory((prev) => [
+        ...prev,
+        { type: 'output', text: `SYSTEM ERROR: ${err instanceof Error ? err.message : String(err)}` },
+      ]);
+    }
   };
 
   const handleContainerClick = (e: React.MouseEvent) => {
