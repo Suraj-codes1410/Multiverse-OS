@@ -33,8 +33,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // Phase 3.2: Only migrate ORBITAIR to the new Mission Briefing format.
-  if (id.toLowerCase() === 'orbitair') {
+  // Phase 3.2 & 3.3: Migrate ORBITAIR and SAHAI to the new Mission Briefing format.
+  if (id.toLowerCase() === 'orbitair' || id.toLowerCase() === 'sahai') {
     return <MissionBriefing project={project} />;
   }
 
