@@ -24,6 +24,7 @@ import Container from './Container';
 import Button from './Button';
 import { GitHubRepository } from '@/lib/types';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import { generateRepositoryIntelligence } from '@/lib/github/intelligence';
 
 interface GithubRepoDetailProps {
   repo: GitHubRepository;
@@ -33,6 +34,8 @@ interface GithubRepoDetailProps {
 export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps) {
   const [oracleQuery, setOracleQuery] = useState('');
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
+  
+  const intelligence = generateRepositoryIntelligence(repo, readme);
 
   // Format dates
   const createdDate = new Date(repo.createdAt).toLocaleDateString('en-US', {
@@ -226,28 +229,91 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
               </div>
             </Card>
 
-            {/* Repository Analysis (Extension Point) */}
+            {/* Repository Intelligence Analysis */}
             <Card hoverable={false} className="border-accent-purple/15 bg-bg-panel/60">
               <div className="flex items-center justify-between mb-4 border-b border-border-subtle/40 pb-2 select-none">
                 <div className="flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-accent-purple" />
                   <h3 className="text-xs font-mono uppercase tracking-widest text-text-primary">
-                    COGNITIVE_REPOSITORIES_ANALYSIS
+                    DETERMINISTIC_REPOSITORIES_INTELLIGENCE
                   </h3>
                 </div>
-                <Badge color="default" variant="solid" className="text-[8px]">OFFLINE</Badge>
+                <Badge color="purple" variant="outline" className="text-[8px]">STATIC_ANALYSIS</Badge>
               </div>
 
-              <div className="p-4 bg-bg-primary/40 border border-border-subtle/80 rounded-lg text-xs leading-relaxed text-text-secondary space-y-2">
-                <div className="flex items-center gap-2 text-accent-purple font-mono font-bold">
-                  <Lock className="w-4 h-4" /> ANALYSIS_PIPELINE_LOCKED
+              <div className="space-y-4">
+                {/* Type & Category */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-bg-primary/30 border border-border-subtle p-3 rounded-lg text-xs">
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1">PROJECT_TYPE:</span>
+                    <span className="text-text-primary font-bold">{intelligence.projectType}</span>
+                  </div>
+                  <div className="bg-bg-primary/30 border border-border-subtle p-3 rounded-lg text-xs">
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1">PROJECT_CATEGORY:</span>
+                    <span className="text-accent-purple font-bold">{intelligence.projectCategory}</span>
+                  </div>
                 </div>
-                <p>
-                  Static security scans, code size indexes, complexity analytics, and structural architecture auditing are prepared.
-                </p>
-                <p>
-                  A future update will run telemetry maps against the repo tree to determine overall maintainability, test coverage indices, and algorithmic density.
-                </p>
+
+                {/* Tech Stack */}
+                <div>
+                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5">DETECTED_TECHNOLOGIES:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {intelligence.technologies.map(tech => (
+                      <Badge key={tech} color="cyan" className="text-[9px]">{tech}</Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Key Concepts */}
+                <div>
+                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">CORE_ARCHITECTURAL_CONCEPTS:</span>
+                  <ul className="space-y-1 bg-bg-primary/20 p-3 border border-border-subtle/60 rounded-lg">
+                    {intelligence.keyConcepts.map((concept, cidx) => (
+                      <li key={cidx} className="flex items-center gap-2 text-xs text-text-secondary">
+                        <Sparkles className="w-3.5 h-3.5 text-accent-purple flex-shrink-0" />
+                        <span>{concept}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Complexity Indicators */}
+                <div>
+                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">COMPLEXITY_INDICATORS:</span>
+                  <div className="space-y-1">
+                    {intelligence.complexityIndicators.map((indicator, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 bg-bg-primary/30 border border-border-subtle/60 rounded text-xs font-mono text-text-secondary">
+                        <span>{indicator}</span>
+                        <Badge color="purple" variant="outline" className="text-[8px] scale-90">VERIFIED</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Activity Level */}
+                <div className="flex items-center justify-between pt-2 border-t border-border-subtle/30 text-xs font-mono">
+                  <span className="text-text-secondary">REPO_ACTIVITY_METRIC:</span>
+                  <span className={`font-bold ${
+                    intelligence.activityLevel === 'High' 
+                      ? 'text-success-green' 
+                      : intelligence.activityLevel === 'Medium' 
+                      ? 'text-accent-cyan' 
+                      : 'text-text-secondary'
+                  }`}>
+                    {intelligence.activityLevel.toUpperCase()}
+                  </span>
+                </div>
+
+                {/* AI integration point notice */}
+                <div className="p-3 bg-accent-purple/5 border border-accent-purple/20 rounded-lg font-mono text-[9px] text-text-secondary leading-relaxed flex gap-2">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <Lock className="w-3.5 h-3.5 text-accent-purple" />
+                  </div>
+                  <div>
+                    <span className="text-accent-purple font-bold block mb-0.5">EXTENSION_SLOT: NEURAL_COMPLEXITY_SCAN</span>
+                    <span>Deterministic telemetry matched successfully. In Phase 4, the ORACLE core will query active model channels to run structural AST analyses and estimate total developer hours.</span>
+                  </div>
+                </div>
               </div>
             </Card>
 
