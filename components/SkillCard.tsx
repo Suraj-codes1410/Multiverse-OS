@@ -1,10 +1,8 @@
-'use client';
-
 import React from 'react';
-import Link from 'next/link';
 import Card from './Card';
 import Badge from './Badge';
 import { Skill } from '@/lib/types';
+import SkillRelationships from './SkillRelationships';
 
 interface SkillCardProps {
   skill: Skill;
@@ -36,28 +34,9 @@ export default function SkillCard({ skill, projectMap }: SkillCardProps) {
         </p>
       </div>
 
-      {skill.relatedProjects && skill.relatedProjects.length > 0 && (
-        <div className="pt-3 border-t border-border-subtle/40 mt-auto">
-          <span className="text-[10px] font-mono text-text-secondary uppercase tracking-wider block mb-1.5">
-            Related Projects
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {skill.relatedProjects.map((projId) => {
-              const projectTitle = projectMap[projId.toLowerCase()];
-              if (!projectTitle) return null;
-              return (
-                <Link
-                  key={projId}
-                  href={`/project/${projId}`}
-                  className="text-xs font-medium text-accent-cyan hover:text-text-primary transition-colors hover:underline focus:outline-none"
-                >
-                  {projectTitle}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <div className="mt-auto">
+        <SkillRelationships skill={skill} projectMap={projectMap} />
+      </div>
     </Card>
   );
 }

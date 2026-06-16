@@ -54,6 +54,8 @@ export interface Skill {
   level: string;
   description: string;
   relatedProjects: string[];
+  relatedTechnologies?: string[];
+  relatedDomain?: string;
 }
 
 export interface Universe {

@@ -4,160 +4,206 @@
     "category": "Backend",
     "level": "Advanced",
     "description": "Object-oriented software development, concurrency, multithreading, and enterprise backend solutions.",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Spring Boot", "Kafka", "gRPC"],
+    "relatedDomain": "Backend Engineering"
   },
   {
     "name": "Spring Boot",
     "category": "Backend",
     "level": "Advanced",
     "description": "Designing RESTful and gRPC microservices, config servers, gateway routing, and dependency injections.",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Java", "Hibernate", "Spring Security"],
+    "relatedDomain": "Backend Engineering"
   },
   {
     "name": "Spring Security",
     "category": "Backend",
     "level": "Proficient",
     "description": "Configuring JWT authentications, filters, CORS filters, and role-based access controls (RBAC).",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Spring Boot", "Java"],
+    "relatedDomain": "Backend Security"
   },
   {
     "name": "Hibernate",
     "category": "Backend",
     "level": "Proficient",
     "description": "Object-Relational Mapping (ORM) setup, database migrations, mapping entities, and query optimizations.",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Spring Boot", "MySQL", "PostgreSQL"],
+    "relatedDomain": "Database Mapping"
   },
   {
     "name": "Python",
     "category": "Backend",
     "level": "Advanced",
     "description": "Writing performant asynchronous APIs, scripting data loaders, and model integration.",
-    "relatedProjects": ["sahai", "orbitair"]
+    "relatedProjects": ["sahai", "orbitair"],
+    "relatedTechnologies": ["FastAPI", "Django"],
+    "relatedDomain": "Backend Engineering"
   },
   {
     "name": "FastAPI",
     "category": "Backend",
     "level": "Advanced",
     "description": "Building high-performance asynchronous API endpoints using Pydantic validation and dependency injection.",
-    "relatedProjects": ["sahai", "orbitair"]
+    "relatedProjects": ["sahai", "orbitair"],
+    "relatedTechnologies": ["Python", "Pinecone", "TimescaleDB"],
+    "relatedDomain": "API Architecture"
   },
   {
     "name": "Django",
     "category": "Backend",
     "level": "Proficient",
     "description": "Developing robust monolithic and split-backend services using Django ORM, authentication, and admin layers.",
-    "relatedProjects": ["sahai"]
+    "relatedProjects": ["sahai"],
+    "relatedTechnologies": ["Python", "MySQL"],
+    "relatedDomain": "Backend Engineering"
   },
   {
     "name": "JavaScript",
     "category": "Frontend",
     "level": "Proficient",
     "description": "Developing client-side interactive UI logic, handling DOM manipulations, and API calls.",
-    "relatedProjects": ["sahai", "orbitair"]
+    "relatedProjects": ["sahai", "orbitair"],
+    "relatedTechnologies": ["React.js"],
+    "relatedDomain": "Frontend Engineering"
   },
   {
     "name": "React.js",
     "category": "Frontend",
     "level": "Proficient",
     "description": "Building responsive UI single page applications using state hooks, context, and components.",
-    "relatedProjects": ["sahai", "orbitair"]
+    "relatedProjects": ["sahai", "orbitair"],
+    "relatedTechnologies": ["JavaScript", "Tailwind CSS", "Leaflet"],
+    "relatedDomain": "Frontend Engineering"
   },
   {
     "name": "Tailwind CSS",
     "category": "Frontend",
     "level": "Advanced",
     "description": "Styling layouts using clean responsive utility classes and modern layout tokens.",
-    "relatedProjects": ["sahai"]
+    "relatedProjects": ["sahai"],
+    "relatedTechnologies": ["React.js"],
+    "relatedDomain": "UI Layout Design"
   },
   {
     "name": "Leaflet",
     "category": "Frontend",
     "level": "Proficient",
     "description": "Rendering geo-spatial coordinate points, building pollution grids, and adding interactive maps.",
-    "relatedProjects": ["orbitair"]
+    "relatedProjects": ["orbitair"],
+    "relatedTechnologies": ["React.js", "TimescaleDB"],
+    "relatedDomain": "Geospatial Visualization"
   },
   {
     "name": "Kafka",
     "category": "Tools",
     "level": "Proficient",
     "description": "Configuring distributed event streams, managing topic partitions, and consumer group offsets.",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Java", "Spring Boot", "Docker"],
+    "relatedDomain": "Distributed Message Queues"
   },
   {
     "name": "gRPC",
     "category": "Tools",
     "level": "Proficient",
     "description": "Defining Proto files, compiling client-server code stubs, and accelerating service-to-service transfers.",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Java", "Spring Boot", "Docker"],
+    "relatedDomain": "High-Performance RPC"
   },
   {
     "name": "Docker",
     "category": "Cloud",
     "level": "Proficient",
     "description": "Writing Dockerfiles, orchestrating multi-container systems, and optimizing deployment images.",
-    "relatedProjects": ["patient-management-service"]
+    "relatedProjects": ["patient-management-service"],
+    "relatedTechnologies": ["Kafka", "gRPC", "Spring Boot"],
+    "relatedDomain": "Container Orchestration"
   },
   {
     "name": "Redis",
     "category": "Database",
     "level": "Proficient",
     "description": "Setting up key-value data caching, scaling API speed, and managing session tokens.",
-    "relatedProjects": []
+    "relatedProjects": [],
+    "relatedTechnologies": ["Python", "FastAPI"],
+    "relatedDomain": "Caching & Memory Engines"
   },
   {
     "name": "WebSockets",
     "category": "Tools",
     "level": "Proficient",
     "description": "Enabling full-duplex bi-directional communications for live chat rooms and system state alerts.",
-    "relatedProjects": ["sahai"]
+    "relatedProjects": ["sahai"],
+    "relatedTechnologies": ["Django", "FastAPI", "React.js"],
+    "relatedDomain": "Real-Time Communications"
   },
   {
     "name": "PostgreSQL",
     "category": "Database",
     "level": "Proficient",
     "description": "Relational schemas indexing, query writing, and transaction properties optimizations.",
-    "relatedProjects": []
+    "relatedProjects": [],
+    "relatedTechnologies": ["Hibernate", "Spring Boot"],
+    "relatedDomain": "Relational Databases"
   },
   {
     "name": "MySQL",
     "category": "Database",
     "level": "Proficient",
     "description": "Setting up schemas, connecting server drivers, and running standard data queries.",
-    "relatedProjects": ["sahai"]
+    "relatedProjects": ["sahai"],
+    "relatedTechnologies": ["Django", "Hibernate"],
+    "relatedDomain": "Relational Databases"
   },
   {
     "name": "TimescaleDB",
     "category": "Database",
     "level": "Proficient",
     "description": "Managing high-volume time-series geospatial points and running hypertable data queries.",
-    "relatedProjects": ["orbitair"]
+    "relatedProjects": ["orbitair"],
+    "relatedTechnologies": ["FastAPI", "Leaflet"],
+    "relatedDomain": "Database & Time-Series"
   },
   {
     "name": "Pinecone",
     "category": "Database",
     "level": "Proficient",
     "description": "Indexing embedding vectors, tuning cosine similarity metrics, and querying database collections.",
-    "relatedProjects": ["sahai"]
+    "relatedProjects": ["sahai"],
+    "relatedTechnologies": ["Python", "FastAPI", "Spring AI"],
+    "relatedDomain": "AI & Vector Databases"
   },
   {
     "name": "Spring AI",
     "category": "AI / ML",
     "level": "Proficient",
     "description": "Integrating LLM cognitive interfaces, loading local embeddings, and running Java AI model pipelines.",
-    "relatedProjects": []
+    "relatedProjects": [],
+    "relatedTechnologies": ["Spring Boot", "Pinecone"],
+    "relatedDomain": "AI Systems Integration"
   },
   {
     "name": "Git & GitHub",
     "category": "Tools",
     "level": "Advanced",
     "description": "Branching models, reviewing pull requests, merge resolving, and automated CI pipelines.",
-    "relatedProjects": []
+    "relatedProjects": [],
+    "relatedTechnologies": [],
+    "relatedDomain": "Version Control"
   },
   {
     "name": "Postman & REST APIs",
     "category": "Tools",
     "level": "Advanced",
     "description": "Testing API endpoints, setting up environment scripts, and documentation collection templates.",
-    "relatedProjects": []
+    "relatedProjects": [],
+    "relatedTechnologies": [],
+    "relatedDomain": "API Testing"
   }
 ]
