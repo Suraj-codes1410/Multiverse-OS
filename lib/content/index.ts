@@ -40,7 +40,12 @@ export async function getProjects(): Promise<Project[]> {
 
   // Enrich manually curated projects with GitHub repository statistics if they match
   const enrichedManuals = await Promise.all(manuals.map(async (project) => {
-    const matchingRepo = repos.find(repo => repo.name.toLowerCase() === project.id.toLowerCase());
+    const matchingRepo = repos.find(repo => 
+      repo.name.toLowerCase() === project.id.toLowerCase() ||
+      repo.name.toLowerCase() === project.id.toLowerCase() + 's' ||
+      project.id.toLowerCase() === repo.name.toLowerCase() + 's' ||
+      (project.githubUrl && project.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
+    );
     if (matchingRepo) {
       const readme = await getReadmeContent(matchingRepo.name);
       const intelligence = generateRepositoryIntelligence(matchingRepo, readme, project);

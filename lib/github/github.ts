@@ -126,7 +126,7 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
       return MOCK_REPOSITORIES;
     }
 
-    return data.map((repo: GitHubRepoResponse) => ({
+    const apiRepos = data.map((repo: GitHubRepoResponse) => ({
       id: repo.id,
       name: repo.name,
       fullName: repo.full_name,
@@ -140,6 +140,16 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
       updatedAt: repo.updated_at,
       createdAt: repo.created_at
     }));
+
+    const apiRepoNames = new Set(apiRepos.map(r => r.name.toLowerCase()));
+    const mergedRepos = [...apiRepos];
+    MOCK_REPOSITORIES.forEach(mockRepo => {
+      if (!apiRepoNames.has(mockRepo.name.toLowerCase())) {
+        mergedRepos.push(mockRepo);
+      }
+    });
+
+    return mergedRepos;
   } catch (error) {
     console.error('Error fetching GitHub repositories, returning mock cache.', error);
     return MOCK_REPOSITORIES;

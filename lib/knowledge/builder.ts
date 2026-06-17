@@ -274,6 +274,15 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
                 role: category
               }
             });
+            graph.addRelationship({
+              sourceId: skillId,
+              targetId: repoId,
+              type: 'RELATED_TO',
+              properties: { 
+                description: `Technology ${tech} is utilized in repository: ${repoName}`,
+                role: category
+              }
+            });
           }
         });
       });
@@ -331,6 +340,12 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
         type: 'DEPENDS_ON',
         properties: { description: `Project code resides in repository: ${repoName}` }
       });
+      graph.addRelationship({
+        sourceId: repoId,
+        targetId: projectId,
+        type: 'RELATED_TO',
+        properties: { description: `Repository contains source code for project: ${project.title}` }
+      });
 
       // Technology links are now handled in B.1 dynamically via technology profiles.
 
@@ -373,6 +388,12 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
             targetId: skillId,
             type: 'USES',
             properties: { description: `Professional role used: ${tech}` }
+          });
+          graph.addRelationship({
+            sourceId: skillId,
+            targetId: expId,
+            type: 'RELATED_TO',
+            properties: { description: `Technology is utilized in professional role: ${exp.role} at ${exp.company}` }
           });
         }
       });
@@ -417,6 +438,12 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
                 type: 'RELATED_TO',
                 properties: { description: `Achievement involved technology via project context: ${tech}` }
               });
+              graph.addRelationship({
+                sourceId: skillId,
+                targetId: achId,
+                type: 'RELATED_TO',
+                properties: { description: `Technology is referenced in achievement via project: ${ach.title}` }
+              });
             }
           });
         }
@@ -429,6 +456,12 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
                 targetId: skillId,
                 type: 'RELATED_TO',
                 properties: { description: `Achievement involved technology via project repository intelligence: ${tech}` }
+              });
+              graph.addRelationship({
+                sourceId: skillId,
+                targetId: achId,
+                type: 'RELATED_TO',
+                properties: { description: `Technology is referenced in achievement via repo intelligence: ${ach.title}` }
               });
             }
           });
@@ -447,6 +480,12 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
           targetId: skillId,
           type: 'RELATED_TO',
           properties: { description: `Achievement text references technology: ${skill.name}` }
+        });
+        graph.addRelationship({
+          sourceId: skillId,
+          targetId: achId,
+          type: 'RELATED_TO',
+          properties: { description: `Technology is associated with achievement: ${ach.title}` }
         });
       }
     });
