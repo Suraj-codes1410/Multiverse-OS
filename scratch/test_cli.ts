@@ -77,6 +77,34 @@ async function runCliTest() {
       console.error(`Error executing show ${args.join(' ')}:`, e);
     }
   }
+  // 4. Test what command
+  const whatCmd = registry.get('what');
+  if (!whatCmd) {
+    console.error("FAIL: what command not registered in the registry!");
+    return;
+  }
+
+  const whatQueries = [
+    ['uses', 'fastapi'],
+    ['uses', 'kafka'],
+    ['uses', 'grpc'],
+    ['uses', 'react']
+  ];
+
+  for (const args of whatQueries) {
+    console.log(`\n> what ${args.join(' ')}`);
+    try {
+      const result = await whatCmd.execute(args, { clearTerminal: () => {} });
+      console.log(`Success: ${result.success}`);
+      if (Array.isArray(result.output)) {
+        result.output.forEach(line => console.log(line));
+      } else {
+        console.log(result.output);
+      }
+    } catch (e) {
+      console.error(`Error executing what ${args.join(' ')}:`, e);
+    }
+  }
 }
 
 runCliTest();
