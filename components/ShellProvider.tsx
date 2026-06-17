@@ -1,8 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Terminal } from 'lucide-react';
+import { Terminal, Sparkles } from 'lucide-react';
 import CliTerminal from '@/components/CliTerminal';
+import OracleWindow from '@/components/OracleWindow';
 
 // Shell System status types
 export type SystemStatus = 'nominal' | 'booting' | 'warning' | 'critical';
@@ -129,22 +130,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
       >
         <CliTerminal isOpen={isCliOpen} onClose={() => setCliOpen(false)} />
 
-        {isOracleOpen && (
-          <div className="absolute inset-0 bg-[#030407]/90 pointer-events-auto flex items-center justify-center p-4">
-            <div className="border border-accent-purple bg-bg-panel/95 rounded p-6 max-w-md w-full shadow-[0_0_30px_rgba(168,85,247,0.15)]">
-              <div className="text-accent-purple font-bold mb-2">&gt; ORACLE BINDINGS [STANDBY]</div>
-              <div className="text-text-secondary leading-relaxed mb-4">
-                The cognitive prompt and AI router system is offline. Connect Oracle in future phases.
-              </div>
-              <button
-                onClick={() => setOracleOpen(false)}
-                className="px-3 py-1 border border-accent-purple/35 text-accent-purple hover:bg-accent-purple/10 transition-colors rounded"
-              >
-                Disconnect Oracle
-              </button>
-            </div>
-          </div>
-        )}
+        <OracleWindow isOpen={isOracleOpen} onClose={() => setOracleOpen(false)} />
       </div>
 
       {/* Utility Region Slot: bottom-right status and audio controls widgets. */}
@@ -152,6 +138,16 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         id="shell-utility-region"
         className="fixed bottom-4 right-4 pointer-events-none z-[9980] flex flex-col items-end gap-2 font-mono text-[10px]"
       >
+        {/* Floating Oracle Action Button */}
+        <button
+          onClick={toggleOracle}
+          className="pointer-events-auto flex items-center justify-center w-10 h-10 rounded-full border border-accent-purple/35 bg-[#0a0c16]/90 text-accent-purple hover:bg-accent-purple/15 hover:border-accent-purple hover:shadow-[0_0_12px_rgba(168,85,247,0.35)] transition-all duration-300 cursor-pointer"
+          title="Toggle Oracle (Alt + O)"
+          aria-label="Toggle Oracle"
+        >
+          <Sparkles className="w-4 h-4" />
+        </button>
+
         {/* Floating Terminal Action Button */}
         <button
           onClick={toggleCli}
