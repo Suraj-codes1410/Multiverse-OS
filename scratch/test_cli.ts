@@ -48,6 +48,35 @@ async function runCliTest() {
       console.error(`Error executing related ${args.join(' ')}:`, e);
     }
   }
+  // 3. Test show command
+  const showCmd = registry.get('show');
+  if (!showCmd) {
+    console.error("FAIL: show command not registered in the registry!");
+    return;
+  }
+
+  const showQueries = [
+    ['ai', 'projects'],
+    ['backend', 'projects'],
+    ['distributed-systems', 'projects'],
+    ['frontend', 'projects'],
+    ['fullstack', 'projects']
+  ];
+
+  for (const args of showQueries) {
+    console.log(`\n> show ${args.join(' ')}`);
+    try {
+      const result = await showCmd.execute(args, { clearTerminal: () => {} });
+      console.log(`Success: ${result.success}`);
+      if (Array.isArray(result.output)) {
+        result.output.forEach(line => console.log(line));
+      } else {
+        console.log(result.output);
+      }
+    } catch (e) {
+      console.error(`Error executing show ${args.join(' ')}:`, e);
+    }
+  }
 }
 
 runCliTest();
