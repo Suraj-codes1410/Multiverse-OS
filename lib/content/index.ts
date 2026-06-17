@@ -43,7 +43,7 @@ export async function getProjects(): Promise<Project[]> {
     const matchingRepo = repos.find(repo => repo.name.toLowerCase() === project.id.toLowerCase());
     if (matchingRepo) {
       const readme = await getReadmeContent(matchingRepo.name);
-      const intelligence = generateRepositoryIntelligence(matchingRepo, readme);
+      const intelligence = generateRepositoryIntelligence(matchingRepo, readme, project);
       const classifications = classifyRepository(matchingRepo, intelligence);
       return {
         ...project,

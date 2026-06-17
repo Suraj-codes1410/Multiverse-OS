@@ -270,14 +270,32 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
                 </div>
 
                 {/* Tech Stack */}
-                <div>
-                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5">DETECTED_TECHNOLOGIES:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {intelligence.technologies.map(tech => (
-                      <Badge key={tech} color="cyan" className="text-[9px]">{tech}</Badge>
-                    ))}
+                {intelligence.technologyProfile && Object.keys(intelligence.technologyProfile.categories).length > 0 ? (
+                  <div>
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">STRUCTURED_TECHNOLOGY_PROFILE:</span>
+                    <div className="space-y-3 bg-bg-primary/20 p-4 border border-border-subtle/60 rounded-lg">
+                      {Object.entries(intelligence.technologyProfile.categories).map(([category, techs]) => (
+                        <div key={category} className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 border-b border-border-subtle/20 pb-2 last:border-0 last:pb-0">
+                          <span className="text-[10px] font-mono font-bold text-accent-cyan uppercase tracking-wider">{category}</span>
+                          <div className="flex flex-wrap gap-1 justify-start sm:justify-end">
+                            {techs.map(tech => (
+                              <Badge key={tech} color="cyan" variant="solid" className="text-[9px]">{tech}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5">DETECTED_TECHNOLOGIES:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {intelligence.technologies.map(tech => (
+                        <Badge key={tech} color="cyan" className="text-[9px]">{tech}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Key Concepts */}
                 <div>

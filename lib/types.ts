@@ -28,6 +28,13 @@ export interface Portfolio {
   socialLinks: SocialLink[]; // Keep for navbar/footer rendering
 }
 
+export interface TechnologyProfile {
+  projectName: string;
+  categories: {
+    [category: string]: string[];
+  };
+}
+
 export interface RepositoryIntelligence {
   projectType: string;
   technologies: string[];
@@ -35,6 +42,7 @@ export interface RepositoryIntelligence {
   projectCategory: string;
   complexityIndicators: string[];
   activityLevel: 'High' | 'Medium' | 'Low' | 'Stable Archive';
+  technologyProfile?: TechnologyProfile;
 }
 
 export interface Project {

@@ -1,4 +1,5 @@
-import { GitHubRepository, RepositoryIntelligence } from '../types';
+import { GitHubRepository, RepositoryIntelligence, Project } from '../types';
+import { extractTechnologyProfile } from './technologyExtractor';
 
 /**
  * Generates repository intelligence metrics using deterministic rules only.
@@ -6,7 +7,8 @@ import { GitHubRepository, RepositoryIntelligence } from '../types';
  */
 export function generateRepositoryIntelligence(
   repo: GitHubRepository,
-  readme: string
+  readme: string,
+  project?: Project
 ): RepositoryIntelligence {
   const contentToSearch = `${repo.name} ${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
 
@@ -143,12 +145,15 @@ export function generateRepositoryIntelligence(
     activityLevel = 'Low';
   }
 
+  const technologyProfile = extractTechnologyProfile(repo, readme, project);
+
   return {
     projectType,
     technologies: Array.from(technologies),
     keyConcepts,
     projectCategory,
     complexityIndicators,
-    activityLevel
+    activityLevel,
+    technologyProfile
   };
 }

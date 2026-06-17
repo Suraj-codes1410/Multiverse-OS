@@ -196,24 +196,83 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
       });
     }
 
-    // Link from repository intelligence detected technologies (dynamic extraction)
-    if (project.intelligence && project.intelligence.technologies) {
-      project.intelligence.technologies.forEach(tech => {
-        const skillId = makeId('skill', tech);
-        if (graph.getNode(skillId)) {
+    // Link from repository intelligence detected technologies (dynamic extraction & knowledge graph integration)
+    if (project.intelligence && project.intelligence.technologyProfile) {
+      const profile = project.intelligence.technologyProfile;
+      Object.entries(profile.categories).forEach(([category, techs]) => {
+        techs.forEach(tech => {
+          const skillId = makeId('skill', tech);
+          
+          // Dynamically create Skill node if it doesn't exist in the graph
+          if (!graph.getNode(skillId)) {
+            let skillCategory: 'Backend' | 'Frontend' | 'Database' | 'Cloud' | 'AI / ML' | 'Tools' = 'Tools';
+            if (category === 'Backend') skillCategory = 'Backend';
+            else if (category === 'Frontend') skillCategory = 'Frontend';
+            else if (category === 'Database') skillCategory = 'Database';
+            else if (category === 'AI / ML') skillCategory = 'AI / ML';
+            else if (category === 'Visualization') skillCategory = 'Frontend';
+            else if (category === 'Messaging' || category === 'RPC') skillCategory = 'Backend';
+            else if (category === 'Containerization') skillCategory = 'Tools';
+
+            graph.addNode({
+              id: skillId,
+              type: 'Skill',
+              label: tech,
+              properties: {
+                description: `${tech} technology extracted dynamically.`,
+                category: skillCategory,
+                level: 'Advanced',
+                originalData: {
+                  name: tech,
+                  category: skillCategory,
+                  level: 'Advanced',
+                  description: `${tech} technology extracted dynamically.`,
+                  relatedProjects: []
+                }
+              }
+            });
+          }
+
           graph.addRelationship({
             sourceId: projectId,
             targetId: skillId,
             type: 'BUILT_WITH',
-            properties: { description: `Repository intelligence detected technology: ${tech}` }
+            properties: { 
+              description: `Repository intelligence detected technology: ${tech} (Category: ${category})`,
+              role: category
+            }
           });
           graph.addRelationship({
             sourceId: skillId,
             targetId: projectId,
             type: 'USES',
-            properties: { description: `Repository intelligence confirms technology is applied in: ${project.title}` }
+            properties: { 
+              description: `Technology ${tech} is used in: ${project.title} (Category: ${category})`,
+              role: category
+            }
           });
-        }
+
+          // Link to Repository node if it exists
+          let repoName = project.id;
+          if (project.githubRepository) {
+            repoName = project.githubRepository.name;
+          } else if (project.githubUrl) {
+            const parts = project.githubUrl.split('/');
+            repoName = parts[parts.length - 1] || project.id;
+          }
+          const repoId = makeId('repository', repoName);
+          if (graph.getNode(repoId)) {
+            graph.addRelationship({
+              sourceId: repoId,
+              targetId: skillId,
+              type: 'USES',
+              properties: { 
+                description: `Repository utilizes technology: ${tech} (Category: ${category})`,
+                role: category
+              }
+            });
+          }
+        });
       });
     }
   });
@@ -270,20 +329,7 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
         properties: { description: `Project code resides in repository: ${repoName}` }
       });
 
-      // Link repository node to skills detected in intelligence
-      if (project.intelligence && project.intelligence.technologies) {
-        project.intelligence.technologies.forEach(tech => {
-          const skillId = makeId('skill', tech);
-          if (graph.getNode(skillId)) {
-            graph.addRelationship({
-              sourceId: repoId,
-              targetId: skillId,
-              type: 'USES',
-              properties: { description: `Repository utilizes technology: ${tech}` }
-            });
-          }
-        });
-      }
+      // Technology links are now handled in B.1 dynamically via technology profiles.
 
       // Link repository node to achievements associated with this project context
       achievements.forEach(ach => {
