@@ -42,6 +42,26 @@ export interface ArchitectureAnalysis {
   dataLayer?: string[];
 }
 
+export interface ComplexityDimension {
+  score: number;
+  maxScore: number;
+  rating: 'Low' | 'Medium' | 'High';
+  details: string[];
+}
+
+export interface ComplexityAnalysis {
+  overallRating: 'Beginner' | 'Intermediate' | 'Advanced';
+  totalScore: number;
+  maxTotalScore: number;
+  dimensions: {
+    technologyCount: ComplexityDimension;
+    architectureComplexity: ComplexityDimension;
+    infrastructureComplexity: ComplexityDimension;
+    serviceCount: ComplexityDimension;
+    integrationCount: ComplexityDimension;
+  };
+}
+
 export interface RepositoryIntelligence {
   projectType: string;
   technologies: string[];
@@ -51,6 +71,7 @@ export interface RepositoryIntelligence {
   activityLevel: 'High' | 'Medium' | 'Low' | 'Stable Archive';
   technologyProfile?: TechnologyProfile;
   architectureAnalysis?: ArchitectureAnalysis;
+  complexityAnalysis?: ComplexityAnalysis;
 }
 
 export interface Project {

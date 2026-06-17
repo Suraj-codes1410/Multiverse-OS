@@ -72,6 +72,8 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
         year: project.year,
         category: project.subtitle,
         architecturePattern: project.intelligence?.architectureAnalysis?.architecturePattern || 'Monolith',
+        complexityRating: project.intelligence?.complexityAnalysis?.overallRating || 'Beginner',
+        complexityScore: project.intelligence?.complexityAnalysis?.totalScore || 0,
         originalData: project
       }
     });
@@ -542,6 +544,12 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
         node.properties.communication = intel.architectureAnalysis.communication;
         node.properties.security = intel.architectureAnalysis.security;
         node.properties.dataLayer = intel.architectureAnalysis.dataLayer;
+      }
+
+      // Attach complexity analysis property to the Repository node
+      if (intel?.complexityAnalysis) {
+        node.properties.complexityRating = intel.complexityAnalysis.overallRating;
+        node.properties.complexityScore = intel.complexityAnalysis.totalScore;
       }
     }
   });

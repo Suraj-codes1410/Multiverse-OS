@@ -98,7 +98,7 @@ const MOCK_READMES: { [key: string]: string } = {
 };
 
 function testTechnologyExtraction() {
-  console.log("\n=== Testing Structured Technology Profiles & Architecture Extraction ===");
+  console.log("\n=== Testing Structured Technology Profiles, Architecture & Complexity Extraction ===");
   MOCK_REPOSITORIES.forEach(repo => {
     const readme = MOCK_READMES[repo.name.toLowerCase()] || ``;
     const intelligence = generateRepositoryIntelligence(repo, readme);
@@ -121,6 +121,16 @@ function testTechnologyExtraction() {
       if (intelligence.architectureAnalysis.dataLayer) {
         console.log(`    Data Layer: ${intelligence.architectureAnalysis.dataLayer.join(', ')}`);
       }
+    }
+    if (intelligence.complexityAnalysis) {
+      console.log('  [Complexity Analysis]');
+      console.log(`    Overall Rating: ${intelligence.complexityAnalysis.overallRating}`);
+      console.log(`    Total Score: ${intelligence.complexityAnalysis.totalScore} / ${intelligence.complexityAnalysis.maxTotalScore} PTS`);
+      Object.entries(intelligence.complexityAnalysis.dimensions).forEach(([key, dim]) => {
+        console.log(`    Dimension: ${key.toUpperCase()}`);
+        console.log(`      Rating: ${dim.rating} (${dim.score} / ${dim.maxScore} PTS)`);
+        dim.details.forEach(d => console.log(`      Reason: ${d}`));
+      });
     }
   });
 }

@@ -308,6 +308,78 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
                   </div>
                 )}
 
+                {/* Complexity Scorecard */}
+                {intelligence.complexityAnalysis && (
+                  <div className="bg-bg-primary/40 border border-border-subtle/80 p-4 rounded-xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-border-subtle/30 pb-2">
+                      <span className="text-[10px] font-mono text-text-secondary uppercase">REPOSITORY_COMPLEXITY:</span>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          color={
+                            intelligence.complexityAnalysis.overallRating === 'Advanced' 
+                              ? 'purple' 
+                              : intelligence.complexityAnalysis.overallRating === 'Intermediate' 
+                              ? 'cyan' 
+                              : 'green'
+                          } 
+                          variant="solid" 
+                          className="text-xs font-bold tracking-wider font-mono scale-95"
+                        >
+                          {intelligence.complexityAnalysis.overallRating.toUpperCase()}
+                        </Badge>
+                        <span className="text-xs font-mono text-text-secondary font-bold">
+                          ({intelligence.complexityAnalysis.totalScore}/{intelligence.complexityAnalysis.maxTotalScore} PTS)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-bg-primary/60 rounded-full h-1.5 overflow-hidden border border-border-subtle/30">
+                      <div 
+                        className={`h-full rounded-full ${
+                          intelligence.complexityAnalysis.overallRating === 'Advanced' 
+                            ? 'bg-accent-purple' 
+                            : intelligence.complexityAnalysis.overallRating === 'Intermediate' 
+                            ? 'bg-accent-cyan' 
+                            : 'bg-success-green'
+                        }`}
+                        style={{ width: `${(intelligence.complexityAnalysis.totalScore / intelligence.complexityAnalysis.maxTotalScore) * 100}%` }}
+                      />
+                    </div>
+
+                    {/* Dimensions List */}
+                    <div className="space-y-3 pt-1">
+                      {Object.entries(intelligence.complexityAnalysis.dimensions).map(([key, dim]) => {
+                        const label = key.replace(/([A-Z])/g, '_$1').toUpperCase();
+                        return (
+                          <div key={key} className="bg-bg-panel/40 border border-border-subtle/40 rounded-lg p-3 space-y-1.5">
+                            <div className="flex items-center justify-between font-mono text-[9px] font-bold">
+                              <span className="text-text-secondary">{label}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className={
+                                  dim.rating === 'High' 
+                                    ? 'text-accent-purple' 
+                                    : dim.rating === 'Medium' 
+                                    ? 'text-accent-cyan' 
+                                    : 'text-text-secondary'
+                                }>
+                                  {dim.rating}
+                                </span>
+                                <span className="text-text-secondary">({dim.score}/{dim.maxScore} PTS)</span>
+                              </div>
+                            </div>
+                            <ul className="list-disc list-inside space-y-0.5 text-xs text-text-secondary pl-1">
+                              {dim.details.map((detail, dIdx) => (
+                                <li key={dIdx} className="leading-relaxed">{detail}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Tech Stack */}
                 {intelligence.technologyProfile && Object.keys(intelligence.technologyProfile.categories).length > 0 ? (
                   <div>
