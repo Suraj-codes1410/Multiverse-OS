@@ -105,6 +105,35 @@ async function runCliTest() {
       console.error(`Error executing what ${args.join(' ')}:`, e);
     }
   }
+  // 5. Test repos filter queries
+  const reposCmd = registry.get('repos');
+  if (!reposCmd) {
+    console.error("FAIL: repos command not registered in the registry!");
+    return;
+  }
+
+  const reposQueries = [
+    ['ai'],
+    ['backend'],
+    ['distributed-systems'],
+    ['fastapi'],
+    ['kafka']
+  ];
+
+  for (const args of reposQueries) {
+    console.log(`\n> repos ${args.join(' ')}`);
+    try {
+      const result = await reposCmd.execute(args, { clearTerminal: () => {} });
+      console.log(`Success: ${result.success}`);
+      if (Array.isArray(result.output)) {
+        result.output.forEach(line => console.log(line));
+      } else {
+        console.log(result.output);
+      }
+    } catch (e) {
+      console.error(`Error executing repos ${args.join(' ')}:`, e);
+    }
+  }
 }
 
 runCliTest();
