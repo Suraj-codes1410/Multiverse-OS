@@ -23,6 +23,11 @@ import { whatCommand } from './what';
 import { timelineCommand } from './timeline';
 import { hackathonsCommand } from './hackathons';
 import { milestonesCommand } from './milestones';
+import { strengthsCommand } from './strengths';
+import { backendExperienceCommand } from './backendExperience';
+import { aiExperienceCommand } from './aiExperience';
+import { distributedSystemsCommand } from './distributedSystems';
+import { bestProjectsCommand } from './bestProjects';
 
 // Register core commands on module load
 registry.register(helpCommand);
@@ -49,6 +54,11 @@ registry.register(whatCommand);
 registry.register(timelineCommand);
 registry.register(hackathonsCommand);
 registry.register(milestonesCommand);
+registry.register(strengthsCommand);
+registry.register(backendExperienceCommand);
+registry.register(aiExperienceCommand);
+registry.register(distributedSystemsCommand);
+registry.register(bestProjectsCommand);
 
 export * from './types';
 export * from './registry';
@@ -78,5 +88,10 @@ export {
   whatCommand,
   timelineCommand,
   hackathonsCommand,
-  milestonesCommand
+  milestonesCommand,
+  strengthsCommand,
+  backendExperienceCommand,
+  aiExperienceCommand,
+  distributedSystemsCommand,
+  bestProjectsCommand
 };

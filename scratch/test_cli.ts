@@ -166,6 +166,40 @@ async function runCliTest() {
       console.error(`Error executing ${item.name}:`, e);
     }
   }
+  // 7. Test recruiter commands
+  const strengthsCmd = registry.get('strengths');
+  const backendExpCmd = registry.get('backend-experience');
+  const aiExpCmd = registry.get('ai-experience');
+  const dsCmd = registry.get('distributed-systems');
+  const bestProjCmd = registry.get('best-projects');
+
+  if (!strengthsCmd || !backendExpCmd || !aiExpCmd || !dsCmd || !bestProjCmd) {
+    console.error("FAIL: One or more recruiter commands not registered!");
+    return;
+  }
+
+  const recruiterCommands = [
+    { cmd: strengthsCmd, name: 'strengths' },
+    { cmd: backendExpCmd, name: 'backend-experience' },
+    { cmd: aiExpCmd, name: 'ai-experience' },
+    { cmd: dsCmd, name: 'distributed-systems' },
+    { cmd: bestProjCmd, name: 'best-projects' }
+  ];
+
+  for (const item of recruiterCommands) {
+    console.log(`\n> ${item.name}`);
+    try {
+      const result = await item.cmd.execute([], { clearTerminal: () => {} });
+      console.log(`Success: ${result.success}`);
+      if (Array.isArray(result.output)) {
+        result.output.forEach(line => console.log(line));
+      } else {
+        console.log(result.output);
+      }
+    } catch (e) {
+      console.error(`Error executing ${item.name}:`, e);
+    }
+  }
 }
 
 runCliTest();
