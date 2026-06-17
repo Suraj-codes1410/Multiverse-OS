@@ -16,7 +16,8 @@ import {
   MessageSquare,
   Lock,
   Layers,
-  Sparkles
+  Sparkles,
+  Workflow
 } from 'lucide-react';
 import Card from './Card';
 import Badge from './Badge';
@@ -30,9 +31,18 @@ import { classifyRepository } from '@/lib/github/classification';
 interface GithubRepoDetailProps {
   repo: GitHubRepository;
   readme: string;
+  relatedProjects?: string[];
+  relatedSkills?: string[];
+  relatedTechnologies?: string[];
 }
 
-export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps) {
+export default function GithubRepoDetail({ 
+  repo, 
+  readme,
+  relatedProjects = [],
+  relatedSkills = [],
+  relatedTechnologies = []
+}: GithubRepoDetailProps) {
   const [oracleQuery, setOracleQuery] = useState('');
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
   
@@ -465,6 +475,69 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
 
           {/* Sidebar Area (1 Col) */}
           <div className="space-y-6">
+            
+            {/* Repository Insights (Knowledge Graph connections) */}
+            <Card hoverable={false} className="border-accent-cyan/15 bg-bg-panel/60">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-text-primary mb-4 border-b border-border-subtle/40 pb-2 flex items-center gap-2 select-none">
+                <Workflow className="w-4 h-4 text-accent-cyan" /> Repository Insights
+              </h3>
+
+              <div className="space-y-4">
+                {/* Related Projects */}
+                <div>
+                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">RELATED_PROJECTS_KG:</span>
+                  {relatedProjects.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {relatedProjects.map(proj => (
+                        <Badge key={proj} color="cyan" variant="solid" className="text-[9px] uppercase tracking-wide font-bold">
+                          {proj}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-text-secondary italic block bg-bg-primary/20 p-2.5 border border-border-subtle/30 rounded-lg">
+                      No connected projects in graph
+                    </span>
+                  )}
+                </div>
+
+                {/* Related Skills */}
+                <div>
+                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">RELATED_SKILLS_KG:</span>
+                  {relatedSkills.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {relatedSkills.map(skill => (
+                        <Badge key={skill} color="purple" variant="outline" className="text-[9px] uppercase font-bold tracking-wider">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-text-secondary italic block bg-bg-primary/20 p-2.5 border border-border-subtle/30 rounded-lg">
+                      No connected skills in graph
+                    </span>
+                  )}
+                </div>
+
+                {/* Related Technologies */}
+                <div>
+                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">RELATED_TECHNOLOGIES_KG:</span>
+                  {relatedTechnologies.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {relatedTechnologies.map(tech => (
+                        <Badge key={tech} color="cyan" variant="outline" className="text-[9px] font-bold">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-text-secondary italic block bg-bg-primary/20 p-2.5 border border-border-subtle/30 rounded-lg">
+                      No connected technologies in graph
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Card>
             
             {/* Datetime Telemetry */}
             <Card hoverable={false}>
