@@ -98,17 +98,29 @@ const MOCK_READMES: { [key: string]: string } = {
 };
 
 function testTechnologyExtraction() {
-  console.log("\n=== Testing Structured Technology Profiles Extraction ===");
+  console.log("\n=== Testing Structured Technology Profiles & Architecture Extraction ===");
   MOCK_REPOSITORIES.forEach(repo => {
     const readme = MOCK_READMES[repo.name.toLowerCase()] || ``;
     const intelligence = generateRepositoryIntelligence(repo, readme);
     console.log(`\nRepository: ${repo.name.toUpperCase()}`);
     if (intelligence.technologyProfile) {
+      console.log('  [Technology Profile]');
       Object.entries(intelligence.technologyProfile.categories).forEach(([category, techs]) => {
-        console.log(`  ${category}: ${techs.join(', ')}`);
+        console.log(`    ${category}: ${techs.join(', ')}`);
       });
-    } else {
-      console.log('  No technology profile extracted.');
+    }
+    if (intelligence.architectureAnalysis) {
+      console.log('  [Architecture Analysis]');
+      console.log(`    Architecture Pattern: ${intelligence.architectureAnalysis.architecturePattern}`);
+      if (intelligence.architectureAnalysis.communication) {
+        console.log(`    Communication: ${intelligence.architectureAnalysis.communication.join(', ')}`);
+      }
+      if (intelligence.architectureAnalysis.security) {
+        console.log(`    Security: ${intelligence.architectureAnalysis.security.join(', ')}`);
+      }
+      if (intelligence.architectureAnalysis.dataLayer) {
+        console.log(`    Data Layer: ${intelligence.architectureAnalysis.dataLayer.join(', ')}`);
+      }
     }
   });
 }

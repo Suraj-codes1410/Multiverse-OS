@@ -71,6 +71,7 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
         url: project.githubUrl || project.liveUrl,
         year: project.year,
         category: project.subtitle,
+        architecturePattern: project.intelligence?.architectureAnalysis?.architecturePattern || 'Monolith',
         originalData: project
       }
     });
@@ -534,6 +535,14 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
       
       node.properties.classifications = finalClassifications;
       repo.classifications = finalClassifications;
+
+      // Attach architecture analysis property to the Repository node
+      if (intel?.architectureAnalysis) {
+        node.properties.architecturePattern = intel.architectureAnalysis.architecturePattern;
+        node.properties.communication = intel.architectureAnalysis.communication;
+        node.properties.security = intel.architectureAnalysis.security;
+        node.properties.dataLayer = intel.architectureAnalysis.dataLayer;
+      }
     }
   });
 

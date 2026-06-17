@@ -269,6 +269,45 @@ export default function GithubRepoDetail({ repo, readme }: GithubRepoDetailProps
                   </div>
                 </div>
 
+                {/* Architecture Analysis */}
+                {intelligence.architectureAnalysis && (
+                  <div className="bg-bg-primary/40 border border-border-subtle/80 p-4 rounded-xl space-y-3">
+                    <div className="flex items-center justify-between border-b border-border-subtle/30 pb-2">
+                      <span className="text-[10px] font-mono text-text-secondary uppercase">ARCHITECTURE_PATTERN:</span>
+                      <span className="text-sm font-bold text-accent-purple uppercase tracking-wide">{intelligence.architectureAnalysis.architecturePattern}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
+                      {intelligence.architectureAnalysis.communication && intelligence.architectureAnalysis.communication.length > 0 && (
+                        <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
+                          <span className="text-[8px] text-text-secondary block mb-1">COMMUNICATION:</span>
+                          <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
+                            {intelligence.architectureAnalysis.communication.join(', ')}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {intelligence.architectureAnalysis.security && intelligence.architectureAnalysis.security.length > 0 && (
+                        <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
+                          <span className="text-[8px] text-text-secondary block mb-1">SECURITY:</span>
+                          <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
+                            {intelligence.architectureAnalysis.security.join(', ')}
+                          </div>
+                        </div>
+                      )}
+
+                      {intelligence.architectureAnalysis.dataLayer && intelligence.architectureAnalysis.dataLayer.length > 0 && (
+                        <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
+                          <span className="text-[8px] text-text-secondary block mb-1">DATA_LAYER:</span>
+                          <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
+                            {intelligence.architectureAnalysis.dataLayer.join(', ')}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Tech Stack */}
                 {intelligence.technologyProfile && Object.keys(intelligence.technologyProfile.categories).length > 0 ? (
                   <div>

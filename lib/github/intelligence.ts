@@ -1,5 +1,6 @@
 import { GitHubRepository, RepositoryIntelligence, Project } from '../types';
 import { extractTechnologyProfile } from './technologyExtractor';
+import { analyzeArchitecture } from './architectureAnalyzer';
 
 /**
  * Generates repository intelligence metrics using deterministic rules only.
@@ -146,6 +147,7 @@ export function generateRepositoryIntelligence(
   }
 
   const technologyProfile = extractTechnologyProfile(repo, readme, project);
+  const architectureAnalysis = analyzeArchitecture(repo, readme, technologyProfile, project);
 
   return {
     projectType,
@@ -154,6 +156,7 @@ export function generateRepositoryIntelligence(
     projectCategory,
     complexityIndicators,
     activityLevel,
-    technologyProfile
+    technologyProfile,
+    architectureAnalysis
   };
 }

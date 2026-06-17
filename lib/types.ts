@@ -35,6 +35,13 @@ export interface TechnologyProfile {
   };
 }
 
+export interface ArchitectureAnalysis {
+  architecturePattern: string;
+  communication?: string[];
+  security?: string[];
+  dataLayer?: string[];
+}
+
 export interface RepositoryIntelligence {
   projectType: string;
   technologies: string[];
@@ -43,6 +50,7 @@ export interface RepositoryIntelligence {
   complexityIndicators: string[];
   activityLevel: 'High' | 'Medium' | 'Low' | 'Stable Archive';
   technologyProfile?: TechnologyProfile;
+  architectureAnalysis?: ArchitectureAnalysis;
 }
 
 export interface Project {
