@@ -20,6 +20,9 @@ import { findCommand } from './find';
 import { relatedCommand } from './related';
 import { showCommand } from './show';
 import { whatCommand } from './what';
+import { timelineCommand } from './timeline';
+import { hackathonsCommand } from './hackathons';
+import { milestonesCommand } from './milestones';
 
 // Register core commands on module load
 registry.register(helpCommand);
@@ -43,6 +46,9 @@ registry.register(findCommand);
 registry.register(relatedCommand);
 registry.register(showCommand);
 registry.register(whatCommand);
+registry.register(timelineCommand);
+registry.register(hackathonsCommand);
+registry.register(milestonesCommand);
 
 export * from './types';
 export * from './registry';
@@ -69,5 +75,8 @@ export {
   findCommand,
   relatedCommand,
   showCommand,
-  whatCommand
+  whatCommand,
+  timelineCommand,
+  hackathonsCommand,
+  milestonesCommand
 };

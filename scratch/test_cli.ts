@@ -134,6 +134,38 @@ async function runCliTest() {
       console.error(`Error executing repos ${args.join(' ')}:`, e);
     }
   }
+  // 6. Test timeline, achievements, hackathons, milestones
+  const timelineCmd = registry.get('timeline');
+  const achievementsCmd = registry.get('achievements');
+  const hackathonsCmd = registry.get('hackathons');
+  const milestonesCmd = registry.get('milestones');
+
+  if (!timelineCmd || !achievementsCmd || !hackathonsCmd || !milestonesCmd) {
+    console.error("FAIL: One or more career path commands not registered!");
+    return;
+  }
+
+  const careerCommands = [
+    { cmd: timelineCmd, name: 'timeline' },
+    { cmd: achievementsCmd, name: 'achievements' },
+    { cmd: hackathonsCmd, name: 'hackathons' },
+    { cmd: milestonesCmd, name: 'milestones' }
+  ];
+
+  for (const item of careerCommands) {
+    console.log(`\n> ${item.name}`);
+    try {
+      const result = await item.cmd.execute([], { clearTerminal: () => {} });
+      console.log(`Success: ${result.success}`);
+      if (Array.isArray(result.output)) {
+        result.output.forEach(line => console.log(line));
+      } else {
+        console.log(result.output);
+      }
+    } catch (e) {
+      console.error(`Error executing ${item.name}:`, e);
+    }
+  }
 }
 
 runCliTest();
