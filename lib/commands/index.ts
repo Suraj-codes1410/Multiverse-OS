@@ -17,6 +17,7 @@ import { projectCommand } from './project';
 import { reposCommand } from './repos';
 import { repoCommand } from './repo';
 import { findCommand } from './find';
+import { relatedCommand } from './related';
 
 // Register core commands on module load
 registry.register(helpCommand);
@@ -37,6 +38,7 @@ registry.register(projectCommand);
 registry.register(reposCommand);
 registry.register(repoCommand);
 registry.register(findCommand);
+registry.register(relatedCommand);
 
 export * from './types';
 export * from './registry';
@@ -60,7 +62,8 @@ export {
   projectCommand,
   reposCommand,
   repoCommand,
-  findCommand
+  findCommand,
+  relatedCommand
 };
 
 
