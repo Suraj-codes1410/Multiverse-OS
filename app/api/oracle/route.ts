@@ -3,7 +3,6 @@ import { contextService } from '@/lib/oracle/service';
 import { OpenRouterProvider } from '@/lib/oracle/openRouterProvider';
 import { OracleContextSelector } from '@/lib/oracle/contextSelector';
 import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
-import { SourceAttributionService } from '@/lib/oracle/sourceAttribution';
 
 
 
@@ -22,6 +21,7 @@ export async function POST(req: Request) {
     process.env.ORACLE_MODEL
   );
   
+
   try {
     const body = await req.json().catch(() => ({}));
     const { query } = body;
@@ -59,8 +59,6 @@ export async function POST(req: Request) {
     if (process.env.NODE_ENV !== 'production') {
       console.log('\n--- ORACLE CONTEXT DIAGNOSTICS ---');
       console.log(`Model: ${modelUsed}`);
-      console.log(`Resolved Entity: ${selected.resolvedEntity}`);
-      console.log(`Traversed Relationships:\n  ${selected.traversedRelationships.join('\n  ') || 'None'}`);
       console.log(`Selected Sections: ${selected.selectedSections.join(', ')}`);
       console.log(`Entities Selected:`);
       console.log(`  Skills (${selected.skills.length}): ${selected.skills.map(s => s.name).join(', ')}`);
@@ -75,31 +73,14 @@ export async function POST(req: Request) {
 
     // 7. System Prompt Assembly (Readable & Curated Markdown)
     const systemPrompt = `You are the ORACLE, a professional, minimal Knowledge Officer representing Suraj Samanta.
-Your purpose is to answer inquiries about Suraj's portfolio (projects, skills, repositories, achievements, experience, and technologies) as well as general technical questions.
+Your purpose is to answer inquiries about Suraj's projects, skills, repositories, achievements, experience, and technologies.
 
-You operate in a hybrid capacity and must classify the query into one of three modes, applying the rules for that mode:
-
-1. PORTFOLIO MODE:
-   - Applies to questions specifically about Suraj Samanta, his specific projects, skills, repositories, experience, or achievements (e.g., "Tell me about ORBITAIR", "Compare SAHAI and ORBITAIR").
-   - You MUST prioritize the provided PORTFOLIO CONTEXT below.
-   - Do NOT assume, guess, or hallucinate facts about Suraj, his projects, metrics, or details not found in the PORTFOLIO CONTEXT.
-   - If the answer to a portfolio-specific question cannot be found or derived from the supplied context, state: "I do not have information on that in the local Knowledge Graph." and do not invent any facts.
-
-2. GENERAL KNOWLEDGE MODE:
-   - Applies to general technical questions unrelated to Suraj's portfolio (e.g., "What is React?", "What is Kafka?", "Explain Docker.", "What are microservices?", "What is Spring Boot?").
-   - You MUST answer these questions using your general technical knowledge.
-   - Do NOT say "I do not have information on that in the local Knowledge Graph." for these general questions. Give a direct, normal, and professional technical explanation.
-
-3. HYBRID MODE:
-   - Applies to questions that bridge Suraj's portfolio/projects and general technology (e.g., "Why did Suraj use Kafka?", "How does ORBITAIR use FastAPI?", "Explain the architecture of SAHAI.").
-   - You MUST combine the provided PORTFOLIO CONTEXT (to identify which project used which technology and any implementation details) with your general technical knowledge (to explain the rationale, concepts, and architectures).
-   - If the context does not explicitly state "why" Suraj made a choice, use your general technical knowledge to explain the technical benefits and rationale of that choice in the context of the project.
-   - Do NOT say "I do not have information on that in the local Knowledge Graph." if you can answer using a combination of the context and general knowledge.
-
-General Rules:
-- Act as Suraj's Knowledge Officer. Be direct, professional, and clear.
-- Avoid neon sci-fi gimmicks, emojis (unless highly appropriate), or ChatGPT conversational filler. Be concise and technical.
-- Format your answers in clean Markdown. Use headings, bold text, lists, and code blocks where appropriate.
+You must strictly adhere to the following rules:
+1. Act as Suraj's Knowledge Officer. Be direct, professional, and clear.
+2. Answer questions ONLY using the supplied portfolio context below. Do not assume or guess anything outside this context.
+3. If the answer to a question cannot be found or derived from the supplied context, state: "I do not have information on that in the local Knowledge Graph." and do NOT invent or hallucinate any facts.
+4. Avoid neon sci-fi gimmicks, emojis (unless highly appropriate), or ChatGPT conversational filler. Be concise and technical.
+5. Format your answers in clean Markdown. Use headings, bold text, lists, and code blocks where appropriate.
 
 ---
 PORTFOLIO CONTEXT:
@@ -107,11 +88,19 @@ ${compressedPromptContext}
 ---`;
 
     // 8. Invoke OpenRouter AI Provider
-    const provider = new OpenRouterProvider();
-    const response = await provider.generate({
-      systemPrompt,
-      userPrompt: query.trim()
-    });
+   const provider = new OpenRouterProvider();
+
+console.log("CALLING OPENROUTER");
+console.log("Query:", query.trim());
+
+const response = await provider.generate({
+  systemPrompt,
+  userPrompt: query.trim()
+});
+
+console.log("OPENROUTER SUCCESS");
+console.log("AI RESPONSE:");
+console.log(response.text);
 
     // 9. Response validation - ensure output is non-empty
     if (!response.text || !response.text.trim()) {
@@ -121,17 +110,11 @@ ${compressedPromptContext}
       }, { status: 502 });
     }
 
-    // 10. Run Source Attribution Layer
-    const attributionService = new SourceAttributionService();
-    const sources = attributionService.getSources(selected, contextSizeChars);
-
-    // 11. Prepare server response and optional debug metrics
+    // 10. Prepare server response and optional debug metrics
     const debugInfo = process.env.NODE_ENV !== 'production' ? {
       contextSizeChars,
       estimatedTokens,
       modelUsed,
-      resolvedEntity: selected.resolvedEntity,
-      traversedRelationships: selected.traversedRelationships,
       selectedEntities: {
         skills: selected.skills.map(s => s.name),
         projects: selected.projects.map(p => p.title),
@@ -147,21 +130,7 @@ ${compressedPromptContext}
       fallback: false,
       empty: false,
       repeated: false,
-      debug: debugInfo,
-      metadata: {
-        confidence: sources.confidence,
-        entitiesUsed: sources.entitiesUsed,
-        projectsUsed: sources.projectsUsed,
-        repositoriesUsed: sources.repositoriesUsed,
-        achievementsUsed: sources.achievementsUsed,
-        skillsUsed: sources.skillsUsed
-      },
-      explainability: {
-        resolvedEntity: sources.resolvedEntity,
-        traversedRelationships: sources.traversedRelationships,
-        contextSizeTokens: sources.contextSizeTokens,
-        confidenceLevel: sources.confidenceLevel
-      }
+      debug: debugInfo
     }, {
       headers: {
         'Cache-Control': 'no-store, max-age=0, must-revalidate' // Prevent caching client-side
