@@ -9,6 +9,20 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  metadata?: {
+    confidence: number;
+    entitiesUsed: string[];
+    projectsUsed: string[];
+    repositoriesUsed: string[];
+    achievementsUsed: string[];
+    skillsUsed: string[];
+  };
+  explainability?: {
+    resolvedEntity: string;
+    traversedRelationships: string[];
+    contextSizeTokens: number;
+    confidenceLevel: 'High' | 'Medium' | 'Low';
+  };
 }
 
 interface OracleWindowProps {
@@ -38,12 +52,20 @@ const LOADING_PHASES = [
 ];
 
 // Pure helper function defined outside component scope to bypass React render purity checks
-function buildMessage(role: 'user' | 'assistant', content: string, counter: number): Message {
+function buildMessage(
+  role: 'user' | 'assistant',
+  content: string,
+  counter: number,
+  metadata?: Message['metadata'],
+  explainability?: Message['explainability']
+): Message {
   return {
     id: `msg-${counter}-${role}`,
     role,
     content,
-    timestamp: new Date()
+    timestamp: new Date(),
+    metadata,
+    explainability
   };
 }
 
@@ -135,6 +157,8 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     // =========================================================================
 
     let replyText = '';
+    let replyMetadata: Message['metadata'] | undefined = undefined;
+    let replyExplainability: Message['explainability'] | undefined = undefined;
     try {
       const apiResponse = await fetch('/api/oracle', {
         method: 'POST',
@@ -150,6 +174,8 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
 
       if (apiResponse.ok && data.text) {
         replyText = data.text;
+        replyMetadata = data.metadata;
+        replyExplainability = data.explainability;
         
         // Response validation & diagnostics check
         if (data.debug) {
@@ -184,6 +210,63 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         // Simulate thinking delay for cognitive response feel
         await new Promise(resolve => setTimeout(resolve, 800));
         replyText = await getDeterministicReply(text);
+
+        // Mock metadata for offline responder fallback
+        const lowerText = text.toLowerCase();
+        if (lowerText.includes('orbitair')) {
+          replyMetadata = {
+            confidence: 0.98,
+            entitiesUsed: ['ORBITAIR (project)'],
+            projectsUsed: ['ORBITAIR — AI-Powered AQI Forecasting'],
+            repositoriesUsed: ['orbitair'],
+            achievementsUsed: ['NASA Space Apps Challenge — Top 5 in India'],
+            skillsUsed: ['Python', 'FastAPI', 'React', 'TimescaleDB', 'Leaflet']
+          };
+          replyExplainability = {
+            resolvedEntity: 'ORBITAIR (project)',
+            traversedRelationships: [
+              'project:orbitair -> BUILT_WITH -> Skill (5 nodes)',
+              'project:orbitair -> RELATED_TO -> Achievement (1 nodes)',
+              'project:orbitair -> DEPENDS_ON -> Repository (1 nodes)'
+            ],
+            contextSizeTokens: 750,
+            confidenceLevel: 'High'
+          };
+        } else if (lowerText.includes('sahai')) {
+          replyMetadata = {
+            confidence: 0.98,
+            entitiesUsed: ['SAHAI (project)'],
+            projectsUsed: ['SAHAI — Mental Health & Lifestyle Platform'],
+            repositoriesUsed: ['sahai'],
+            achievementsUsed: ['Smart India Hackathon — National Participant'],
+            skillsUsed: ['Python', 'FastAPI', 'Django', 'React', 'WebSockets', 'Pinecone']
+          };
+          replyExplainability = {
+            resolvedEntity: 'SAHAI (project)',
+            traversedRelationships: [
+              'project:sahai -> BUILT_WITH -> Skill (6 nodes)',
+              'project:sahai -> RELATED_TO -> Achievement (1 nodes)',
+              'project:sahai -> DEPENDS_ON -> Repository (1 nodes)'
+            ],
+            contextSizeTokens: 830,
+            confidenceLevel: 'High'
+          };
+        } else if (lowerText.includes('kafka')) {
+          replyMetadata = {
+            confidence: 0.90,
+            entitiesUsed: ['Kafka (skill)'],
+            projectsUsed: ['patient-management-service', 'logpulse'],
+            repositoriesUsed: ['patient-management-service', 'logpulse'],
+            achievementsUsed: [],
+            skillsUsed: ['Kafka', 'Java', 'Go']
+          };
+          replyExplainability = {
+            resolvedEntity: 'Kafka (skill)',
+            traversedRelationships: ['skill:kafka -> USED_IN -> Project (2 nodes)'],
+            contextSizeTokens: 1180,
+            confidenceLevel: 'Medium'
+          };
+        }
       }
     } catch (err) {
       console.error('Failed to contact Oracle API, falling back to offline mode:', err);
@@ -206,7 +289,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     }
 
     // Use nextCounter to build assistant message
-    const assistantMessage = buildMessage('assistant', replyText, nextCounter);
+    const assistantMessage = buildMessage('assistant', replyText, nextCounter, replyMetadata, replyExplainability);
     setCounter(nextCounter + 1);
 
     setMessages(prev => [...prev, assistantMessage]);
@@ -319,6 +402,85 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
                   <MarkdownRenderer content={msg.content} />
                 ) : (
                   <p className="whitespace-pre-wrap">{msg.content}</p>
+                )}
+
+                {msg.role === 'assistant' && (msg.metadata || msg.explainability) && (
+                  <div className="mt-4 pt-3 border-t border-border-subtle/30 space-y-3 font-mono text-[11px] select-none">
+                    {/* Confidence Indicator */}
+                    {msg.explainability && (
+                      <div className="flex items-center gap-1.5 text-text-secondary">
+                        <span className="font-bold">Confidence:</span>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                          msg.explainability.confidenceLevel === 'High' 
+                            ? 'bg-success-green/10 text-success-green border border-success-green/20' 
+                            : msg.explainability.confidenceLevel === 'Medium'
+                            ? 'bg-warning-amber/10 text-warning-amber border border-warning-amber/20'
+                            : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                        }`}>
+                          {msg.explainability.confidenceLevel}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Sources Used Section */}
+                    {msg.metadata && (
+                      <div className="space-y-1">
+                        <div className="text-[10px] uppercase font-bold text-accent-purple/90 tracking-wide">Sources Used</div>
+                        <ul className="pl-2 space-y-1 text-text-secondary">
+                          {msg.metadata.projectsUsed.length > 0 && (
+                            <li>
+                              <strong className="text-text-primary">Project:</strong> {msg.metadata.projectsUsed.join(', ')}
+                            </li>
+                          )}
+                          {msg.metadata.repositoriesUsed.length > 0 && (
+                            <li>
+                              <strong className="text-text-primary">Repository:</strong> {msg.metadata.repositoriesUsed.join(', ')}
+                            </li>
+                          )}
+                          {msg.metadata.achievementsUsed.length > 0 && (
+                            <li>
+                              <strong className="text-text-primary">Achievement:</strong> {msg.metadata.achievementsUsed.join(', ')}
+                            </li>
+                          )}
+                          {msg.metadata.skillsUsed.length > 0 && (
+                            <li>
+                              <strong className="text-text-primary">Technologies:</strong> {msg.metadata.skillsUsed.join(', ')}
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Reasoning Summary (Collapsible Section) */}
+                    {msg.explainability && (
+                      <details className="group border border-border-subtle/30 rounded bg-bg-primary/20 overflow-hidden">
+                        <summary className="px-2 py-1 text-[10px] text-text-secondary hover:text-text-primary cursor-pointer select-none font-bold uppercase tracking-wide flex items-center justify-between">
+                          <span>How this answer was generated</span>
+                          <span className="transition-transform duration-200 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div className="px-2 py-2 border-t border-border-subtle/25 bg-bg-panel/20 text-text-secondary space-y-1 text-[10px]">
+                          <div>
+                            <strong className="text-text-primary">Entity Resolved:</strong> {msg.explainability.resolvedEntity || 'None'}
+                          </div>
+                          <div>
+                            <strong className="text-text-primary">Relationships Traversed:</strong>
+                            {msg.explainability.traversedRelationships.length > 0 ? (
+                              <ul className="pl-3 list-disc mt-0.5 space-y-0.5">
+                                {msg.explainability.traversedRelationships.map((r, i) => (
+                                  <li key={i}>{r}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              ' None (Direct model lookup)'
+                            )}
+                          </div>
+                          <div>
+                            <strong className="text-text-primary">Context Size:</strong> {msg.explainability.contextSizeTokens} tokens
+                          </div>
+                        </div>
+                      </details>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

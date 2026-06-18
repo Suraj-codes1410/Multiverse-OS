@@ -3,6 +3,7 @@ import { contextService } from '@/lib/oracle/service';
 import { OpenRouterProvider } from '@/lib/oracle/openRouterProvider';
 import { OracleContextSelector } from '@/lib/oracle/contextSelector';
 import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
+import { SourceAttributionService } from '@/lib/oracle/sourceAttribution';
 
 
 
@@ -120,7 +121,11 @@ ${compressedPromptContext}
       }, { status: 502 });
     }
 
-    // 10. Prepare server response and optional debug metrics
+    // 10. Run Source Attribution Layer
+    const attributionService = new SourceAttributionService();
+    const sources = attributionService.getSources(selected, contextSizeChars);
+
+    // 11. Prepare server response and optional debug metrics
     const debugInfo = process.env.NODE_ENV !== 'production' ? {
       contextSizeChars,
       estimatedTokens,
@@ -142,7 +147,21 @@ ${compressedPromptContext}
       fallback: false,
       empty: false,
       repeated: false,
-      debug: debugInfo
+      debug: debugInfo,
+      metadata: {
+        confidence: sources.confidence,
+        entitiesUsed: sources.entitiesUsed,
+        projectsUsed: sources.projectsUsed,
+        repositoriesUsed: sources.repositoriesUsed,
+        achievementsUsed: sources.achievementsUsed,
+        skillsUsed: sources.skillsUsed
+      },
+      explainability: {
+        resolvedEntity: sources.resolvedEntity,
+        traversedRelationships: sources.traversedRelationships,
+        contextSizeTokens: sources.contextSizeTokens,
+        confidenceLevel: sources.confidenceLevel
+      }
     }, {
       headers: {
         'Cache-Control': 'no-store, max-age=0, must-revalidate' // Prevent caching client-side
