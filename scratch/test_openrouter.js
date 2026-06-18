@@ -52,9 +52,7 @@ async function testModel(modelName) {
 }
 
 async function run() {
-  await testModel(process.env.ORACLE_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free');
-  await testModel('google/gemini-2.5-flash:free');
-  await testModel('meta-llama/llama-3-8b-instruct:free');
+  await testModel('openrouter/free');
 }
 
 run();

@@ -173,6 +173,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       const data = await apiResponse.json().catch(() => ({}));
 
       if (apiResponse.ok && data.text) {
+        console.log("ROUTE: OPENROUTER");
         replyText = data.text;
         replyMetadata = data.metadata;
         replyExplainability = data.explainability;
@@ -187,6 +188,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
           console.warn('WARNING: Repeated response detected in consecutive model completions.');
         }
       } else {
+        console.log("ROUTE: FALLBACK");
         if (data.error === 'API_KEY_MISSING') {
           console.warn('OpenRouter API key missing on server. Falling back to local offline responder.');
         } else {
@@ -269,6 +271,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         }
       }
     } catch (err) {
+      console.log("ROUTE: FALLBACK");
       console.error('Failed to contact Oracle API, falling back to offline mode:', err);
       
       setDebugData({

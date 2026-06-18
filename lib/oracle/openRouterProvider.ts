@@ -17,11 +17,43 @@ export class OpenRouterProvider implements IAIProvider {
     const config = request.config || DEFAULT_MODEL_CONFIG;
     const timeoutMs = config.timeoutMs || 30000;
 
+    try {
+      return await this.executeGenerate(request, config.modelName, timeoutMs);
+    } catch (primaryError) {
+      console.warn(`Primary model ${config.modelName} failed. Retrying with stable fallback model...`, primaryError);
+      
+      const fallbackModels = [
+        'meta-llama/llama-3.1-8b-instruct:free',
+        'qwen/qwen-2.5-7b-instruct:free',
+        'google/gemma-2-9b-it:free'
+      ];
+      
+      for (const fallbackModel of fallbackModels) {
+        try {
+          if (fallbackModel !== config.modelName) {
+            return await this.executeGenerate(request, fallbackModel, 30000);
+          }
+        } catch (fallbackError) {
+          console.warn(`Fallback model ${fallbackModel} also failed:`, fallbackError);
+        }
+      }
+      
+      // If all fallbacks fail, rethrow the original primary error
+      throw primaryError;
+    }
+  }
+
+  private async executeGenerate(
+    request: AIProviderRequest, 
+    modelName: string, 
+    timeoutMs: number
+  ): Promise<AIProviderResponse> {
+    const config = request.config || DEFAULT_MODEL_CONFIG;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      console.log("CALLING OPENROUTER");
+      console.log(`CALLING OPENROUTER with model: ${modelName}`);
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -31,7 +63,7 @@ export class OpenRouterProvider implements IAIProvider {
           'X-Title': 'Multiverse OS Oracle'
         },
         body: JSON.stringify({
-          model: config.modelName,
+          model: modelName,
           temperature: config.temperature,
           max_tokens: config.maxTokens,
           messages: [
@@ -55,7 +87,6 @@ export class OpenRouterProvider implements IAIProvider {
 
       const text = data.choices[0].message?.content || '';
       console.log("OPENROUTER SUCCESS");
-      console.log(text.substring(0, 300));
 
       const usage = data.usage ? {
         promptTokens: data.usage.prompt_tokens,
