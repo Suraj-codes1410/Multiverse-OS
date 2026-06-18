@@ -124,6 +124,15 @@ export class OracleContextBuilder {
       const intelligence = proj?.intelligence;
       const readmeExcerpt = proj?.readme ? proj.readme.slice(0, 1200) : undefined;
 
+      const simplifiedIntelligence = intelligence ? {
+        projectType: intelligence.projectType,
+        projectCategory: intelligence.projectCategory,
+        technologies: intelligence.technologies,
+        keyConcepts: intelligence.keyConcepts,
+        complexityRating: intelligence.complexityAnalysis?.overallRating || 'Beginner',
+        architecturePattern: intelligence.architectureAnalysis?.architecturePattern || 'Monolith'
+      } : undefined;
+
       return {
         name: repo.name,
         fullName: repo.fullName,
@@ -137,7 +146,7 @@ export class OracleContextBuilder {
         createdAt: repo.createdAt,
         updatedAt: repo.updatedAt,
         classifications,
-        intelligence,
+        intelligence: simplifiedIntelligence,
         readmeExcerpt
       };
     }));

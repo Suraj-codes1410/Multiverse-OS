@@ -47,6 +47,19 @@ function buildMessage(role: 'user' | 'assistant', content: string, counter: numb
   };
 }
 
+interface DebugData {
+  contextSizeChars: number;
+  estimatedTokens: number;
+  modelUsed: string;
+  selectedEntities: {
+    skills: string[];
+    projects: string[];
+    repositories: string[];
+    achievements: string[];
+    sections: string[];
+  };
+}
+
 export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -60,6 +73,8 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState(0);
+  const [debugData, setDebugData] = useState<DebugData | null>(null);
+  const [showDebug, setShowDebug] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   // Scroll to bottom when messages or loading state changes
@@ -111,8 +126,6 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     // =========================================================================
     // ARCHITECTURAL EXTENSION POINTS (STANDBY FOR FUTURE SYSTEM INTEGRATIONS)
     // =========================================================================
-    // 1. OpenRouter API Integration (Phase 4.2)
-    //    - Will route queries to LLM model endpoints using openrouter credentials.
     // 2. Knowledge Graph Query Traversal (Phase 4.3)
     //    - Will fetch nodes and edges matching query context from buildKnowledgeGraph().
     // 3. Repository Intelligence Scanner
@@ -121,10 +134,76 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     //    - Will pipe outputs directly to/from command registries.
     // =========================================================================
 
-    // Simulate thinking delay for cognitive response feel
-    await new Promise(resolve => setTimeout(resolve, 800));
+    let replyText = '';
+    try {
+      const apiResponse = await fetch('/api/oracle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache, no-store'
+        },
+        body: JSON.stringify({ query: text })
+      });
 
-    const replyText = await getDeterministicReply(text);
+      const data = await apiResponse.json().catch(() => ({}));
+
+      if (apiResponse.ok && data.text) {
+        replyText = data.text;
+        
+        // Response validation & diagnostics check
+        if (data.debug) {
+          setDebugData(data.debug);
+        }
+        
+        const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant');
+        if (lastAssistantMsg && lastAssistantMsg.content === replyText) {
+          console.warn('WARNING: Repeated response detected in consecutive model completions.');
+        }
+      } else {
+        if (data.error === 'API_KEY_MISSING') {
+          console.warn('OpenRouter API key missing on server. Falling back to local offline responder.');
+        } else {
+          console.error('Oracle API Route returned error:', data.message || 'Unknown error');
+        }
+        
+        // Load mock diagnostics
+        setDebugData({
+          modelUsed: 'Offline Mock Responder',
+          contextSizeChars: 0,
+          estimatedTokens: 0,
+          selectedEntities: {
+            skills: [],
+            projects: [],
+            repositories: [],
+            achievements: [],
+            sections: ['Local Fallback Rules']
+          }
+        });
+        
+        // Simulate thinking delay for cognitive response feel
+        await new Promise(resolve => setTimeout(resolve, 800));
+        replyText = await getDeterministicReply(text);
+      }
+    } catch (err) {
+      console.error('Failed to contact Oracle API, falling back to offline mode:', err);
+      
+      setDebugData({
+        modelUsed: 'Offline Fallback Handler',
+        contextSizeChars: 0,
+        estimatedTokens: 0,
+        selectedEntities: {
+          skills: [],
+          projects: [],
+          repositories: [],
+          achievements: [],
+          sections: ['Local Network Error Fallback']
+        }
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 800));
+      replyText = await getDeterministicReply(text);
+    }
 
     // Use nextCounter to build assistant message
     const assistantMessage = buildMessage('assistant', replyText, nextCounter);
@@ -284,6 +363,33 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         </div>
       )}
 
+      {/* Collapsible Debug Panel (Development only) */}
+      {process.env.NODE_ENV !== 'production' && debugData && (
+        <div className="border-t border-border-subtle bg-bg-primary/40 px-4 py-2 font-mono text-[9px] text-text-secondary select-none">
+          <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowDebug(prev => !prev)}>
+            <span className="font-bold text-accent-cyan flex items-center gap-1">
+              [DIAGNOSTICS] {showDebug ? '▼' : '▶'}
+            </span>
+            <span>Estimated Tokens: {debugData.estimatedTokens}</span>
+          </div>
+          {showDebug && (
+            <div className="mt-2 space-y-1.5 border-t border-border-subtle/30 pt-2 animate-in fade-in duration-200">
+              <div><strong className="text-text-primary">Model:</strong> {debugData.modelUsed}</div>
+              <div><strong className="text-text-primary">Payload Size:</strong> {debugData.contextSizeChars} chars (~{debugData.estimatedTokens} tokens)</div>
+              {debugData.selectedEntities.sections.length > 0 && (
+                <div><strong className="text-text-primary">Matched Sections:</strong> {debugData.selectedEntities.sections.join(', ')}</div>
+              )}
+              {debugData.selectedEntities.projects.length > 0 && (
+                <div><strong className="text-text-primary">Target Projects:</strong> {debugData.selectedEntities.projects.join(', ')}</div>
+              )}
+              {debugData.selectedEntities.skills.length > 0 && (
+                <div><strong className="text-text-primary">Target Skills:</strong> {debugData.selectedEntities.skills.join(', ')}</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Input Area */}
       <div className="border-t border-border-subtle bg-bg-panel/90 p-3 flex gap-2">
         <input
@@ -311,61 +417,5 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
 
 // Rules-based deterministic responder to mock Knowledge Graph queries
 async function getDeterministicReply(queryText: string): Promise<string> {
-  const normalized = queryText.toLowerCase().trim();
-  const matches = (keywords: string[]) => keywords.some(kw => normalized.includes(kw));
-
-  if (matches(['project', 'best-projects', 'featured'])) {
-    const { getProjects } = await import('@/lib/data');
-    const projects = await getProjects();
-    const featured = projects.filter(p => p.featured);
-    return `### Featured Projects:\n\n` + 
-      featured.map((p, i) => `**${i+1}. ${p.title}** (${p.year})\n* ${p.subtitle || p.description}\n* Tech: ${p.techStack.join(', ')}\n* Link: [Source Code](${p.githubUrl || '#'})`).join('\n\n');
-  }
-
-  if (matches(['repo', 'repository', 'repositories'])) {
-    const { getRepositories } = await import('@/lib/github/github');
-    const repos = await getRepositories();
-    return `### Public Code Repositories:\n\n` + 
-      repos.map((r, i) => `**${i+1}. ${r.name}** [stars: ${r.starsCount} | forks: ${r.forksCount}]\n* ${r.description || 'No description'}\n* Language: ${r.language || 'TypeScript'}\n* Link: [GitHub](${r.htmlUrl})`).join('\n\n');
-  }
-
-  if (matches(['skill', 'tech', 'technology', 'technologies'])) {
-    const { getSkills } = await import('@/lib/data');
-    const skills = getSkills();
-    const categories: { [cat: string]: string[] } = {};
-    skills.forEach(s => {
-      if (!categories[s.category]) categories[s.category] = [];
-      categories[s.category].push(s.name);
-    });
-    return `### Dynamic Technology Stack:\n\n` + 
-      Object.entries(categories).map(([cat, list]) => `**${cat}**:\n* ${list.join(', ')}`).join('\n\n');
-  }
-
-  if (matches(['achievement', 'award', 'hackathon'])) {
-    const { getAchievements } = await import('@/lib/data');
-    const achievements = getAchievements();
-    return `### Achievements & Awards:\n\n` + 
-      achievements.map((a, i) => `**${i+1}. ${a.title}** (${a.year})\n* ${a.description}`).join('\n\n');
-  }
-
-  if (matches(['experience', 'job', 'work', 'role'])) {
-    const { getExperience } = await import('@/lib/data');
-    const experience = getExperience();
-    return `### Professional Experience:\n\n` + 
-      experience.map((e) => `**${e.role} at ${e.company}** (${e.startDate} - ${e.endDate})\n* ${e.description}\n* Tech: ${e.technologies.join(', ')}`).join('\n\n');
-  }
-
-  if (matches(['timeline', 'history', 'career'])) {
-    const { getTimeline } = await import('@/lib/data');
-    const timeline = getTimeline();
-    timeline.sort((a, b) => parseInt(b.year) - parseInt(a.year));
-    return `### Career Timeline:\n\n` + 
-      timeline.map(e => `**${e.year}** - *${e.title}* (${e.date})\n* ${e.description}`).join('\n\n');
-  }
-
-  if (matches(['help', 'info', 'hello', 'hi', 'hey'])) {
-    return `### ORACLE Assistance Mode\n\nI can retrieve portfolio metrics and details directly from the Knowledge Graph. Try asking about:\n\n* **projects**: Show featured portfolio projects.\n* **repositories**: List synchronized GitHub codebases.\n* **skills**: Detail technology stack categories.\n* **experience**: Summarize career roles.\n* **achievements**: Detail hackathon awards.\n* **timeline**: List academic/career history.`;
-  }
-
   return `### ORACLE System Log\n\nI detected query keyword context, but local offline matching could not verify details. \n\n*Architectural extension points (OpenRouter API, semantic vector searches, and live Knowledge Graph querying) are prepared for implementation in the next phase.* \n\n**Quick Queries:**\n* Ask about "projects" or "repositories"\n* Ask about "skills" or "achievements"\n* Ask about "experience" or "timeline"`;
 }

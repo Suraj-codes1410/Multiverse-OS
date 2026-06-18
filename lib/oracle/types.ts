@@ -1,4 +1,11 @@
-import { RepositoryIntelligence } from '../types';
+export interface SimplifiedIntelligence {
+  projectType: string;
+  projectCategory: string;
+  technologies: string[];
+  keyConcepts: string[];
+  complexityRating: string;
+  architecturePattern: string;
+}
 
 export interface CandidateProfile {
   name: string;
@@ -63,7 +70,7 @@ export interface RepositoryContext {
   createdAt: string;
   updatedAt: string;
   classifications: string[];
-  intelligence?: RepositoryIntelligence;
+  intelligence?: SimplifiedIntelligence;
   readmeExcerpt?: string;
 }
 

@@ -32,8 +32,8 @@ async function testOracleContextBuilder() {
     context.repositories.slice(0, 5).forEach(repo => {
       console.log(`  - ${repo.name} [stars: ${repo.starsCount}, forks: ${repo.forksCount}]`);
       console.log(`    Language: ${repo.language}, Topics: ${repo.topics.join(', ') || 'None'}`);
-      console.log(`    Complexity Rating: ${repo.intelligence?.complexityAnalysis?.overallRating || 'None'}`);
-      console.log(`    Architecture Pattern: ${repo.intelligence?.architectureAnalysis?.architecturePattern || 'None'}`);
+      console.log(`    Complexity Rating: ${repo.intelligence?.complexityRating || 'None'}`);
+      console.log(`    Architecture Pattern: ${repo.intelligence?.architecturePattern || 'None'}`);
     });
 
     console.log(`\n5. Achievements Context (Total: ${context.achievements.length}):`);
