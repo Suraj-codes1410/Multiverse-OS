@@ -173,7 +173,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       const data = await apiResponse.json().catch(() => ({}));
 
       if (apiResponse.ok && data.text) {
-        console.log("ROUTE: OPENROUTER");
+        console.log("ROUTE_OPENROUTER");
         replyText = data.text;
         replyMetadata = data.metadata;
         replyExplainability = data.explainability;
@@ -188,9 +188,9 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
           console.warn('WARNING: Repeated response detected in consecutive model completions.');
         }
       } else {
-        console.log("ROUTE: FALLBACK");
+        console.log("ROUTE_FALLBACK");
         if (data.error === 'API_KEY_MISSING') {
-          console.warn('OpenRouter API key missing on server. Falling back to local offline responder.');
+          console.warn('OpenRouter API key missing on server.');
         } else {
           console.error('Oracle API Route returned error:', data.message || 'Unknown error');
         }
@@ -211,7 +211,11 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         
         // Simulate thinking delay for cognitive response feel
         await new Promise(resolve => setTimeout(resolve, 800));
-        replyText = await getDeterministicReply(text);
+        replyText = await getDeterministicReply(text, {
+          statusCode: data.message?.includes('status 429') ? 429 : (data.message?.includes('status 404') ? 404 : apiResponse.status),
+          errorType: data.error,
+          message: data.message
+        });
 
         // Mock metadata for offline responder fallback
         const lowerText = text.toLowerCase();
@@ -271,8 +275,8 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         }
       }
     } catch (err) {
-      console.log("ROUTE: FALLBACK");
-      console.error('Failed to contact Oracle API, falling back to offline mode:', err);
+      console.log("ROUTE_FALLBACK");
+      console.error('Failed to contact Oracle API:', err);
       
       setDebugData({
         modelUsed: 'Offline Fallback Handler',
@@ -287,8 +291,12 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         }
       });
 
+      const isTimeout = err instanceof Error && (err.message.toLowerCase().includes('timeout') || err.message.toLowerCase().includes('timed out'));
       await new Promise(resolve => setTimeout(resolve, 800));
-      replyText = await getDeterministicReply(text);
+      replyText = await getDeterministicReply(text, {
+        errorType: isTimeout ? 'TIMEOUT' : 'NETWORK_FAILURE',
+        message: err instanceof Error ? err.message : String(err)
+      });
     }
 
     // Use nextCounter to build assistant message
@@ -580,7 +588,57 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
   );
 }
 
-// Rules-based deterministic responder to mock Knowledge Graph queries
-async function getDeterministicReply(queryText: string): Promise<string> {
-  return `### ORACLE System Log\n\nI detected query keyword context, but local offline matching could not verify details. \n\n*Architectural extension points (OpenRouter API, semantic vector searches, and live Knowledge Graph querying) are prepared for implementation in the next phase.* \n\n**Quick Queries:**\n* Ask about "projects" or "repositories"\n* Ask about "skills" or "achievements"\n* Ask about "experience" or "timeline"`;
+// Connection/Rate-limit fallback responder
+async function getDeterministicReply(
+  queryText: string,
+  options?: {
+    statusCode?: number;
+    errorType?: string;
+    message?: string;
+  }
+): Promise<string> {
+  const title = "Oracle temporarily unavailable.";
+  let reason = "An unknown error occurred.";
+  let instructions = "Please try again shortly.";
+
+  const messageLower = (options?.message || '').toLowerCase();
+  const errorType = options?.errorType;
+  const statusCode = options?.statusCode;
+
+  // 1. Missing API Key
+  if (errorType === 'API_KEY_MISSING' || messageLower.includes('api key') || messageLower.includes('key missing')) {
+    reason = "Configuration error: OpenRouter API key is missing on the server.";
+    instructions = "Please configure the OPENROUTER_API_KEY environment variable.";
+  }
+  // 2. Rate Limit (HTTP 429)
+  else if (statusCode === 429 || messageLower.includes('429') || messageLower.includes('rate limit') || messageLower.includes('quota')) {
+    reason = "OpenRouter rate limit reached (HTTP 429).";
+    instructions = "Try again in a few minutes.";
+  }
+  // 3. Model/Provider Unavailable (HTTP 404)
+  else if (statusCode === 404 || messageLower.includes('404') || messageLower.includes('unavailable') || messageLower.includes('not found')) {
+    reason = `AI Provider or Model unavailable (HTTP ${statusCode || 404}).`;
+    instructions = "Please verify your model configuration slug or check OpenRouter status.";
+  }
+  // 4. Timeout
+  else if (errorType === 'TIMEOUT' || messageLower.includes('timeout') || messageLower.includes('timed out')) {
+    reason = "Request timed out.";
+    instructions = "Please check your network connection and retry.";
+  }
+  // 5. Network Failure
+  else if (errorType === 'NETWORK_FAILURE' || messageLower.includes('fetch') || messageLower.includes('network')) {
+    reason = "Network connection failure.";
+    instructions = "Please check your internet connection and try again.";
+  }
+  // Catch-all with status code if present
+  else {
+    const statusText = statusCode ? ` (HTTP ${statusCode})` : "";
+    reason = `OpenRouter API execution failure${statusText}.`;
+    if (options?.message) {
+      reason += ` Details: ${options.message}`;
+    }
+    instructions = "Please try again shortly.";
+  }
+
+  return `### ${title}\n\n**Reason:**\n${reason}\n\n${instructions}`;
 }

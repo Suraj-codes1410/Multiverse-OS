@@ -188,9 +188,9 @@ export default function GithubRepoCard({ repo }: GithubRepoCardProps) {
           {showIntelligence && (
             <div className="p-2 bg-accent-purple/5 border border-accent-purple/20 rounded font-mono text-[9px] text-text-secondary leading-normal space-y-1">
               <div className="flex items-center gap-1 text-accent-purple font-bold">
-                <AlertCircle className="w-3 h-3" /> COGNITIVE_ANALYSIS_LOCKED
+                <AlertCircle className="w-3 h-3" /> COGNITIVE_ANALYSIS
               </div>
-              <p>Complexity index, code health audits, and developer metrics will load via LLM embeddings in the next phase.</p>
+              <p>Complexity indicators, architecture analysis, and developer metrics are available. Open the detail view to see the complete scorecard.</p>
             </div>
           )}
         </div>

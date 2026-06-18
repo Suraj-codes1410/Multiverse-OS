@@ -4,7 +4,12 @@ import { KnowledgeGraph } from './graph';
 import { classifyRepository } from '../github/classification';
 import { GitHubRepository } from '../types';
 
-export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
+let cachedGraph: KnowledgeGraph | null = null;
+
+export async function buildKnowledgeGraph(forceRebuild = false): Promise<KnowledgeGraph> {
+  if (cachedGraph && !forceRebuild) {
+    return cachedGraph;
+  }
   const graph = new KnowledgeGraph();
 
   // 1. Fetch all datasets
@@ -593,5 +598,18 @@ export async function buildKnowledgeGraph(): Promise<KnowledgeGraph> {
     }
   });
 
+  cachedGraph = graph;
   return graph;
+}
+
+export function getCachedKnowledgeGraph(): KnowledgeGraph | null {
+  return cachedGraph;
+}
+
+export function setCachedKnowledgeGraph(graph: KnowledgeGraph): void {
+  cachedGraph = graph;
+}
+
+export function invalidateKnowledgeGraphCache(): void {
+  cachedGraph = null;
 }

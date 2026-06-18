@@ -1,5 +1,25 @@
 import githubConfig from '@/data/github-config.json';
 
+function loadCachedReadme(normalizedName: string): string | null {
+  if (typeof window === 'undefined') {
+    try {
+      const fs = eval('require')('fs');
+      const path = eval('require')('path');
+      const cachePath = path.join(process.cwd(), 'data/github-readme-cache.json');
+      if (fs.existsSync(cachePath)) {
+        const content = fs.readFileSync(cachePath, 'utf8');
+        const cache = JSON.parse(content);
+        if (cache && cache[normalizedName]) {
+          return cache[normalizedName];
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse github-readme-cache.json:', e);
+    }
+  }
+  return null;
+}
+
 // Offline markdown documentation fallbacks for mock repositories
 const MOCK_READMES: { [key: string]: string } = {
   novadb: `# NovaDB\n\nA high-performance, distributed vector database engineered in Go and Rust.\n\n## Core Features\n- **Sub-millisecond query latency**: Optimized similarity search indices.\n- **Raft Consensus**: Distributed state machine replication for failover protection.\n- **gRPC API Layer**: Fast serialization protocol buffers endpoints.\n\n## Quick Start\n\`\`\`bash\n# Run novadb standalone server\nnovadb-server --config ./config.yaml\n\`\`\`\n\n## References\nCheck the developer portal at [novadb.io](https://novadb.example.com) for specs.`,
@@ -15,9 +35,17 @@ const MOCK_READMES: { [key: string]: string } = {
  * Consumed by repository detail pages and future ORACLE agents.
  */
 export async function getReadmeContent(repoName: string): Promise<string> {
-  const username = githubConfig.username;
   const normalizedName = repoName.toLowerCase();
   
+  const cached = loadCachedReadme(normalizedName);
+  if (cached !== null) {
+    return cached;
+  }
+
+  if (process.env.ENABLE_GITHUB_SYNC === 'false') {
+    return MOCK_READMES[normalizedName] || `# ${repoName}\n\nGitHub sync disabled. Offline cache placeholder loaded.`;
+  }
+  const username = githubConfig.username;
   try {
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/readme`, {
       next: { revalidate: 3600 },

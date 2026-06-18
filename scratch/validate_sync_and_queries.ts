@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-// 1. Load env variables from .env.local BEFORE importing any other modules
+// 1. Load env variables from .env.local BEFORE importing other modules
 const envPath = path.join(__dirname, '../.env.local');
 if (fs.existsSync(envPath)) {
   const envContent = fs.readFileSync(envPath, 'utf8');
@@ -20,39 +20,55 @@ if (fs.existsSync(envPath)) {
   });
 }
 
-// 2. Ensure ORACLE_MODEL is set
 if (!process.env.ORACLE_MODEL) {
   process.env.ORACLE_MODEL = 'openrouter/free';
 }
 
 const queries = [
   "What is Java?",
-  "What is Kafka?",
-  "2+2",
-  "Compare SAHAI and ORBITAIR",
+  "Compare SAHAI and ORBITAIR.",
+  "Which project demonstrates backend engineering?",
+  "Which is Suraj's newest project?",
   "Why did Suraj use Kafka?"
 ];
 
 async function runValidation() {
   console.log("====================================================");
-  console.log("STARTING ORACLE ROUTING & EXECUTION VALIDATION");
+  console.log("STARTING LIVE GITHUB SYNC & ORACLE VALIDATION RUN");
   console.log("====================================================");
   console.log("OPENROUTER KEY EXISTS:", !!process.env.OPENROUTER_API_KEY);
   console.log("CONFIGURED MODEL:", process.env.ORACLE_MODEL);
-  console.log("ENABLE_GITHUB_SYNC:", process.env.ENABLE_GITHUB_SYNC || 'true');
 
   // Dynamic imports to prevent static initialization issues during hoisting
+  const { GitHubSyncService, getSyncDiagnostics } = await import('../lib/github/syncService');
   const { OpenRouterProvider } = await import('../lib/oracle/openRouterProvider');
   const { contextService } = await import('../lib/oracle/service');
   const { OracleContextSelector } = await import('../lib/oracle/contextSelector');
 
+  // 1. Execute Sync
+  console.log("\n--- Executing Sync Service ---");
+  const syncService = new GitHubSyncService();
+  await syncService.sync();
+
+  // 2. Fetch Diagnostics
+  const diagnostics = getSyncDiagnostics();
+  console.log("\n--- Sync Diagnostics ---");
+  console.log(`Sync Status:             ${diagnostics.status}`);
+  console.log(`Last Refresh Time:       ${diagnostics.lastRefreshTime}`);
+  console.log(`Repositories Synced:     ${diagnostics.repositoriesSynced}`);
+  console.log(`New Repositories Found:  ${diagnostics.newRepositoriesFound}`);
+  if (diagnostics.error) {
+    console.log(`Sync Error (Isolated):   ${diagnostics.error}`);
+  }
+
+  // 3. Execute Queries
   const fullContext = await contextService.getContext();
   const provider = new OpenRouterProvider();
 
   for (let i = 0; i < queries.length; i++) {
     const query = queries[i];
     if (i > 0) {
-      console.log(`Waiting 8 seconds to avoid rate limits...`);
+      console.log(`\nWaiting 8 seconds to avoid rate limits...`);
       await new Promise(resolve => setTimeout(resolve, 8000));
     }
     console.log(`\n----------------------------------------------------`);
@@ -60,13 +76,21 @@ async function runValidation() {
     console.log(`----------------------------------------------------`);
 
     try {
-      // 1. Selection Layer
+      // a. Selection Layer
       const selected = await OracleContextSelector.select(query, fullContext);
       
-      // 2. Format / Compression
-      const compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
+      // b. Format / Compression
+      let compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
 
-      // 3. System Prompt
+      // Add repository timestamps additively for recency queries
+      if (selected.repositories && selected.repositories.length > 0) {
+        compressedPromptContext += `\n\n### REPOSITORY TIMESTAMPS\n`;
+        selected.repositories.forEach(r => {
+          compressedPromptContext += `- Repository: ${r.name} | Created: ${r.createdAt} | Last Updated: ${r.updatedAt}\n`;
+        });
+      }
+
+      // c. System Prompt
       const systemPrompt = `You are the ORACLE, a professional, minimal Knowledge Officer representing Suraj Samanta.
 Your purpose is to answer inquiries about Suraj's projects, skills, repositories, achievements, experience, and technologies, as well as general technical questions.
 
@@ -77,8 +101,8 @@ You must strictly adhere to the following rules:
    - For portfolio questions, prioritize supplied context and do not invent portfolio facts.
 3. Apply the appropriate response mode based on the query:
    - PORTFOLIO MODE: For questions about Suraj, his projects, skills, repositories, experience, or achievements, use the supplied PORTFOLIO CONTEXT as the primary source. If a specific portfolio fact cannot be found or derived from the context, state: "I do not have information on that in the local Knowledge Graph." and do not invent facts.
-   - GENERAL KNOWLEDGE MODE: For general technical questions (e.g., "What is Kafka?", "What is React?", "What is Next.js?", "What is Docker?", "What is Spring Boot?", "What is FastAPI?"), use your model knowledge normally. Do NOT refuse them or output the "local Knowledge Graph" refusal.
-   - HYBRID MODE: For questions bridging Suraj's portfolio and general concepts (e.g., "Why did Suraj use Kafka?", "How does ORBITAIR use FastAPI?"), combine the supplied PORTFOLIO CONTEXT with your model knowledge to provide an evidence-backed rationale.
+   - GENERAL KNOWLEDGE MODE: For general technical questions, use your model knowledge normally.
+   - HYBRID MODE: For questions bridging Suraj's portfolio and general concepts, combine the supplied PORTFOLIO CONTEXT with your model knowledge to provide an evidence-backed rationale.
 4. Avoid neon sci-fi gimmicks, emojis (unless highly appropriate), or ChatGPT conversational filler. Be concise and technical.
 5. Format your answers in clean Markdown. Use headings, bold text, lists, and code blocks where appropriate.
 

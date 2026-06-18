@@ -1,6 +1,26 @@
 import { GitHubRepository } from '../types';
 import githubConfig from '@/data/github-config.json';
 
+function loadCachedRepositories(): GitHubRepository[] | null {
+  if (typeof window === 'undefined') {
+    try {
+      const fs = eval('require')('fs');
+      const path = eval('require')('path');
+      const cachePath = path.join(process.cwd(), 'data/github-sync-cache.json');
+      if (fs.existsSync(cachePath)) {
+        const content = fs.readFileSync(cachePath, 'utf8');
+        const cache = JSON.parse(content);
+        if (cache && Array.isArray(cache.repositories)) {
+          return cache.repositories;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse github-sync-cache.json:', e);
+    }
+  }
+  return null;
+}
+
 // Local fallback cache to avoid rate-limiting issues on GitHub public APIs during development/builds
 const MOCK_REPOSITORIES: GitHubRepository[] = [
   {
@@ -105,6 +125,14 @@ interface GitHubRepoResponse {
 }
 
 export async function getRepositories(): Promise<GitHubRepository[]> {
+  const cached = loadCachedRepositories();
+  if (cached) {
+    return cached;
+  }
+
+  if (process.env.ENABLE_GITHUB_SYNC === 'false') {
+    return MOCK_REPOSITORIES;
+  }
   try {
     const username = githubConfig.username;
     // Cache GitHub requests for 1 hour to optimize performance and prevent rate limiting

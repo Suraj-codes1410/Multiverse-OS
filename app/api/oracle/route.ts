@@ -3,6 +3,14 @@ import { contextService } from '@/lib/oracle/service';
 import { OpenRouterProvider } from '@/lib/oracle/openRouterProvider';
 import { OracleContextSelector } from '@/lib/oracle/contextSelector';
 import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
+import { RepositoryRefreshManager } from '@/lib/github/syncService';
+
+// Initialize the GitHub Repository Refresh Manager to run background synchronizations.
+// It will run a startup sync in the background and trigger periodic syncs.
+RepositoryRefreshManager.getInstance().start({
+  intervalMs: parseInt(process.env.GITHUB_SYNC_INTERVAL_MS || '3600000'), // Default 1 hour
+  performStartupSync: true
+});
 
 
 
@@ -49,7 +57,15 @@ export async function POST(req: Request) {
     const selected = await OracleContextSelector.select(query, fullContext);
 
     // 5. Context Compression Layer - Format to structured readable markdown (No raw JSON)
-    const compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
+    let compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
+
+    // Add repository creation dates for recency queries (Phase 4.6 additive functionality)
+    if (selected.repositories && selected.repositories.length > 0) {
+      compressedPromptContext += `\n\n### REPOSITORY TIMESTAMPS\n`;
+      selected.repositories.forEach(r => {
+        compressedPromptContext += `- Repository: ${r.name} | Created: ${r.createdAt} | Last Updated: ${r.updatedAt}\n`;
+      });
+    }
 
     // 6. Diagnostics & Logging (Development-only)
     const contextSizeChars = compressedPromptContext.length;
@@ -103,6 +119,7 @@ const response = await provider.generate({
   userPrompt: query.trim()
 });
 
+console.log("ROUTE_OPENROUTER");
 console.log("OPENROUTER SUCCESS");
 console.log("AI RESPONSE:");
 console.log(response.text);
@@ -142,6 +159,7 @@ console.log(response.text);
       }
     });
   } catch (error: unknown) {
+    console.log("ROUTE_FALLBACK");
     console.error('Error in Oracle API Route:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown server error occurred.';
     return NextResponse.json({ 
