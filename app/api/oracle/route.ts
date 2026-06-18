@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     const fullContext = await contextService.getContext();
 
     // 4. Context Selection Layer - Select only relevant content
-    const selected = OracleContextSelector.select(query, fullContext);
+    const selected = await OracleContextSelector.select(query, fullContext);
 
     // 5. Context Compression Layer - Format to structured readable markdown (No raw JSON)
     const compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
@@ -58,6 +58,8 @@ export async function POST(req: Request) {
     if (process.env.NODE_ENV !== 'production') {
       console.log('\n--- ORACLE CONTEXT DIAGNOSTICS ---');
       console.log(`Model: ${modelUsed}`);
+      console.log(`Resolved Entity: ${selected.resolvedEntity}`);
+      console.log(`Traversed Relationships:\n  ${selected.traversedRelationships.join('\n  ') || 'None'}`);
       console.log(`Selected Sections: ${selected.selectedSections.join(', ')}`);
       console.log(`Entities Selected:`);
       console.log(`  Skills (${selected.skills.length}): ${selected.skills.map(s => s.name).join(', ')}`);
@@ -123,6 +125,8 @@ ${compressedPromptContext}
       contextSizeChars,
       estimatedTokens,
       modelUsed,
+      resolvedEntity: selected.resolvedEntity,
+      traversedRelationships: selected.traversedRelationships,
       selectedEntities: {
         skills: selected.skills.map(s => s.name),
         projects: selected.projects.map(p => p.title),

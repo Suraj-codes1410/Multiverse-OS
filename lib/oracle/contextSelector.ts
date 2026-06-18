@@ -1,4 +1,6 @@
 import { OracleContext, ProjectContext, RepositoryContext, TechnicalSkillContext, AchievementContext, TimelineContext } from './types';
+import { EntityResolver } from './entityResolver';
+import { GraphTraversalService } from './graphTraversal';
 
 export interface SelectedContext {
   profile: OracleContext['profile'];
@@ -11,13 +13,153 @@ export interface SelectedContext {
 }
 
 export class OracleContextSelector {
+  private static entityResolver = new EntityResolver();
+  private static traversalService = new GraphTraversalService();
+  private static isInitialized = false;
+
+  private static async ensureInitialized() {
+    if (!this.isInitialized) {
+      await this.traversalService.init();
+      this.isInitialized = true;
+    }
+  }
+
   /**
-   * Selects and curates only the relevant context components based on query keywords.
+   * Selects and curates only the relevant context components based on entity resolution and graph traversal.
    */
-  static select(query: string, context: OracleContext): SelectedContext {
-    const normalizedQuery = query.toLowerCase().trim();
+  static async select(
+    query: string, 
+    context: OracleContext
+  ): Promise<SelectedContext & { resolvedEntity: string; traversedRelationships: string[] }> {
+    await this.ensureInitialized();
+    const queryClean = query.toLowerCase().trim();
+
+    // 1. Entity Resolution Layer
+    const resolved = this.entityResolver.resolve(query);
     
-    // Initialize empty collections
+    if (resolved) {
+      const entity = resolved.entity;
+      const entityId = entity.id;
+      const entityType = entity.type;
+
+      const selectedSkills: TechnicalSkillContext[] = [];
+      const selectedProjects: ProjectContext[] = [];
+      const selectedRepositories: RepositoryContext[] = [];
+      const selectedAchievements: AchievementContext[] = [];
+      const selectedTimeline: TimelineContext[] = [];
+      const selectedSections: string[] = [];
+      const traversedRelationships: string[] = [];
+
+      if (entityType === 'project') {
+        const projNodeId = `project:${entityId}`;
+        selectedSections.push('Resolved Project');
+
+        // Fetch primary project context
+        const proj = context.projects.find(p => p.id.toLowerCase() === entityId);
+        if (proj) selectedProjects.push(proj);
+
+        // Traverse skills/technologies
+        const skills = this.traversalService.getProjectSkills(projNodeId);
+        skills.forEach(s => {
+          const matchedSkill = context.skills.find(sk => sk.name.toLowerCase() === s.label.toLowerCase());
+          if (matchedSkill) selectedSkills.push(matchedSkill);
+        });
+        if (skills.length > 0) {
+          selectedSections.push('Project Technologies');
+          traversedRelationships.push(`project:${entityId} -> BUILT_WITH -> Skill (${skills.length} nodes)`);
+        }
+
+        // Traverse achievements
+        const achievements = this.traversalService.getProjectAchievements(projNodeId);
+        achievements.forEach(a => {
+          const matchedAch = context.achievements.find(ach => ach.title.toLowerCase() === a.label.toLowerCase());
+          if (matchedAch) selectedAchievements.push(matchedAch);
+        });
+        if (achievements.length > 0) {
+          selectedSections.push('Project Achievements');
+          traversedRelationships.push(`project:${entityId} -> RELATED_TO -> Achievement (${achievements.length} nodes)`);
+        }
+
+        // Traverse repositories
+        const repos = this.traversalService.getProjectRepositories(projNodeId);
+        repos.forEach(r => {
+          const matchedRepo = context.repositories.find(rep => rep.name.toLowerCase() === r.label.toLowerCase());
+          if (matchedRepo) selectedRepositories.push(matchedRepo);
+        });
+        if (repos.length > 0) {
+          selectedSections.push('Project Repository');
+          traversedRelationships.push(`project:${entityId} -> DEPENDS_ON -> Repository (${repos.length} nodes)`);
+        }
+
+        // Match timeline milestones linked to project
+        context.timeline.forEach(yearGroup => {
+          const matchingMilestones = yearGroup.milestones.filter(m => {
+            const mtitle = m.title.toLowerCase();
+            return proj ? mtitle.includes(proj.title.toLowerCase()) : false;
+          });
+          if (matchingMilestones.length > 0) {
+            selectedTimeline.push({
+              year: yearGroup.year,
+              milestones: matchingMilestones
+            });
+          }
+        });
+        if (selectedTimeline.length > 0) {
+          selectedSections.push('Project Timeline Milestones');
+        }
+      } 
+      else if (entityType === 'skill' || entityType === 'technology') {
+        const skillNodeId = `skill:${entityId}`;
+        selectedSections.push('Resolved Skill');
+
+        // Fetch primary skill context
+        const skill = context.skills.find(s => s.name.toLowerCase() === entityId);
+        if (skill) selectedSkills.push(skill);
+
+        // Traverse related projects
+        const projects = this.traversalService.getSkillProjects(skillNodeId);
+        projects.forEach(p => {
+          const matchedProj = context.projects.find(proj => 
+            proj.id.toLowerCase() === p.id.split(':').slice(1).join(':').toLowerCase() || 
+            proj.title.toLowerCase() === p.label.toLowerCase()
+          );
+          if (matchedProj) selectedProjects.push(matchedProj);
+        });
+        if (projects.length > 0) {
+          selectedSections.push('Related Projects');
+          traversedRelationships.push(`skill:${entityId} -> USED_IN -> Project (${projects.length} nodes)`);
+        }
+
+        // Fetch repositories associated with those projects
+        selectedProjects.forEach(p => {
+          const matchedRepo = context.repositories.find(r => 
+            r.name.toLowerCase() === p.id.toLowerCase() || 
+            (p.associatedRepositoryName && r.name.toLowerCase() === p.associatedRepositoryName.toLowerCase())
+          );
+          if (matchedRepo) selectedRepositories.push(matchedRepo);
+        });
+        if (selectedRepositories.length > 0) {
+          selectedSections.push('Project Repositories');
+        }
+      }
+
+      // Check if we populated any content. If so, return it!
+      if (selectedProjects.length > 0 || selectedSkills.length > 0) {
+        return {
+          profile: context.profile,
+          skills: Array.from(new Set(selectedSkills)),
+          projects: Array.from(new Set(selectedProjects)),
+          repositories: Array.from(new Set(selectedRepositories)),
+          achievements: Array.from(new Set(selectedAchievements)),
+          timeline: Array.from(new Set(selectedTimeline)),
+          selectedSections,
+          resolvedEntity: `${entity.name} (${entity.type})`,
+          traversedRelationships
+        };
+      }
+    }
+
+    // 2. Fallback to existing keyword-based selection if no entity resolved
     const selectedSkills: TechnicalSkillContext[] = [];
     const selectedProjects: ProjectContext[] = [];
     const selectedRepositories: RepositoryContext[] = [];
@@ -25,17 +167,13 @@ export class OracleContextSelector {
     const selectedTimeline: TimelineContext[] = [];
     const selectedSections: string[] = [];
 
-    // Helper checking for keywords
-    const matches = (keywords: string[]) => keywords.some(kw => normalizedQuery.includes(kw));
+    const matches = (keywords: string[]) => keywords.some(kw => queryClean.includes(kw));
 
-    // 1. Detect target projects
+    // Detect target projects
     const wantsOrbitair = matches(['orbitair', 'orbit', 'aqi', 'air quality', 'pollution', 'forecasting']);
     const wantsSahai = matches(['sahai', 'mental health', 'lifestyle', 'therapist', 'chat', 'mood']);
     const wantsPatient = matches(['patient', 'hospital', 'billing', 'clinical', 'patient-management-service', 'microservices']);
 
-    const projectMatch = wantsOrbitair || wantsSahai || wantsPatient;
-
-    // Filter projects
     context.projects.forEach(p => {
       const pid = p.id.toLowerCase();
       const isTarget = 
@@ -48,29 +186,24 @@ export class OracleContextSelector {
       }
     });
 
-    // 2. Detect target skills and categories
+    // Detect target skills and categories
     const wantsBackend = matches(['backend', 'java', 'python', 'go', 'rust', 'spring', 'django', 'fastapi', 'grpc', 'kafka', 'vector', 'database', 'sql']);
     const wantsFrontend = matches(['frontend', 'react', 'typescript', 'javascript', 'nextjs', 'css', 'html', 'ui', 'interface']);
     const wantsAi = matches(['ai', 'ml', 'machine learning', 'artificial intelligence', 'rag', 'pinecone', 'model']);
     const wantsCloud = matches(['cloud', 'docker', 'kubernetes', 'aws', 'gcp', 'ci/cd', 'deployment']);
 
-    const categoryMatch = wantsBackend || wantsFrontend || wantsAi || wantsCloud;
-
     context.skills.forEach(s => {
       const scat = s.category.toLowerCase();
       const sname = s.name.toLowerCase();
 
-      // Direct matches by tech name
-      const isTechMentioned = normalizedQuery.includes(sname);
+      const isTechMentioned = queryClean.includes(sname);
       
-      // Category matches
       const isCatMatch = 
         (wantsBackend && (scat.includes('backend') || scat.includes('database'))) ||
         (wantsFrontend && scat.includes('frontend')) ||
         (wantsAi && (scat.includes('ai') || scat.includes('ml'))) ||
         (wantsCloud && (scat.includes('cloud') || scat.includes('tools')));
 
-      // Project dependency match (select skills that are in selected projects' techStacks)
       const isProjectSkill = selectedProjects.some(p => 
         p.techStack.some(t => t.toLowerCase() === sname)
       );
@@ -80,20 +213,14 @@ export class OracleContextSelector {
       }
     });
 
-    // 3. Detect target repositories
+    // Detect repositories
     context.repositories.forEach(r => {
       const rname = r.name.toLowerCase();
-      
-      // Match by keyword
-      const isRepoNameMatch = normalizedQuery.includes(rname);
-      
-      // Match by association with selected projects
+      const isRepoNameMatch = queryClean.includes(rname);
       const isProjectRepo = selectedProjects.some(p => 
         p.associatedRepositoryName?.toLowerCase() === rname ||
         p.id.toLowerCase() === rname
       );
-
-      // Match by association with selected skills topics
       const isSkillRepo = selectedSkills.some(s => 
         r.topics.some(t => t.toLowerCase() === s.name.toLowerCase()) ||
         (r.language && r.language.toLowerCase() === s.name.toLowerCase())
@@ -104,12 +231,12 @@ export class OracleContextSelector {
       }
     });
 
-    // 4. Detect achievements
+    // Detect achievements
     const wantsAchievements = matches(['achievement', 'award', 'hackathon', 'nasa', 'sih', 'smart india', 'delhi', 'prize', 'compete']);
     context.achievements.forEach(a => {
       const isAchievementMatch = 
         wantsAchievements || 
-        normalizedQuery.includes(a.title.toLowerCase()) ||
+        queryClean.includes(a.title.toLowerCase()) ||
         selectedProjects.some(p => a.associatedProjects.some(ap => ap.toLowerCase().includes(p.title.toLowerCase())));
 
       if (isAchievementMatch) {
@@ -117,12 +244,11 @@ export class OracleContextSelector {
       }
     });
 
-    // 5. Detect timeline
+    // Detect timeline
     const wantsTimeline = matches(['timeline', 'history', 'career', 'milestone', 'education', 'degree', 'graduation', 'college', 'school']);
     if (wantsTimeline) {
       selectedTimeline.push(...context.timeline);
     } else {
-      // Pull only timeline groups containing matching milestones
       context.timeline.forEach(yearGroup => {
         const matchingMilestones = yearGroup.milestones.filter(m => {
           const mtitle = m.title.toLowerCase();
@@ -140,15 +266,9 @@ export class OracleContextSelector {
       });
     }
 
-    // 6. Default Fallback Selection if nothing matched (e.g. general "Who are you?")
+    // Default Fallback Selection (Minimal Fallback for General Knowledge Mode)
     if (selectedSkills.length === 0 && selectedProjects.length === 0 && selectedRepositories.length === 0 && selectedAchievements.length === 0) {
-      // Pick featured projects
-      selectedProjects.push(...context.projects.filter(p => p.featured));
-      // Pick top skills
-      selectedSkills.push(...context.skills.filter(s => s.level === 'Advanced'));
-      // Pick featured repositories
-      selectedRepositories.push(...context.repositories.filter(r => r.starsCount > 20));
-      selectedSections.push('Profile (Default Fallback)', 'Top Skills', 'Featured Projects', 'Popular Repositories');
+      selectedSections.push('Profile (Minimal Fallback)');
     } else {
       if (selectedSkills.length > 0) selectedSections.push('Relevant Skills');
       if (selectedProjects.length > 0) selectedSections.push('Relevant Projects');
@@ -164,7 +284,9 @@ export class OracleContextSelector {
       repositories: Array.from(new Set(selectedRepositories)),
       achievements: Array.from(new Set(selectedAchievements)),
       timeline: Array.from(new Set(selectedTimeline)),
-      selectedSections
+      selectedSections,
+      resolvedEntity: 'None (General/Fallback Mode)',
+      traversedRelationships: []
     };
   }
 

@@ -16,17 +16,20 @@ async function runSelectionTest() {
       "What backend technologies does Suraj know?"
     ];
 
-    queries.forEach((query, idx) => {
+    for (let idx = 0; idx < queries.length; idx++) {
+      const query = queries[idx];
       console.log(`\n---------------------------------------------------------`);
       console.log(`TEST CASE ${idx + 1}: "${query}"`);
       console.log(`---------------------------------------------------------`);
 
-      const selected = OracleContextSelector.select(query, fullContext);
+      const selected = await OracleContextSelector.select(query, fullContext);
       const compressedText = OracleContextSelector.compressAndFormat(selected);
       const compressedSizeChars = compressedText.length;
       const compressedTokens = Math.round(compressedSizeChars / 4);
       const reductionPercent = Math.round(((fullSizeChars - compressedSizeChars) / fullSizeChars) * 100);
 
+      console.log(`Resolved Entity: ${selected.resolvedEntity}`);
+      console.log(`Traversed Relationships:\n  ${selected.traversedRelationships.join('\n  ') || 'None'}`);
       console.log(`Selected Sections: ${selected.selectedSections.join(', ') || 'None'}`);
       console.log(`Selected Projects: ${selected.projects.map(p => p.title).join(', ') || 'None'}`);
       console.log(`Selected Skills: ${selected.skills.map(s => s.name).join(', ') || 'None'}`);
@@ -39,7 +42,7 @@ async function runSelectionTest() {
       
       console.log(`\nSample Output Context (First 500 chars):`);
       console.log(compressedText.slice(0, 500) + "...\n[TRUNCATED FOR LOGS]");
-    });
+    }
 
   } catch (error) {
     console.error("Error in selection test:", error);
