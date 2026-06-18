@@ -133,6 +133,11 @@ export class OracleContextBuilder {
         architecturePattern: intelligence.architectureAnalysis?.architecturePattern || 'Monolith'
       } : undefined;
 
+      // Retrieve repositorySummary from graph node properties
+      const repoNodeId = `repository:${repo.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
+      const repoNode = graph.getNode(repoNodeId);
+      const repositorySummary = repoNode?.properties.repositorySummary as any;
+
       return {
         name: repo.name,
         fullName: repo.fullName,
@@ -147,7 +152,8 @@ export class OracleContextBuilder {
         updatedAt: repo.updatedAt,
         classifications,
         intelligence: simplifiedIntelligence,
-        readmeExcerpt
+        readmeExcerpt,
+        repositorySummary
       };
     }));
 

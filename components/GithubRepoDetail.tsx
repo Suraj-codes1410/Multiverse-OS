@@ -17,7 +17,8 @@ import {
   Lock,
   Layers,
   Sparkles,
-  Workflow
+  Workflow,
+  Loader2
 } from 'lucide-react';
 import Card from './Card';
 import Badge from './Badge';
@@ -45,6 +46,7 @@ export default function GithubRepoDetail({
 }: GithubRepoDetailProps) {
   const [oracleQuery, setOracleQuery] = useState('');
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
+  const [isOracleLoading, setIsOracleLoading] = useState(false);
   
   const intelligence = generateRepositoryIntelligence(repo, readme);
   const classifications = repo.classifications || classifyRepository(repo, intelligence);
@@ -79,16 +81,32 @@ export default function GithubRepoDetail({
     }
   };
 
-  const handleOracleSubmit = (e: React.FormEvent) => {
+  const handleOracleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!oracleQuery.trim()) return;
 
-    // Simulate ORACLE offline status
-    setOracleResponse(
-      `[ORACLE_GATEWAY_OFFLINE]: Query processed deterministically. \n` +
-      `Agent interaction for repository context requires Phase 4 LLM code indexing. \n` +
-      `Your query "${oracleQuery}" has been cached under transaction slot.`
-    );
+    setIsOracleLoading(true);
+    setOracleResponse(null);
+    try {
+      const response = await fetch('/api/oracle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: oracleQuery, repositoryName: repo.name }),
+      });
+      const data = await response.json();
+      if (response.ok && data.text) {
+        setOracleResponse(data.text);
+      } else {
+        setOracleResponse(data.message || 'Error executing query via Oracle.');
+      }
+    } catch (err) {
+      console.error(err);
+      setOracleResponse('Failed to reach ORACLE network services.');
+    } finally {
+      setIsOracleLoading(false);
+    }
   };
 
   return (
@@ -561,39 +579,49 @@ export default function GithubRepoDetail({
             <Card hoverable={false} className="border-border-bright/20 bg-bg-panel/90">
               <div className="flex items-center justify-between mb-4 border-b border-border-subtle/40 pb-2 select-none">
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-text-primary animate-pulse" />
+                  <MessageSquare className="w-4 h-4 text-accent-cyan animate-pulse" />
                   <h3 className="text-xs font-mono uppercase tracking-widest text-text-primary">
                     ORACLE_DIALOGUE_PORTAL
                   </h3>
                 </div>
-                <Badge color="default" variant="solid" className="text-[8px]">OFFLINE</Badge>
+                <Badge color="green" variant="solid" className="text-[8px] animate-pulse">ONLINE</Badge>
               </div>
 
               <form onSubmit={handleOracleSubmit} className="space-y-4">
                 <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase leading-normal">
-                  Inquire about this codebase (Extension Slot):
+                  Inquire about this codebase:
                 </span>
                 <input
                   type="text"
                   value={oracleQuery}
                   onChange={(e) => setOracleQuery(e.target.value)}
                   placeholder="Ask ORACLE about algorithms, imports..."
-                  className="w-full bg-bg-primary border border-border-subtle p-2 rounded text-xs font-mono text-text-primary focus:outline-none focus:border-accent-cyan/50"
+                  disabled={isOracleLoading}
+                  className="w-full bg-bg-primary border border-border-subtle p-2 rounded text-xs font-mono text-text-primary focus:outline-none focus:border-accent-cyan/50 disabled:opacity-50"
                 />
                 <button
                   type="submit"
-                  disabled={!oracleQuery.trim()}
-                  className="w-full py-1.5 bg-bg-primary hover:bg-bg-panel border border-border-bright/25 hover:border-accent-cyan/40 text-text-primary font-mono text-[10px] rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!oracleQuery.trim() || isOracleLoading}
+                  className="w-full py-1.5 bg-bg-primary hover:bg-bg-panel border border-border-bright/25 hover:border-accent-cyan/40 text-text-primary font-mono text-[10px] rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                 >
-                  QUERY_ORACLE
+                  {isOracleLoading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-cyan" />
+                      SYNAPSE_PROCESSING
+                    </>
+                  ) : (
+                    'QUERY_ORACLE'
+                  )}
                 </button>
 
                 {oracleResponse && (
-                  <div className="p-3 bg-accent-cyan/5 border border-accent-cyan/25 rounded font-mono text-[10px] text-text-secondary leading-relaxed space-y-1">
-                    <div className="flex items-center gap-1.5 text-accent-cyan font-bold">
+                  <div className="p-3 bg-bg-primary/80 border border-accent-cyan/20 rounded text-xs text-text-primary leading-relaxed space-y-2 select-text">
+                    <div className="flex items-center gap-1.5 text-accent-cyan font-mono text-[10px] font-bold border-b border-border-subtle/35 pb-1">
                       <Sparkles className="w-3.5 h-3.5 text-accent-cyan" /> ORACLE_STATUS
                     </div>
-                    <p className="whitespace-pre-line">{oracleResponse}</p>
+                    <div className="prose prose-invert prose-xs max-w-none">
+                      <MarkdownRenderer content={oracleResponse} />
+                    </div>
                   </div>
                 )}
               </form>

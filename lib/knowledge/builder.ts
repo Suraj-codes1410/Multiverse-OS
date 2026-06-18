@@ -3,6 +3,7 @@ import { getRepositories } from '../github/github';
 import { KnowledgeGraph } from './graph';
 import { classifyRepository } from '../github/classification';
 import { GitHubRepository } from '../types';
+import { RepositoryContentAnalyzer } from '../github/repositoryContentAnalyzer';
 
 let cachedGraph: KnowledgeGraph | null = null;
 
@@ -85,8 +86,9 @@ export async function buildKnowledgeGraph(forceRebuild = false): Promise<Knowled
   });
 
   // 4. Add Repository Nodes
-  repositories.forEach(repo => {
+  for (const repo of repositories) {
     const repoId = makeId('repository', repo.name);
+    const contentAnalysis = await RepositoryContentAnalyzer.analyze(repo);
     graph.addNode({
       id: repoId,
       type: 'Repository',
@@ -96,10 +98,56 @@ export async function buildKnowledgeGraph(forceRebuild = false): Promise<Knowled
         url: repo.htmlUrl,
         language: repo.language || 'TypeScript',
         starsCount: repo.starsCount,
-        originalData: repo
+        originalData: repo,
+        repositorySummary: contentAnalysis.summary,
+        extractedData: contentAnalysis.extractedData
       }
     });
-  });
+
+    // Link extracted technologies to Repository node in the graph
+    contentAnalysis.extractedData.technologies.forEach(tech => {
+      const skillId = makeId('skill', tech);
+      
+      // Ensure the skill node exists
+      if (!graph.getNode(skillId)) {
+        graph.addNode({
+          id: skillId,
+          type: 'Skill',
+          label: tech,
+          properties: {
+            description: `${tech} technology extracted dynamically.`,
+            category: 'Tools',
+            level: 'Advanced',
+            originalData: {
+              name: tech,
+              category: 'Tools',
+              level: 'Advanced',
+              description: `${tech} technology extracted dynamically.`,
+              relatedProjects: []
+            }
+          }
+        });
+      }
+
+      // Add relationships
+      graph.addRelationship({
+        sourceId: repoId,
+        targetId: skillId,
+        type: 'USES',
+        properties: {
+          description: `Repository utilizes technology: ${tech}`
+        }
+      });
+      graph.addRelationship({
+        sourceId: skillId,
+        targetId: repoId,
+        type: 'RELATED_TO',
+        properties: {
+          description: `Technology ${tech} is utilized in repository: ${repo.name}`
+        }
+      });
+    });
+  }
 
   // 5. Add Experience Nodes
   experience.forEach(exp => {

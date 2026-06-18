@@ -72,6 +72,12 @@ export interface RepositoryContext {
   classifications: string[];
   intelligence?: SimplifiedIntelligence;
   readmeExcerpt?: string;
+  repositorySummary?: {
+    RepositoryPurpose: string;
+    KeyFeatures: string[];
+    TechnologyStack: string[];
+    ComplexityIndicators: string[];
+  };
 }
 
 export interface AchievementContext {

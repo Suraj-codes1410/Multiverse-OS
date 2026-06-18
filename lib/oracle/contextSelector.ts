@@ -112,6 +112,18 @@ export class OracleContextSelector {
         if (r.intelligence) {
           output += `  Category: ${r.intelligence.projectCategory}, Pattern: ${r.intelligence.architecturePattern}, Complexity Rating: ${r.intelligence.complexityRating}\n`;
         }
+        if (r.repositorySummary) {
+          output += `  Purpose: ${r.repositorySummary.RepositoryPurpose}\n`;
+          if (r.repositorySummary.KeyFeatures && r.repositorySummary.KeyFeatures.length > 0) {
+            output += `  Key Features: ${r.repositorySummary.KeyFeatures.join(', ')}\n`;
+          }
+          if (r.repositorySummary.TechnologyStack && r.repositorySummary.TechnologyStack.length > 0) {
+            output += `  Technologies: ${r.repositorySummary.TechnologyStack.join(', ')}\n`;
+          }
+          if (r.repositorySummary.ComplexityIndicators && r.repositorySummary.ComplexityIndicators.length > 0) {
+            output += `  Complexity Indicators: ${r.repositorySummary.ComplexityIndicators.join(', ')}\n`;
+          }
+        }
         output += `  Stars: ${r.starsCount}, Forks: ${r.forksCount}, Link: ${r.url}\n`;
       });
       output += `\n`;

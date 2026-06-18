@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { query } = body;
+    const { query, repositoryName } = body;
 
     // 1. Response validation - check if query is present and correct
     if (!query || typeof query !== 'string' || !query.trim()) {
@@ -109,15 +109,22 @@ ${compressedPromptContext}
 ---`;
 
     // 8. Invoke OpenRouter AI Provider
-   const provider = new OpenRouterProvider();
+    const provider = new OpenRouterProvider();
 
-console.log("CALLING OPENROUTER");
-console.log("Query:", query.trim());
+    console.log("CALLING OPENROUTER");
+    console.log("Query:", query.trim());
+    if (repositoryName) {
+      console.log("Repository Context Name:", repositoryName);
+    }
 
-const response = await provider.generate({
-  systemPrompt,
-  userPrompt: query.trim()
-});
+    const userPrompt = repositoryName 
+      ? `[Context: The user is currently viewing the repository page for "${repositoryName}". "This repository" refers to "${repositoryName}".]\n\nQuery: ${query.trim()}`
+      : query.trim();
+
+    const response = await provider.generate({
+      systemPrompt,
+      userPrompt
+    });
 
 console.log("ROUTE_OPENROUTER");
 console.log("OPENROUTER SUCCESS");
