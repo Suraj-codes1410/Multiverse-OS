@@ -5,6 +5,7 @@ import { OracleContextSelector } from '@/lib/oracle/contextSelector';
 import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
 import { RepositoryRefreshManager } from '@/lib/github/syncService';
 import { RecruiterInsightEngine } from '@/lib/github/recruiterInsightEngine';
+import { queryCacheService } from '@/lib/oracle/queryCache';
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
@@ -49,6 +50,27 @@ export async function POST(req: Request) {
         error: 'API_KEY_MISSING', 
         message: 'OpenRouter API key is not configured on the server.' 
       }, { status: 500 });
+    }
+
+    // 2.5. Query Cache Lookup
+    const cacheKey = repositoryName ? `${query.trim()}::repo:${repositoryName}` : query.trim();
+    const cachedResponse = queryCacheService.get(cacheKey);
+    if (cachedResponse) {
+      return NextResponse.json({
+        text: cachedResponse,
+        fresh: false,
+        fallback: false,
+        empty: false,
+        repeated: true,
+        debug: {
+          cacheHit: true,
+          cacheKey
+        }
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate'
+        }
+      });
     }
 
     // 3. Load full portfolio context from caching service
@@ -157,6 +179,10 @@ console.log(response.text);
         message: 'The AI provider returned an empty text completion.' 
       }, { status: 502 });
     }
+
+    // Store in query cache
+    const cachedModelUsed = response.usage?.modelUsed || process.env.PRIMARY_MODEL || 'deepseek/deepseek-r1:free';
+    queryCacheService.set(cacheKey, response.text, cachedModelUsed);
 
     // 10. Prepare server response and optional debug metrics
     const debugInfo = process.env.NODE_ENV !== 'production' ? {

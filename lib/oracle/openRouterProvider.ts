@@ -159,11 +159,12 @@ export class OpenRouterProvider implements IAIProvider {
       const text = data.choices[0].message?.content || '';
       console.log("OPENROUTER SUCCESS");
 
-      const usage = data.usage ? {
-        promptTokens: data.usage.prompt_tokens,
-        completionTokens: data.usage.completion_tokens,
-        totalTokens: data.usage.total_tokens
-      } : undefined;
+      const usage = {
+        promptTokens: data.usage?.prompt_tokens || 0,
+        completionTokens: data.usage?.completion_tokens || 0,
+        totalTokens: data.usage?.total_tokens || 0,
+        modelUsed: modelName
+      };
 
       return {
         text,
