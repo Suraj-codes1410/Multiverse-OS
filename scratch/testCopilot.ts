@@ -86,7 +86,7 @@ async function runAllCopilotTests() {
   if (!t6) allPassed = false;
 
   // Test 7: Interview showcase (Distributed Systems focus)
-  const t7 = await testCopilotQuery("Which project demonstrates distributed systems?", "CAREER_DIRECT_RESPONSE");
+  const t7 = await testCopilotQuery("Which project should I showcase for distributed systems interviews?", "CAREER_DIRECT_RESPONSE");
   if (!t7) allPassed = false;
 
   // Test 8: Project recommendations (Distributed Systems focus)

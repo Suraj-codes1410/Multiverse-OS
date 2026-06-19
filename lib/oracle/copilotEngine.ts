@@ -20,7 +20,7 @@ export class CareerIntentClassifier {
     const queryLower = query.toLowerCase().trim();
 
     const hasResume = /\b(resume|cv|portfolio first|resume first|first on my resume|put first)\b/i.test(queryLower);
-    const hasInterview = /\b(interview|interviews|showcase|show case|demonstrate|demonstrates|demonstrating|show during|present to)\b/i.test(queryLower);
+    const hasInterview = /\b(interview|interviews|showcase|show case|show during|present to)\b/i.test(queryLower);
     const hasInternship = /\b(internship|intern|ready for a|ready for an|competitive for)\b/i.test(queryLower);
     const hasSkillGap = /\b(missing|gap|gaps|lack|lacking|skills i need|still need to learn|skills am i missing)\b/i.test(queryLower);
     const hasProjectRec = /\b(build next|should i build|project suggestion|project ideas|strengthen my.*portfolio|project to build|project would help me|what project|project recommendation|project recommendations)\b/i.test(queryLower);

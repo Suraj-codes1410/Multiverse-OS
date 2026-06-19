@@ -99,7 +99,7 @@ export class QueryIntentClassifier {
     let confidence = 0.5;
 
     // A. Portfolio Statistics
-    const statRegex = /\b(how many|number of|total count|count of|most popular|most common|most used)\b/i;
+    const statRegex = /\b(how many|number of|total count|count of|most popular|most common|most used|list|show)\b/i;
     const statKeywords = ['repos', 'repository', 'repositories', 'project', 'projects', 'skill', 'skills', 'achievement', 'achievements', 'technology', 'technologies', 'languages'];
     const isStatQuery = statRegex.test(queryLower) && statKeywords.some(kw => queryLower.includes(kw));
 
@@ -214,10 +214,10 @@ ${lines.join('\n')}`;
         }
       }
 
-      // 3. Count of repositories
-      if (queryLower.includes('how many') || queryLower.includes('number of') || queryLower.includes('count')) {
+      // 3. Count / list of repositories
+      if (queryLower.includes('how many') || queryLower.includes('number of') || queryLower.includes('count') || (queryLower.includes('list') && (queryLower.includes('repo') || queryLower.includes('repository') || queryLower.includes('repositories')))) {
         return `Suraj has **${repositories.length}** repositories in his portfolio.
-
+ 
 Here is a list of his repositories:
 ${repositories.map(r => `- **[${r.name}](${r.htmlUrl})** - ${r.description || 'No description'}`).join('\n')}`;
       }
@@ -453,7 +453,7 @@ Based on portfolio telemetry, here are Suraj's advanced technical skills categor
 All skills are backed by direct implementation evidence across active repositories.`;
       }
 
-      if (queryLower.includes('hired for a backend role') || queryLower.includes('hired for backend') || (queryLower.includes('why should') && queryLower.includes('backend')) || queryLower.includes('hired for a backend position')) {
+      if (queryLower.includes('hired for a backend role') || queryLower.includes('hired for backend') || (queryLower.includes('why should') && queryLower.includes('backend')) || queryLower.includes('hired for a backend position') || (queryLower.includes('why should') && queryLower.includes('hired'))) {
         console.log("RECRUITER_DIRECT_RESPONSE");
         console.log("No OpenRouter call required.");
         return `### Hiring Rationale: Backend Engineering Role
