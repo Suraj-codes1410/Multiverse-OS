@@ -1,6 +1,8 @@
 import { POST } from '@/app/api/oracle/route';
+import { GET } from '@/app/api/oracle/analytics/route';
 import { queryCacheService } from '@/lib/oracle/queryCache';
 import { conversationalMemoryService } from '@/lib/oracle/memory';
+import { analyticsService } from '@/lib/oracle/analyticsService';
 
 // Ensure OpenRouter API key is mocked for local validation
 if (!process.env.OPENROUTER_API_KEY) {
@@ -167,9 +169,10 @@ async function runRegressionSuite() {
   const results: TestResult[] = [];
   const sessionId = `session-${Date.now()}`;
 
-  // Clear cache and conversational memory
+  // Clear cache, conversational memory, and analytics
   (queryCacheService as any).cacheManager.clear();
   conversationalMemoryService.clear(sessionId);
+  analyticsService.clear();
 
   // ==========================================
   // Category 1: General Knowledge
@@ -373,6 +376,47 @@ async function runRegressionSuite() {
   } else {
     delete process.env.PRIMARY_MODEL;
   }
+
+  // ==========================================
+  // Category 11: Analytics & Observability Validation
+  // ==========================================
+  const resAnalytics = await runTest('Analytics Validation', 'Retrieve analytics dashboard data', async (data, logs, dur, status) => {
+    const response = await GET();
+    if (response.status !== 200) throw new Error(`HTTP status is ${response.status}`);
+    const metrics = await response.json();
+    
+    const requiredKeys = ['queries', 'cache', 'routing', 'performance', 'providers', 'recruiter', 'memory'];
+    for (const key of requiredKeys) {
+      if (!(key in metrics)) {
+        throw new Error(`Missing expected analytics key: ${key}`);
+      }
+    }
+
+    if (metrics.queries.totalQueries === 0) {
+      throw new Error('Query count did not increase (expected > 0)');
+    }
+    if (metrics.cache.cacheHits === 0) {
+      throw new Error('Cache hit count did not increase (expected > 0)');
+    }
+    if (metrics.routing.smartRoutes === 0) {
+      throw new Error('Smart route count did not increase (expected > 0)');
+    }
+    if (metrics.providers.openRouterCalls === 0) {
+      throw new Error('OpenRouter API call count did not increase (expected > 0)');
+    }
+    
+    const fs = eval('require')('fs');
+    const path = eval('require')('path');
+    const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
+    if (!fs.existsSync(analyticsPath)) {
+      throw new Error('Analytics data was not persisted to file');
+    }
+    const persisted = JSON.parse(fs.readFileSync(analyticsPath, 'utf8'));
+    if (persisted.queries.length !== metrics.queries.totalQueries) {
+      throw new Error('Persisted query count does not match in-memory dashboard query count');
+    }
+  }, sessionId);
+  results.push(resAnalytics);
 
   // ==========================================
   // Summary & Performance Metrics

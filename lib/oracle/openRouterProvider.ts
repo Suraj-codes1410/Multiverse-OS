@@ -1,5 +1,6 @@
 import { IAIProvider, AIProviderRequest, AIProviderResponse } from './aiProvider';
 import { DEFAULT_MODEL_CONFIG } from './config';
+import { analyticsService } from './analyticsService';
 
 export class OpenRouterProvider implements IAIProvider {
   private apiKey: string;
@@ -29,6 +30,7 @@ export class OpenRouterProvider implements IAIProvider {
 
     for (let i = 0; i < uniqueModels.length; i++) {
       const currentModel = uniqueModels[i];
+      const isFailover = i > 0;
       console.log(`MODEL_ATTEMPT: ${currentModel}`);
 
       try {
@@ -37,10 +39,24 @@ export class OpenRouterProvider implements IAIProvider {
         if (process.env.NODE_ENV !== 'production') {
           console.log(`Model used: ${currentModel}`);
         }
+        analyticsService.recordProviderCall({
+          model: currentModel,
+          success: true,
+          isFailover
+        });
         return response;
       } catch (error: any) {
         console.log(`MODEL_FAIL: ${currentModel} | Error: ${error.message || error}`);
         lastError = error;
+
+        const errorCode = error.status || (error.message?.includes('429') ? 429 : undefined);
+        analyticsService.recordProviderCall({
+          model: currentModel,
+          success: false,
+          errorCode,
+          errorMessage: error.message || String(error),
+          isFailover
+        });
 
         // Check if we should retry/failover
         if (i < uniqueModels.length - 1) {

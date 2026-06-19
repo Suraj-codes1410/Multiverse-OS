@@ -6,10 +6,13 @@ import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
 import { RepositoryRefreshManager } from '@/lib/github/syncService';
 import { RecruiterInsightEngine } from '@/lib/github/recruiterInsightEngine';
 import { queryCacheService } from '@/lib/oracle/queryCache';
-import { SmartRouter } from '@/lib/oracle/smartRouter';
+import { SmartRouter, QueryIntentClassifier } from '@/lib/oracle/smartRouter';
 import { conversationalMemoryService } from '@/lib/oracle/memory';
 import { PortfolioNarrativeEngine } from '@/lib/oracle/narrativeEngine';
 import { PortfolioCopilotEngine } from '@/lib/oracle/copilotEngine';
+import { analyticsService } from '@/lib/oracle/analyticsService';
+import { getRepositories } from '@/lib/github/github';
+import { getProjects } from '@/lib/content/index';
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
@@ -18,11 +21,7 @@ RepositoryRefreshManager.getInstance().start({
   performStartupSync: true
 });
 
-
-
-
 export async function POST(req: Request) {
-
   console.log("========== ORACLE API HIT ==========");
 
   console.log(
@@ -34,7 +33,8 @@ export async function POST(req: Request) {
     "MODEL:",
     process.env.ORACLE_MODEL
   );
-  
+
+  const startTime = Date.now();
 
   try {
     const body = await req.json().catch(() => ({}));
@@ -49,8 +49,9 @@ export async function POST(req: Request) {
     }
 
     // 1.5. Resolve pronouns in query using conversational memory
-    const { resolvedQuery, hit } = conversationalMemoryService.resolve(sessionId, query);
+    const { resolvedQuery, hit: resolvedMemory } = conversationalMemoryService.resolve(sessionId, query);
     const queryToUse = resolvedQuery;
+    const contextReused = conversationalMemoryService.getSession(sessionId).interactions.length > 0;
 
     // 2. Check if API key is configured
     if (!process.env.OPENROUTER_API_KEY) {
@@ -65,6 +66,33 @@ export async function POST(req: Request) {
     const cachedResponse = queryCacheService.get(cacheKey);
     if (cachedResponse) {
       await conversationalMemoryService.store(sessionId, queryToUse, cachedResponse);
+
+      // Determine category and route for cached query
+      const cachedRepos = await getRepositories().catch(() => []);
+      const cachedProjs = await getProjects().catch(() => []);
+      const classification = QueryIntentClassifier.classify(queryToUse, cachedRepos, cachedProjs);
+      
+      const cacheEntry = (queryCacheService as any).cacheManager.get(queryCacheService.normalize(cacheKey));
+      const source = cacheEntry?.source || 'openrouter';
+      
+      const routeName = source === 'narrative-engine' ? 'narrative-engine' 
+                : source === 'copilot-engine' ? 'copilot-engine'
+                : source === 'smart-route' ? 'smart-route'
+                : source === 'recruiter-insight' ? 'recruiter-insight'
+                : 'openrouter';
+
+      analyticsService.recordQuery({
+        query,
+        normalizedQuery: queryCacheService.normalize(queryToUse),
+        latencyMs: Date.now() - startTime,
+        cacheHit: true,
+        route: routeName,
+        category: classification.category,
+        directAnswer: routeName !== 'openrouter',
+        resolvedMemory,
+        contextReused
+      });
+
       return NextResponse.json({
         text: cachedResponse,
         fresh: false,
@@ -88,6 +116,18 @@ export async function POST(req: Request) {
       // Store in query cache (using 'narrative-engine' as the model)
       queryCacheService.set(cacheKey, narrativeResult.directResponse, 'narrative-engine');
       await conversationalMemoryService.store(sessionId, queryToUse, narrativeResult.directResponse);
+
+      analyticsService.recordQuery({
+        query,
+        normalizedQuery: queryCacheService.normalize(queryToUse),
+        latencyMs: Date.now() - startTime,
+        cacheHit: false,
+        route: 'narrative-engine',
+        category: 'Narrative',
+        directAnswer: true,
+        resolvedMemory,
+        contextReused
+      });
 
       return NextResponse.json({
         text: narrativeResult.directResponse,
@@ -113,6 +153,18 @@ export async function POST(req: Request) {
       queryCacheService.set(cacheKey, copilotResult.directResponse, 'copilot-engine');
       await conversationalMemoryService.store(sessionId, queryToUse, copilotResult.directResponse);
 
+      analyticsService.recordQuery({
+        query,
+        normalizedQuery: queryCacheService.normalize(queryToUse),
+        latencyMs: Date.now() - startTime,
+        cacheHit: false,
+        route: 'copilot-engine',
+        category: 'Portfolio Copilot',
+        directAnswer: true,
+        resolvedMemory,
+        contextReused
+      });
+
       return NextResponse.json({
         text: copilotResult.directResponse,
         fresh: true,
@@ -133,9 +185,22 @@ export async function POST(req: Request) {
     // 2.7. Smart Query Routing Layer
     const routeResult = await SmartRouter.route(queryToUse, repositoryName);
     if (routeResult.directAnswerAvailable && routeResult.directResponse) {
-      // Store in query cache (using 'smart-route' as the model)
-      queryCacheService.set(cacheKey, routeResult.directResponse, 'smart-route');
+      // Store in query cache
+      const finalSource = routeResult.category === 'Recruiter Insight' ? 'recruiter-insight' : 'smart-route';
+      queryCacheService.set(cacheKey, routeResult.directResponse, finalSource);
       await conversationalMemoryService.store(sessionId, queryToUse, routeResult.directResponse);
+
+      analyticsService.recordQuery({
+        query,
+        normalizedQuery: queryCacheService.normalize(queryToUse),
+        latencyMs: Date.now() - startTime,
+        cacheHit: false,
+        route: finalSource,
+        category: routeResult.category,
+        directAnswer: true,
+        resolvedMemory,
+        contextReused
+      });
 
       return NextResponse.json({
         text: routeResult.directResponse,
@@ -248,10 +313,10 @@ ${compressedPromptContext}
       userPrompt
     });
 
-console.log("ROUTE_OPENROUTER");
-console.log("OPENROUTER SUCCESS");
-console.log("AI RESPONSE:");
-console.log(response.text);
+    console.log("ROUTE_OPENROUTER");
+    console.log("OPENROUTER SUCCESS");
+    console.log("AI RESPONSE:");
+    console.log(response.text);
 
     // 9. Response validation - ensure output is non-empty
     if (!response.text || !response.text.trim()) {
@@ -267,6 +332,24 @@ console.log(response.text);
 
     // Store in conversational memory
     await conversationalMemoryService.store(sessionId, queryToUse, response.text);
+
+    // Determine category
+    const finalRepos = await getRepositories().catch(() => []);
+    const finalProjs = await getProjects().catch(() => []);
+    const classification = QueryIntentClassifier.classify(queryToUse, finalRepos, finalProjs);
+
+    // Record successful query to analytics
+    analyticsService.recordQuery({
+      query,
+      normalizedQuery: queryCacheService.normalize(queryToUse),
+      latencyMs: Date.now() - startTime,
+      cacheHit: false,
+      route: 'openrouter',
+      category: classification.category,
+      directAnswer: false,
+      resolvedMemory,
+      contextReused
+    });
 
     // 10. Prepare server response and optional debug metrics
     const debugInfo = process.env.NODE_ENV !== 'production' ? {
@@ -291,7 +374,7 @@ console.log(response.text);
       debug: debugInfo
     }, {
       headers: {
-        'Cache-Control': 'no-store, max-age=0, must-revalidate' // Prevent caching client-side
+        'Cache-Control': 'no-store, max-age=0, must-revalidate'
       }
     });
   } catch (error: unknown) {
