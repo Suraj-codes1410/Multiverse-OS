@@ -9,6 +9,7 @@ import { queryCacheService } from '@/lib/oracle/queryCache';
 import { SmartRouter } from '@/lib/oracle/smartRouter';
 import { conversationalMemoryService } from '@/lib/oracle/memory';
 import { PortfolioNarrativeEngine } from '@/lib/oracle/narrativeEngine';
+import { PortfolioCopilotEngine } from '@/lib/oracle/copilotEngine';
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
@@ -97,6 +98,30 @@ export async function POST(req: Request) {
         debug: {
           narrativeEngine: true,
           mode: narrativeResult.mode
+        }
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate'
+        }
+      });
+    }
+
+    // 2.6.5. Portfolio Copilot & Career Advisor Layer
+    const copilotResult = await PortfolioCopilotEngine.evaluate(queryToUse);
+    if (copilotResult.directAnswerAvailable && copilotResult.directResponse) {
+      // Store in query cache (using 'copilot-engine' as the model)
+      queryCacheService.set(cacheKey, copilotResult.directResponse, 'copilot-engine');
+      await conversationalMemoryService.store(sessionId, queryToUse, copilotResult.directResponse);
+
+      return NextResponse.json({
+        text: copilotResult.directResponse,
+        fresh: true,
+        fallback: false,
+        empty: false,
+        repeated: false,
+        debug: {
+          copilotEngine: true,
+          category: copilotResult.category
         }
       }, {
         headers: {
