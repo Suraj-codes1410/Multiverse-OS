@@ -3,7 +3,7 @@ import { analyticsService } from '@/lib/oracle/analyticsService';
 
 export async function GET() {
   try {
-    const metrics = analyticsService.getDashboardMetrics();
+    const metrics = await analyticsService.getDashboardMetrics();
     return NextResponse.json(metrics, {
       headers: {
         'Cache-Control': 'no-store, max-age=0, must-revalidate'

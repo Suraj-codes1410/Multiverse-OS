@@ -1,5 +1,8 @@
 import { POST } from '@/app/api/oracle/route';
 import { GET } from '@/app/api/oracle/analytics/route';
+import { GET as healthGET } from '@/app/api/health/route';
+import { POST as clearPOST } from '@/app/api/oracle/cache/clear/route';
+import AdminOraclePage from '@/app/admin/oracle/page';
 import { queryCacheService } from '@/lib/oracle/queryCache';
 import { conversationalMemoryService } from '@/lib/oracle/memory';
 import { analyticsService } from '@/lib/oracle/analyticsService';
@@ -417,6 +420,53 @@ async function runRegressionSuite() {
     }
   }, sessionId);
   results.push(resAnalytics);
+
+  // ==========================================
+  // Category 12: Admin Dashboard & Health Validation
+  // ==========================================
+  const resAdmin = await runTest('Admin Dashboard & Health Validation', 'Validate Admin dashboard loading, health status, and cache clearing', async (data, logs, dur, status) => {
+    const pageElement = await AdminOraclePage();
+    if (!pageElement) {
+      throw new Error('Admin Dashboard Page returned empty element');
+    }
+    if (!logs.some(l => l.includes('ADMIN_DASHBOARD_LOAD'))) {
+      throw new Error('ADMIN_DASHBOARD_LOAD was not logged on page load');
+    }
+
+    const healthResponse = await healthGET();
+    if (healthResponse.status !== 200) {
+      throw new Error(`Health endpoint returned status ${healthResponse.status}`);
+    }
+    const healthData = await healthResponse.json();
+    if (healthData.status !== 'healthy') {
+      throw new Error(`Expected health status 'healthy', got ${healthData.status}`);
+    }
+    if (!healthData.cache || !healthData.githubSync || !healthData.memory || !healthData.oracle) {
+      throw new Error('One or more systems are unhealthy');
+    }
+    if (!logs.some(l => l.includes('HEALTH_CHECK'))) {
+      throw new Error('HEALTH_CHECK was not logged on health check endpoint execution');
+    }
+
+    const clearResponse = await clearPOST();
+    if (clearResponse.status !== 200) {
+      throw new Error(`Clear cache endpoint returned status ${clearResponse.status}`);
+    }
+    const clearData = await clearResponse.json();
+    if (!clearData.success) {
+      throw new Error('Clear cache call was unsuccessful');
+    }
+    if (!logs.some(l => l.includes('CACHE_CLEAR'))) {
+      throw new Error('CACHE_CLEAR was not logged on clear cache call');
+    }
+
+    const metricsResponse = await GET();
+    const metricsData = await metricsResponse.json();
+    if (metricsData.cache.cacheSize !== 0) {
+      throw new Error(`Cache was not cleared successfully, current cacheSize is ${metricsData.cache.cacheSize}`);
+    }
+  }, sessionId);
+  results.push(resAdmin);
 
   // ==========================================
   // Summary & Performance Metrics

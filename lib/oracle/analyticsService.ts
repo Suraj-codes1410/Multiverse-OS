@@ -119,8 +119,13 @@ export class AnalyticsService {
   }
 
   private logConsoleStats(record: QueryRecord): void {
-    const stats = this.getDashboardMetrics();
+    const total = this.data.queries.length;
+    const cacheHits = this.data.queries.filter(q => q.cacheHit).length;
+    const hitRate = total > 0 ? ((cacheHits / total) * 100).toFixed(1) : "0.0";
     
+    const smartRoutes = this.data.queries.filter(q => q.route === 'smart-route').length;
+    const smartRouteRate = total > 0 ? ((smartRoutes / total) * 100).toFixed(1) : "0.0";
+
     console.log("ANALYTICS_EVENT", JSON.stringify({
       type: 'QUERY',
       query: record.query,
@@ -130,15 +135,15 @@ export class AnalyticsService {
     }));
 
     console.log("QUERY_LATENCY", `Query "${record.query}" took ${record.latencyMs}ms`);
-    console.log("CACHE_HIT_RATE", `Cache Hit Rate: ${stats.cache.hitRate}%`);
-    console.log("SMART_ROUTE_RATE", `Smart Route Direct Response Rate: ${stats.routing.directResponseRate}%`);
+    console.log("CACHE_HIT_RATE", `Cache Hit Rate: ${hitRate}%`);
+    console.log("SMART_ROUTE_RATE", `Smart Route Direct Response Rate: ${smartRouteRate}%`);
 
     if (record.route === 'openrouter') {
       console.log("OPENROUTER_USAGE", `OpenRouter API called for query "${record.query}"`);
     }
   }
 
-  public getDashboardMetrics() {
+  public async getDashboardMetrics() {
     const queries = this.data.queries;
     const providerCalls = this.data.providerCalls;
 
@@ -171,6 +176,24 @@ export class AnalyticsService {
       }
     });
 
+    // Recent queries
+    const recentQueries = [...queries].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10).map(q => ({
+      query: q.query,
+      timestamp: q.timestamp,
+      route: q.route,
+      latencyMs: q.latencyMs,
+      cacheHit: q.cacheHit
+    }));
+
+    // Most common categories
+    const categoryCounts: { [cat: string]: number } = {};
+    queries.forEach(q => {
+      categoryCounts[q.category] = (categoryCounts[q.category] || 0) + 1;
+    });
+    const mostCommonCategories = Object.entries(categoryCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([category, count]) => ({ category, count }));
+
     // 2. Cache Analytics
     const cacheHits = queries.filter(q => q.cacheHit).length;
     const cacheMisses = totalQueries - cacheHits;
@@ -191,6 +214,27 @@ export class AnalyticsService {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5)
       .map(item => ({ query: item.original, count: item.count }));
+
+    // Live cache statistics
+    let cacheSize = 0;
+    let oldestEntry: any = null;
+    let newestEntry: any = null;
+    try {
+      const { queryCacheService } = await import('./queryCache');
+      const cacheManager = (queryCacheService as any).cacheManager;
+      if (cacheManager) {
+        const cacheMap = (cacheManager as any).cache as Map<string, any>;
+        if (cacheMap) {
+          cacheSize = cacheMap.size;
+          const entries = Array.from(cacheMap.values());
+          if (entries.length > 0) {
+            const sortedEntries = [...entries].sort((a, b) => a.createdAt - b.createdAt);
+            oldestEntry = { query: sortedEntries[0].query, createdAt: sortedEntries[0].createdAt };
+            newestEntry = { query: sortedEntries[sortedEntries.length - 1].query, createdAt: sortedEntries[sortedEntries.length - 1].createdAt };
+          }
+        }
+      }
+    } catch (e) {}
 
     // 3. Smart Router Analytics
     let smartRoutes = 0;
@@ -255,6 +299,12 @@ export class AnalyticsService {
     const contextReuseRate = totalQueries > 0
       ? parseFloat(((followUpResolutions / totalQueries) * 100).toFixed(1))
       : 0.0;
+    
+    const recentMemoryEvents = queries.slice(-5).map(q => ({
+      query: q.query,
+      resolvedMemory: q.resolvedMemory,
+      timestamp: q.timestamp
+    }));
 
     // 7. Recruiter Analytics
     let recruiterQueries = 0;
@@ -291,19 +341,62 @@ export class AnalyticsService {
       }
     });
 
+    // 8. Oracle Overview Stats (Knowledge Graph & GitHub Sync metadata)
+    let kgNodesCount = 0;
+    let kgRelationsCount = 0;
+    try {
+      const { buildKnowledgeGraph } = await import('@/lib/knowledge/builder');
+      const graph = await buildKnowledgeGraph();
+      kgNodesCount = graph.getNodes().length;
+      kgRelationsCount = graph.getRelationships().length;
+    } catch (e) {}
+
+    let lastSyncTime = '';
+    let reposIndexed = 0;
+    try {
+      const fs = eval('require')('fs');
+      const path = eval('require')('path');
+      const cachePath = path.join(process.cwd(), 'data/github-sync-cache.json');
+      if (fs.existsSync(cachePath)) {
+        const content = fs.readFileSync(cachePath, 'utf8');
+        const cache = JSON.parse(content);
+        lastSyncTime = cache.lastUpdated || '';
+        reposIndexed = Array.isArray(cache.repositories) ? cache.repositories.length : 0;
+      }
+    } catch (e) {}
+
+    let projectsIndexed = 0;
+    try {
+      const { getProjects } = await import('@/lib/content/index');
+      const projects = await getProjects();
+      projectsIndexed = projects.length;
+    } catch (e) {}
+
     return {
+      overview: {
+        repositoriesIndexed: reposIndexed,
+        projectsIndexed,
+        kgNodesCount,
+        kgRelationsCount,
+        lastSync: lastSyncTime
+      },
       queries: {
         totalQueries,
         queriesPerHour,
         queriesPerDay,
         uniqueQueryCount,
-        repeatedQueryCount
+        repeatedQueryCount,
+        recentQueries,
+        mostCommonCategories
       },
       cache: {
         cacheHits,
         cacheMisses,
         hitRate: cacheHitRate,
-        mostCachedQueries
+        mostCachedQueries,
+        cacheSize,
+        oldestEntry,
+        newestEntry
       },
       routing: {
         smartRoutes,
@@ -332,7 +425,8 @@ export class AnalyticsService {
       memory: {
         memoryResolutions,
         followUpResolutions,
-        contextReuseRate
+        contextReuseRate,
+        recentMemoryEvents
       },
       recruiter: {
         recruiterQueries,

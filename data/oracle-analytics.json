@@ -3,126 +3,42 @@
     {
       "query": "What is Java?",
       "normalizedQuery": "what is java",
-      "latencyMs": 1495,
+      "latencyMs": 1466,
       "cacheHit": false,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": false,
-      "timestamp": 1781888279247
+      "timestamp": 1781888616752
     },
     {
       "query": "What is Kafka?",
       "normalizedQuery": "what is kafka",
-      "latencyMs": 185,
+      "latencyMs": 199,
       "cacheHit": false,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888279437
+      "timestamp": 1781888616954
     },
     {
       "query": "What is FastAPI?",
       "normalizedQuery": "what is fastapi",
-      "latencyMs": 184,
+      "latencyMs": 190,
       "cacheHit": false,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888279624
+      "timestamp": 1781888617146
     },
     {
       "query": "What is Next.js?",
       "normalizedQuery": "what is nextjs",
-      "latencyMs": 187,
-      "cacheHit": false,
-      "route": "openrouter",
-      "category": "General Knowledge",
-      "directAnswer": false,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888279814
-    },
-    {
-      "query": "Tell me about SAHAI.",
-      "normalizedQuery": "tell me about sahai",
-      "latencyMs": 93,
-      "cacheHit": false,
-      "route": "smart-route",
-      "category": "Repository Summary",
-      "directAnswer": true,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888279910
-    },
-    {
-      "query": "Tell me about ORBITAIR.",
-      "normalizedQuery": "tell me about orbitair",
-      "latencyMs": 86,
-      "cacheHit": false,
-      "route": "smart-route",
-      "category": "Repository Summary",
-      "directAnswer": true,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888279999
-    },
-    {
-      "query": "List Suraj's repositories.",
-      "normalizedQuery": "list suraj's repositories",
-      "latencyMs": 95,
-      "cacheHit": false,
-      "route": "smart-route",
-      "category": "Portfolio Statistics",
-      "directAnswer": true,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888280096
-    },
-    {
-      "query": "Which is Suraj's newest repository?",
-      "normalizedQuery": "which is suraj's newest repository",
-      "latencyMs": 99,
-      "cacheHit": false,
-      "route": "smart-route",
-      "category": "Repository Metadata",
-      "directAnswer": true,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888280198
-    },
-    {
-      "query": "Summarize oracle-sync-test.",
-      "normalizedQuery": "summarize oraclesynctest",
-      "latencyMs": 86,
-      "cacheHit": false,
-      "route": "smart-route",
-      "category": "Repository Summary",
-      "directAnswer": true,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888280287
-    },
-    {
-      "query": "What technologies are used in oracle-sync-test?",
-      "normalizedQuery": "what technologies are used in oraclesynctest",
-      "latencyMs": 87,
-      "cacheHit": false,
-      "route": "smart-route",
-      "category": "Repository Metadata",
-      "directAnswer": true,
-      "resolvedMemory": false,
-      "contextReused": true,
-      "timestamp": 1781888280377
-    },
-    {
-      "query": "What is SPECIAL_TOKEN_1410?",
-      "normalizedQuery": "what is specialtoken1410",
       "latencyMs": 179,
       "cacheHit": false,
       "route": "openrouter",
@@ -130,7 +46,91 @@
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888280559
+      "timestamp": 1781888617328
+    },
+    {
+      "query": "Tell me about SAHAI.",
+      "normalizedQuery": "tell me about sahai",
+      "latencyMs": 91,
+      "cacheHit": false,
+      "route": "smart-route",
+      "category": "Repository Summary",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888617421
+    },
+    {
+      "query": "Tell me about ORBITAIR.",
+      "normalizedQuery": "tell me about orbitair",
+      "latencyMs": 89,
+      "cacheHit": false,
+      "route": "smart-route",
+      "category": "Repository Summary",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888617512
+    },
+    {
+      "query": "List Suraj's repositories.",
+      "normalizedQuery": "list suraj's repositories",
+      "latencyMs": 90,
+      "cacheHit": false,
+      "route": "smart-route",
+      "category": "Portfolio Statistics",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888617603
+    },
+    {
+      "query": "Which is Suraj's newest repository?",
+      "normalizedQuery": "which is suraj's newest repository",
+      "latencyMs": 104,
+      "cacheHit": false,
+      "route": "smart-route",
+      "category": "Repository Metadata",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888617709
+    },
+    {
+      "query": "Summarize oracle-sync-test.",
+      "normalizedQuery": "summarize oraclesynctest",
+      "latencyMs": 89,
+      "cacheHit": false,
+      "route": "smart-route",
+      "category": "Repository Summary",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888617800
+    },
+    {
+      "query": "What technologies are used in oracle-sync-test?",
+      "normalizedQuery": "what technologies are used in oraclesynctest",
+      "latencyMs": 88,
+      "cacheHit": false,
+      "route": "smart-route",
+      "category": "Repository Metadata",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888617890
+    },
+    {
+      "query": "What is SPECIAL_TOKEN_1410?",
+      "normalizedQuery": "what is specialtoken1410",
+      "latencyMs": 187,
+      "cacheHit": false,
+      "route": "openrouter",
+      "category": "General Knowledge",
+      "directAnswer": false,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888618079
     },
     {
       "query": "Which repositories use FastAPI?",
@@ -142,19 +142,19 @@
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888280649
+      "timestamp": 1781888618168
     },
     {
       "query": "Which repositories use Docker?",
       "normalizedQuery": "which repositories use docker",
-      "latencyMs": 87,
+      "latencyMs": 86,
       "cacheHit": false,
       "route": "smart-route",
       "category": "Technology Lookup",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888280738
+      "timestamp": 1781888618256
     },
     {
       "query": "How many repositories does Suraj have?",
@@ -166,91 +166,91 @@
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888280830
+      "timestamp": 1781888618347
     },
     {
       "query": "Which project demonstrates backend engineering?",
       "normalizedQuery": "which project demonstrates backend engineering",
-      "latencyMs": 140,
+      "latencyMs": 136,
       "cacheHit": false,
       "route": "recruiter-insight",
       "category": "Recruiter Insight",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888280973
+      "timestamp": 1781888618484
     },
     {
       "query": "Why should Suraj be hired?",
       "normalizedQuery": "why should suraj be hired",
-      "latencyMs": 86,
+      "latencyMs": 90,
       "cacheHit": false,
       "route": "recruiter-insight",
       "category": "Recruiter Insight",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281061
+      "timestamp": 1781888618576
     },
     {
       "query": "Which project best demonstrates AI engineering?",
       "normalizedQuery": "which project best demonstrates ai engineering",
-      "latencyMs": 127,
+      "latencyMs": 134,
       "cacheHit": false,
       "route": "recruiter-insight",
       "category": "Recruiter Insight",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281190
+      "timestamp": 1781888618712
     },
     {
       "query": "Tell me Suraj's journey.",
       "normalizedQuery": "tell me suraj's journey",
-      "latencyMs": 89,
+      "latencyMs": 96,
       "cacheHit": false,
       "route": "narrative-engine",
       "category": "Narrative",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281281
+      "timestamp": 1781888618809
     },
     {
       "query": "How has Suraj evolved as an engineer?",
       "normalizedQuery": "how has suraj evolved as an engineer",
-      "latencyMs": 87,
+      "latencyMs": 91,
       "cacheHit": false,
       "route": "narrative-engine",
       "category": "Narrative",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281370
+      "timestamp": 1781888618901
     },
     {
       "query": "Which project should Suraj put first on his resume?",
       "normalizedQuery": "which project should suraj put first on his resume",
-      "latencyMs": 46,
+      "latencyMs": 42,
       "cacheHit": false,
       "route": "copilot-engine",
       "category": "Portfolio Copilot",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281418
+      "timestamp": 1781888618945
     },
     {
       "query": "What skills are missing for backend roles?",
       "normalizedQuery": "what skills are missing for backend roles",
-      "latencyMs": 43,
+      "latencyMs": 47,
       "cacheHit": false,
       "route": "copilot-engine",
       "category": "Portfolio Copilot",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281464
+      "timestamp": 1781888618993
     },
     {
       "query": "What should Suraj build next?",
@@ -262,79 +262,91 @@
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281512
+      "timestamp": 1781888619041
     },
     {
       "query": "Tell me about SAHAI.",
       "normalizedQuery": "tell me about sahai",
-      "latencyMs": 85,
+      "latencyMs": 89,
       "cacheHit": true,
       "route": "smart-route",
       "category": "Repository Summary",
       "directAnswer": true,
       "resolvedMemory": false,
       "contextReused": false,
-      "timestamp": 1781888281599
+      "timestamp": 1781888619132
     },
     {
       "query": "What technologies does it use?",
       "normalizedQuery": "what technologies does sahai use",
-      "latencyMs": 87,
+      "latencyMs": 90,
       "cacheHit": false,
       "route": "smart-route",
       "category": "Repository Metadata",
       "directAnswer": true,
       "resolvedMemory": true,
       "contextReused": true,
-      "timestamp": 1781888281689
+      "timestamp": 1781888619224
     },
     {
       "query": "What is Java?",
       "normalizedQuery": "what is java",
-      "latencyMs": 171,
+      "latencyMs": 179,
       "cacheHit": false,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281862
+      "timestamp": 1781888619404
     },
     {
       "query": "What is Java?",
       "normalizedQuery": "what is java",
-      "latencyMs": 86,
+      "latencyMs": 89,
       "cacheHit": true,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888281950
+      "timestamp": 1781888619495
     },
     {
       "query": "Write a professional biography story about Suraj.",
       "normalizedQuery": "write a professional biography story about suraj",
-      "latencyMs": 204,
+      "latencyMs": 179,
       "cacheHit": false,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888282157
+      "timestamp": 1781888619676
     },
     {
       "query": "Retrieve analytics dashboard data",
       "normalizedQuery": "retrieve analytics dashboard data",
-      "latencyMs": 180,
+      "latencyMs": 183,
       "cacheHit": false,
       "route": "openrouter",
       "category": "General Knowledge",
       "directAnswer": false,
       "resolvedMemory": false,
       "contextReused": true,
-      "timestamp": 1781888282340
+      "timestamp": 1781888619861
+    },
+    {
+      "query": "Validate Admin dashboard loading, health status, and cache clearing",
+      "normalizedQuery": "validate admin dashboard loading health status and cache clearing",
+      "latencyMs": 189,
+      "cacheHit": false,
+      "route": "openrouter",
+      "category": "General Knowledge",
+      "directAnswer": false,
+      "resolvedMemory": false,
+      "contextReused": true,
+      "timestamp": 1781888620055
     }
   ],
   "providerCalls": [
@@ -342,37 +354,37 @@
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888279151
+      "timestamp": 1781888616654
     },
     {
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888279340
+      "timestamp": 1781888616852
     },
     {
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888279534
+      "timestamp": 1781888617060
     },
     {
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888279720
+      "timestamp": 1781888617241
     },
     {
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888280470
+      "timestamp": 1781888617991
     },
     {
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888281778
+      "timestamp": 1781888619317
     },
     {
       "model": "invalid-primary-model",
@@ -380,19 +392,25 @@
       "errorCode": 404,
       "errorMessage": "OpenRouter API returned error status 404: {\"error\":{\"message\":\"Model not found or rate-limited upstream\",\"status\":404}}",
       "isFailover": false,
-      "timestamp": 1781888282045
+      "timestamp": 1781888619588
     },
     {
       "model": "meta-llama/llama-3.3-70b-instruct:free",
       "success": true,
       "isFailover": true,
-      "timestamp": 1781888282047
+      "timestamp": 1781888619590
     },
     {
       "model": "google/gemini-2.5-flash",
       "success": true,
       "isFailover": false,
-      "timestamp": 1781888282254
+      "timestamp": 1781888619766
+    },
+    {
+      "model": "google/gemini-2.5-flash",
+      "success": true,
+      "isFailover": false,
+      "timestamp": 1781888619957
     }
   ]
 }
