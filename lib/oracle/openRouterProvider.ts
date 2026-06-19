@@ -23,9 +23,10 @@ export class OpenRouterProvider implements IAIProvider {
       console.warn(`Primary model ${config.modelName} failed. Retrying with stable fallback model...`, primaryError);
       
       const fallbackModels = [
-        'meta-llama/llama-3.1-8b-instruct:free',
-        'qwen/qwen-2.5-7b-instruct:free',
-        'google/gemma-2-9b-it:free'
+        'meta-llama/llama-3.3-70b-instruct:free',
+        'meta-llama/llama-3.2-3b-instruct:free',
+        'deepseek/deepseek-r1:free',
+        'meta-llama/llama-3-8b-instruct:free'
       ];
       
       for (const fallbackModel of fallbackModels) {

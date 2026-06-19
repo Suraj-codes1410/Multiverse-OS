@@ -6,6 +6,7 @@ import { generateRepositoryIntelligence } from './intelligence';
 import { classifyRepository } from './classification';
 import { buildKnowledgeGraph } from '../knowledge/builder';
 import { ContextService } from '../oracle/service';
+import { ReadmeFetcher } from './readmeFetcher';
 
 export interface SyncDiagnostics {
   status: 'Idle' | 'Syncing' | 'Completed' | 'Failed';
@@ -149,12 +150,12 @@ export class GitHubSyncService {
           if (readmeResponse.ok) {
             readmeContent = await readmeResponse.text();
           } else {
-            console.warn(`SyncService: README status ${readmeResponse.status} for ${repo.name}. Using placeholder.`);
-            readmeContent = `# ${repo.name}\n\nSynced dynamically from GitHub. No README.md content was retrieved.`;
+            console.warn(`SyncService: README status ${readmeResponse.status} for ${repo.name}. Using ReadmeFetcher fallback.`);
+            readmeContent = await ReadmeFetcher.fetch(repo.name);
           }
         } catch (e) {
           console.error(`SyncService: Exception fetching README for ${repo.name}:`, e);
-          readmeContent = `# ${repo.name}\n\nSynced dynamically from GitHub. Failed to fetch README due to error.`;
+          readmeContent = await ReadmeFetcher.fetch(repo.name);
         }
 
         updatedReadmeCache[repo.name.toLowerCase()] = readmeContent;

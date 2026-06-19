@@ -67,7 +67,7 @@ export class RepositoryAnalyzer {
     if (repo.language) languagesSet.add(repo.language);
     
     // Add languages based on keywords or project details
-    const textContext = `${repo.name} ${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
+    const textContext = `${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
     if (textContext.includes('python') || repo.language?.toLowerCase() === 'python') languagesSet.add('Python');
     if (textContext.includes('java ') || textContext.includes('spring') || repo.language?.toLowerCase() === 'java') languagesSet.add('Java');
     if (textContext.includes('typescript') || textContext.includes('ts ') || repo.language?.toLowerCase() === 'typescript') languagesSet.add('TypeScript');

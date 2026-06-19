@@ -1,144 +1,110 @@
 export interface ExtractedReadmeData {
   readmeContent: string;
-  technologies: string[];
+  technologies: string[]; // Flattened list of all detected technologies for legacy compat
+  languages: string[];
+  frameworks: string[];
+  databases: string[];
   features: string[];
   architectureDescriptions: string[];
-  usageInstructions: string[];
 }
 
 export class ReadmeParser {
+  private static LANGUAGES = [
+    'Go', 'Rust', 'TypeScript', 'JavaScript', 'Python', 'Java', 'HTML', 'CSS', 'C++', 'C', 'Shell', 'SQL'
+  ];
+
+  private static FRAMEWORKS = [
+    'Spring Boot', 'FastAPI', 'Django', 'React', 'Next.js', 'Vite', 'TailwindCSS', 
+    'Hibernate', 'Spring Security', 'Express', 'NestJS', 'Angular', 'Vue', 'Leaflet', 
+    'WebSockets', 'gRPC'
+  ];
+
+  private static DATABASES = [
+    'Pinecone', 'TimescaleDB', 'Redis', 'MySQL', 'PostgreSQL', 'MongoDB', 'Elasticsearch'
+  ];
+
   static parse(readme: string): ExtractedReadmeData {
-    const lines = readme.split('\n');
-    
-    const features: string[] = [];
-    const architectureDescriptions: string[] = [];
-    const usageInstructions: string[] = [];
-    const technologies: string[] = [];
-
-    let currentSection: 'features' | 'architecture' | 'usage' | 'tech' | null = null;
-    let sectionLines: string[] = [];
-
-    const flushSection = () => {
-      if (!currentSection) return;
-      
-      const content = sectionLines.join('\n').trim();
-      if (content) {
-        if (currentSection === 'features') {
-          features.push(content);
-        } else if (currentSection === 'architecture') {
-          architectureDescriptions.push(content);
-        } else if (currentSection === 'usage') {
-          usageInstructions.push(content);
-        } else if (currentSection === 'tech') {
-          technologies.push(content);
-        }
-      }
-      sectionLines = [];
-      currentSection = null;
-    };
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      
-      if (trimmed.startsWith('#')) {
-        flushSection();
-        const headingText = trimmed.replace(/^#+\s+/, '').toLowerCase();
-        
-        if (headingText.includes('feature')) {
-          currentSection = 'features';
-        } else if (headingText.includes('architecture') || headingText.includes('component') || headingText.includes('design')) {
-          currentSection = 'architecture';
-        } else if (
-          headingText.includes('get started') || 
-          headingText.includes('quick start') || 
-          headingText.includes('run') || 
-          headingText.includes('install') || 
-          headingText.includes('usage') || 
-          headingText.includes('prerequisite')
-        ) {
-          currentSection = 'usage';
-        } else if (headingText.includes('tech') || headingText.includes('stack') || headingText.includes('tool') || headingText.includes('language')) {
-          currentSection = 'tech';
-        } else {
-          currentSection = null;
-        }
-      } else {
-        if (currentSection) {
-          sectionLines.push(line);
-        }
-      }
+    // 1. If README is unavailable, return empty lists
+    if (readme === 'No README content available.' || !readme.trim()) {
+      return {
+        readmeContent: readme,
+        technologies: [],
+        languages: [],
+        frameworks: [],
+        databases: [],
+        features: [],
+        architectureDescriptions: []
+      };
     }
-    flushSection();
 
-    const extractListItems = (contentBlocks: string[]): string[] => {
-      const items: string[] = [];
-      contentBlocks.forEach(block => {
-        const lines = block.split('\n');
-        lines.forEach(line => {
-          const match = line.trim().match(/^[-*+]\s+(.*)$/) || line.trim().match(/^\d+\.\s+(.*)$/);
-          if (match) {
-            const cleaned = match[1].replace(/\*\*/g, '').replace(/`/g, '').trim();
-            if (cleaned) items.push(cleaned);
-          } else {
-            const cleaned = line.trim().replace(/\*\*/g, '').replace(/`/g, '').trim();
-            if (cleaned && cleaned.length > 5 && cleaned.length < 150 && !cleaned.startsWith('#') && !cleaned.startsWith('|')) {
-              items.push(cleaned);
-            }
-          }
-        });
-      });
-      return items;
-    };
+    const languages: string[] = [];
+    const frameworks: string[] = [];
+    const databases: string[] = [];
 
-    const parsedFeatures = extractListItems(features);
-    const parsedUsage = usageInstructions.length > 0 ? usageInstructions : [];
-    const parsedArchitecture = architectureDescriptions.length > 0 ? architectureDescriptions : [];
-
-    const techItemsSet = new Set<string>();
-    const knownTechs = [
-      'Spring Boot', 'Kafka', 'gRPC', 'Docker', 'FastAPI', 'Django', 'React', 'WebSockets', 'MySQL', 
-      'Pinecone', 'TimescaleDB', 'Leaflet', 'Hibernate', 'Spring Security', 'Redis', 'Go', 'Rust', 
-      'TypeScript', 'RabbitMQ', 'Next.js', 'Vite', 'PostgreSQL', 'MongoDB', 'Python', 'Java', 'TailwindCSS',
-      'HTML', 'CSS', 'JavaScript', 'PyTorch', 'Elasticsearch', 'Kubernetes'
-    ];
-
-    knownTechs.forEach(tech => {
-      const regex = new RegExp(`\\b${tech.replace('.', '\\.')}\\b`, 'i');
+    // Search text for matches - never infer from repo name!
+    this.LANGUAGES.forEach(lang => {
+      const regex = new RegExp(`\\b${lang.replace('+', '\\+')}\\b`, 'i');
       if (regex.test(readme)) {
-        techItemsSet.add(tech);
+        languages.push(lang);
       }
     });
 
-    if (technologies.length > 0) {
-      technologies.forEach(techBlock => {
-        const lines = techBlock.split('\n');
-        lines.forEach(line => {
-          if (line.includes('|')) {
-            const parts = line.split('|').map(p => p.trim());
-            parts.forEach(part => {
-              knownTechs.forEach(tech => {
-                if (part.toLowerCase() === tech.toLowerCase()) {
-                  techItemsSet.add(tech);
-                }
-              });
-            });
-          } else {
-            knownTechs.forEach(tech => {
-              if (line.toLowerCase().includes(tech.toLowerCase())) {
-                techItemsSet.add(tech);
-              }
-            });
+    this.FRAMEWORKS.forEach(fw => {
+      const regex = new RegExp(`\\b${fw.replace('.', '\\.')}\\b`, 'i');
+      if (regex.test(readme)) {
+        frameworks.push(fw);
+      }
+    });
+
+    this.DATABASES.forEach(db => {
+      const regex = new RegExp(`\\b${db}\\b`, 'i');
+      if (regex.test(readme)) {
+        databases.push(db);
+      }
+    });
+
+    // Flatten for legacy compatibility
+    const technologies = Array.from(new Set([...languages, ...frameworks, ...databases]));
+
+    // 2. Parse features & architecture sections from markdown
+    const features: string[] = [];
+    const architectureDescriptions: string[] = [];
+    const lines = readme.split('\n');
+
+    let currentSection: 'features' | 'architecture' | null = null;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('#')) {
+        const heading = trimmed.replace(/^#+\s+/, '').toLowerCase();
+        if (heading.includes('feature') || heading.includes('capability') || heading.includes('what it does')) {
+          currentSection = 'features';
+        } else if (heading.includes('architecture') || heading.includes('design') || heading.includes('component')) {
+          currentSection = 'architecture';
+        } else {
+          currentSection = null;
+        }
+      } else if (trimmed) {
+        if (currentSection === 'features') {
+          // Parse bullet points
+          const match = trimmed.match(/^[-*+]\s+(.*)$/) || trimmed.match(/^\d+\.\s+(.*)$/);
+          if (match) {
+            features.push(match[1].replace(/\*\*/g, '').replace(/`/g, '').trim());
           }
-        });
-      });
+        } else if (currentSection === 'architecture') {
+          architectureDescriptions.push(trimmed);
+        }
+      }
     }
 
     return {
       readmeContent: readme,
-      technologies: Array.from(techItemsSet),
-      features: parsedFeatures.length > 0 ? parsedFeatures : [],
-      architectureDescriptions: parsedArchitecture,
-      usageInstructions: parsedUsage
+      technologies,
+      languages,
+      frameworks,
+      databases,
+      features,
+      architectureDescriptions
     };
   }
 }

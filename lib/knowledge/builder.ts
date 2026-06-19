@@ -4,6 +4,7 @@ import { KnowledgeGraph } from './graph';
 import { classifyRepository } from '../github/classification';
 import { GitHubRepository } from '../types';
 import { RepositoryContentAnalyzer } from '../github/repositoryContentAnalyzer';
+import { RelationshipDiscoveryService } from './relationshipDiscoveryService';
 
 let cachedGraph: KnowledgeGraph | null = null;
 
@@ -645,6 +646,9 @@ export async function buildKnowledgeGraph(forceRebuild = false): Promise<Knowled
       }
     }
   });
+
+  // Automatically discover and construct the relationship graph
+  RelationshipDiscoveryService.discoverAll(graph);
 
   cachedGraph = graph;
   return graph;

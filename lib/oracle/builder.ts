@@ -7,6 +7,7 @@ import {
   buildKnowledgeGraph 
 } from '../data';
 import { getRepositories } from '../github/github';
+import { getReadmeContent } from '../github/readme';
 import { OracleContext, CandidateProfile, TechnicalSkillContext, ProjectContext, RepositoryContext, AchievementContext, TimelineContext, TechnologyRelationshipContext, RepositoryRelationshipContext } from './types';
 
 export class OracleContextBuilder {
@@ -122,7 +123,14 @@ export class OracleContextBuilder {
 
       const classifications = proj?.githubRepository?.classifications || [];
       const intelligence = proj?.intelligence;
-      const readmeExcerpt = proj?.readme ? proj.readme.slice(0, 1200) : undefined;
+      
+      let readmeExcerpt = proj?.readme ? proj.readme.slice(0, 1200) : undefined;
+      if (!readmeExcerpt) {
+        const rawReadme = await getReadmeContent(repo.name);
+        if (rawReadme && rawReadme !== 'No README content available.') {
+          readmeExcerpt = rawReadme.slice(0, 1200);
+        }
+      }
 
       const simplifiedIntelligence = intelligence ? {
         projectType: intelligence.projectType,

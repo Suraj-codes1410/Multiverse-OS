@@ -12,7 +12,7 @@ export function generateRepositoryIntelligence(
   readme: string,
   project?: Project
 ): RepositoryIntelligence {
-  const contentToSearch = `${repo.name} ${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
+  const contentToSearch = `${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
 
   // 1. Determine Project Type
   let projectType = 'Software Repository';

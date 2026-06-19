@@ -4,6 +4,7 @@ import { OpenRouterProvider } from '@/lib/oracle/openRouterProvider';
 import { OracleContextSelector } from '@/lib/oracle/contextSelector';
 import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
 import { RepositoryRefreshManager } from '@/lib/github/syncService';
+import { RecruiterInsightEngine } from '@/lib/github/recruiterInsightEngine';
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
@@ -64,6 +65,24 @@ export async function POST(req: Request) {
       compressedPromptContext += `\n\n### REPOSITORY TIMESTAMPS\n`;
       selected.repositories.forEach(r => {
         compressedPromptContext += `- Repository: ${r.name} | Created: ${r.createdAt} | Last Updated: ${r.updatedAt}\n`;
+      });
+    }
+
+    // Dynamic Recruiter Insights Integration (Phase 4.7B)
+    const recruiterInsight = await RecruiterInsightEngine.evaluateQuery(query);
+    if (recruiterInsight) {
+      compressedPromptContext += `\n\n### RECRUITER INSIGHT RECOMMENDATIONS (RANKED EVIDENCE-BACKED)
+Matching Dimension: ${recruiterInsight.bestDimensionMatched}
+We have run a deterministic ProjectRankingService across projects. Here are the ranked results:
+`;
+      recruiterInsight.rankings.forEach(rank => {
+        compressedPromptContext += `- Rank ${rank.rank}: **${rank.projectTitle}** (Score: ${rank.score}/100)
+  * Project Reference: ${rank.projectId}
+  * Repository Reference: ${rank.repositoryName} | Link: ${rank.repositoryUrl}
+  * Technologies Used: ${rank.technologies.join(', ')}
+  * Evidence: ${rank.evidence.join(', ')}
+  * Rationale: ${rank.rationale}
+`;
       });
     }
 
