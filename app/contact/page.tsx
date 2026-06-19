@@ -85,17 +85,22 @@ export default function ContactPage() {
 
             {/* Resume Download Box */}
             <Card hoverable={false} className="bg-bg-panel/40 border-dashed border-border-bright/50 p-5 mt-6">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-text-primary mb-1">
-                    Looking for a CV/Resume?
+                  <h3 className="text-sm font-semibold text-text-primary mb-1 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-accent-cyan" /> Technical CV / Resume
                   </h3>
-                  <p className="text-xs text-text-secondary leading-relaxed">
+                  <p className="text-xs text-text-secondary leading-relaxed mb-2">
                     Download the latest version of Suraj Samanta&apos;s technical resume containing detailed histories, architectures, and academic credentials.
                   </p>
+                  <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary">
+                    <span>LAST_UPDATED: June 20, 2026</span>
+                    <span className="text-border-subtle">|</span>
+                    <span>FILE_SIZE: 385 KB</span>
+                  </div>
                 </div>
-                <Button href={portfolio.resume} target="_blank" variant="outline" size="sm" className="whitespace-nowrap flex-shrink-0">
-                  <FileText className="w-3.5 h-3.5 mr-1.5" /> RESUME.PDF
+                <Button href={portfolio.resume} target="_blank" variant="outline" size="sm" className="whitespace-nowrap flex-shrink-0 w-full sm:w-auto">
+                  <FileText className="w-3.5 h-3.5 mr-1.5" /> Download Resume
                 </Button>
               </div>
             </Card>

@@ -145,7 +145,7 @@ interface TestResult {
 async function runTest(
   categoryName: string,
   query: string,
-  assertions: (res: any, logs: string[], durationMs: number, status: number) => void,
+  assertions: (res: any, logs: string[], durationMs: number, status: number) => void | Promise<void>,
   sessionId: string = 'test-session',
   repositoryName?: string
 ): Promise<TestResult> {
@@ -178,7 +178,7 @@ async function runTest(
     data = await res.json();
     const durationMs = Date.now() - startTime;
 
-    assertions(data, capturedLogs, durationMs, status);
+    await assertions(data, capturedLogs, durationMs, status);
     passed = true;
   } catch (err: any) {
     passed = false;
@@ -521,6 +521,27 @@ async function runRegressionSuite() {
     }
   }, sessionId);
   results.push(resAdmin);
+  // ==========================================
+  // Category 13: Resume Intelligence Validation
+  // ==========================================
+  const c13Queries = [
+    "Show Suraj's resume",
+    "Download Suraj's resume",
+    "Where can I find Suraj's resume?",
+    "Resume"
+  ];
+  for (const q of c13Queries) {
+    const res = await runTest('Resume Intelligence', q, (data, logs, dur, status) => {
+      if (status !== 200) throw new Error(`HTTP status ${status}`);
+      if (!logs.some(l => l.includes('SMART_ROUTE') || l.includes('DIRECT_RESPONSE'))) {
+        throw new Error('Resume Intelligence direct response indicator not found in logs');
+      }
+      if (!data.text || !data.text.includes('Suraj_Samanta_Resume.pdf')) {
+        throw new Error('Response did not contain the correct resume URL');
+      }
+    }, sessionId);
+    results.push(res);
+  }
 
   // ==========================================
   // Summary & Performance Metrics

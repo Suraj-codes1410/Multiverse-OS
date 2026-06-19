@@ -19,7 +19,15 @@ export class CareerIntentClassifier {
   public static classify(query: string): CareerCategory {
     const queryLower = query.toLowerCase().trim();
 
-    const hasResume = /\b(resume|cv|portfolio first|resume first|first on my resume|put first)\b/i.test(queryLower);
+    const isShowOrDownloadResume = (
+      queryLower === 'resume' || 
+      queryLower === 'cv' ||
+      (/\b(resume|cv)\b/i.test(queryLower) && 
+       /\b(download|show|where|find|get|view|link|path|url|access)\b/i.test(queryLower) &&
+       !/\b(project|projects|first|optimize|ranking|structure|hired|skills|backend)\b/i.test(queryLower))
+    );
+
+    const hasResume = !isShowOrDownloadResume && /\b(resume|cv|portfolio first|resume first|first on my resume|put first)\b/i.test(queryLower);
     const hasInterview = /\b(interview|interviews|showcase|show case|show during|present to)\b/i.test(queryLower);
     const hasInternship = /\b(internship|intern|ready for a|ready for an|competitive for)\b/i.test(queryLower);
     const hasSkillGap = /\b(missing|gap|gaps|lack|lacking|skills i need|still need to learn|skills am i missing)\b/i.test(queryLower);

@@ -2,6 +2,7 @@ import { GitHubRepository, Project } from '@/lib/types';
 import { getRepositories } from '@/lib/github/github';
 import { getProjects } from '@/lib/content/index';
 import { buildKnowledgeGraph } from '@/lib/knowledge/builder';
+import portfolio from '@/data/portfolio.json';
 
 export type QueryIntentCategory =
   | 'Repository Metadata'
@@ -10,7 +11,8 @@ export type QueryIntentCategory =
   | 'Relationship Queries'
   | 'General Knowledge'
   | 'Recruiter Insight'
-  | 'Repository Summary';
+  | 'Repository Summary'
+  | 'Resume Download';
 
 export interface ClassificationResult {
   category: QueryIntentCategory;
@@ -128,7 +130,19 @@ export class QueryIntentClassifier {
     const recruitKeywords = ['project demonstrates', 'experience with', 'recommend a project', 'best project for', 'evidence of', 'skills in', 'candidate', 'recruiter', 'hire', 'strongest technical skills', 'hired for', 'why should suraj be hired'];
     const isRecruiterQuery = recruitKeywords.some(kw => queryLower.includes(kw)) || (queryLower.includes('project') && queryLower.includes('demonstrates')) || (queryLower.includes('strongest') && queryLower.includes('skills')) || (queryLower.includes('why') && queryLower.includes('hired')) || (queryLower.includes('why') && queryLower.includes('hire'));
 
-    if (isStatQuery) {
+    // G. Resume Download Query
+    const isResumeQuery = (
+      queryLower === 'resume' || 
+      queryLower === 'cv' ||
+      (/\b(resume|cv)\b/i.test(queryLower) && 
+       /\b(download|show|where|find|get|view|link|path|url|access)\b/i.test(queryLower) &&
+       !/\b(project|projects|first|optimize|ranking|structure|hired|skills|backend)\b/i.test(queryLower))
+    );
+
+    if (isResumeQuery) {
+      category = 'Resume Download';
+      confidence = 1.0;
+    } else if (isStatQuery) {
       category = 'Portfolio Statistics';
       confidence = 0.95;
     } else if (isMetaQuery && !isStatQuery) {
@@ -490,6 +504,18 @@ Suraj Samanta is highly qualified for a Backend Engineering position based on th
       }
     }
 
+    if (category === 'Resume Download') {
+      const resumeUrl = portfolio.resume;
+      return `### Suraj Samanta's Resume
+
+You can view or download Suraj Samanta's official technical resume from the following path:
+
+* **[Download Resume (PDF)](${resumeUrl})**
+* **Local Path**: \`${resumeUrl}\`
+
+The resume provides detailed insights into Suraj's backend and systems engineering credentials, including Spring Boot microservices, high-concurrency event-driven streaming with Kafka, FastAPI/TimescaleDB geospatial analysis, and Django/Pinecone AI integrations.`;
+    }
+
     return null;
   }
 }
@@ -510,7 +536,8 @@ export class SmartRouter {
       classification.category === 'Portfolio Statistics' ||
       classification.category === 'Relationship Queries' ||
       classification.category === 'Repository Summary' ||
-      classification.category === 'Recruiter Insight'
+      classification.category === 'Recruiter Insight' ||
+      classification.category === 'Resume Download'
     ) {
       const response = await DirectAnswerService.getDirectResponse(
         query,
