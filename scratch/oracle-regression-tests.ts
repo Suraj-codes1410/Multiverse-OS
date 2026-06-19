@@ -441,7 +441,7 @@ async function runRegressionSuite() {
     if (healthData.status !== 'healthy') {
       throw new Error(`Expected health status 'healthy', got ${healthData.status}`);
     }
-    if (!healthData.cache || !healthData.githubSync || !healthData.memory || !healthData.oracle) {
+    if (!healthData.services.cache || !healthData.services.githubSync || !healthData.services.memory || !healthData.services.oracle || !healthData.services.openrouter || !healthData.services.smartRouter) {
       throw new Error('One or more systems are unhealthy');
     }
     if (!logs.some(l => l.includes('HEALTH_CHECK'))) {

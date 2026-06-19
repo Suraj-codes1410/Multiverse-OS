@@ -35,7 +35,7 @@ export class GitHubSyncService {
   async sync(): Promise<void> {
     diagnostics.status = 'Syncing';
     diagnostics.newRepositoriesFound = 0;
-    console.log('GitHubSyncService: Starting live synchronization...');
+    console.log('SYNC_START');
 
     try {
       const username = githubConfig.username;
@@ -48,11 +48,20 @@ export class GitHubSyncService {
         headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
       }
 
-      // 1. Fetch repositories from GitHub API
-      const response = await fetch(`https://api.github.com/users/${username}/repos`, {
-        headers,
-        cache: 'no-store'
-      });
+      // 1. Fetch repositories from GitHub API with timeout protection
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      
+      let response;
+      try {
+        response = await fetch(`https://api.github.com/users/${username}/repos`, {
+          headers,
+          cache: 'no-store',
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!response.ok) {
         throw new Error(`GitHub API returned status ${response.status}: ${await response.text()}`);
@@ -295,9 +304,10 @@ export class GitHubSyncService {
       diagnostics.status = 'Completed';
       diagnostics.repositoriesSynced = finalizedRepos.length;
       diagnostics.lastRefreshTime = new Date().toISOString();
-      console.log('GitHubSyncService: Synchronization completed successfully.');
+      console.log('SYNC_SUCCESS');
     } catch (e: any) {
-      console.error('GitHubSyncService: Synchronization failed.', e);
+      console.log('SYNC_FAILURE');
+      console.error('Sync failure details:', e);
       diagnostics.status = 'Failed';
       diagnostics.error = e.message || String(e);
       // Failures must never break Oracle, so we just log and catch the error.

@@ -4,6 +4,7 @@ import { analyticsService } from './analyticsService';
 
 export class OpenRouterProvider implements IAIProvider {
   private apiKey: string;
+  private static cooldownUntil = 0;
 
   constructor() {
     // Read only server-side
@@ -11,7 +12,12 @@ export class OpenRouterProvider implements IAIProvider {
   }
 
   async generate(request: AIProviderRequest): Promise<AIProviderResponse> {
+    if (Date.now() < OpenRouterProvider.cooldownUntil) {
+      console.log('OPENROUTER_FAIL');
+      throw new Error('Oracle AI provider temporarily unavailable. Smart routing and portfolio intelligence remain operational. Please retry in a few minutes.');
+    }
     if (!this.apiKey) {
+      console.log('OPENROUTER_FAIL');
       throw new Error('OPENROUTER_API_KEY environment variable is not defined.');
     }
 
@@ -36,6 +42,7 @@ export class OpenRouterProvider implements IAIProvider {
       try {
         const response = await this.executeGenerate(request, currentModel, timeoutMs);
         console.log(`MODEL_SUCCESS: ${currentModel}`);
+        console.log('OPENROUTER_SUCCESS');
         if (process.env.NODE_ENV !== 'production') {
           console.log(`Model used: ${currentModel}`);
         }
@@ -72,6 +79,7 @@ export class OpenRouterProvider implements IAIProvider {
       }
     }
 
+    console.log('OPENROUTER_FAIL');
     throw lastError || new Error('All configured models failed to generate a response.');
   }
 
@@ -160,6 +168,11 @@ export class OpenRouterProvider implements IAIProvider {
 
       if (!response.ok) {
         const errorText = await response.text();
+        if (response.status === 429) {
+          const retryAfterHeader = response.headers.get('Retry-After');
+          const retrySeconds = retryAfterHeader ? parseInt(retryAfterHeader, 10) : 30;
+          OpenRouterProvider.cooldownUntil = Date.now() + (retrySeconds * 1000);
+        }
         const error = new Error(`OpenRouter API returned error status ${response.status}: ${errorText}`);
         (error as any).status = response.status;
         (error as any).body = errorText;

@@ -79,11 +79,16 @@ interface MetricSnapshot {
 
 interface HealthStatus {
   status: string;
-  analytics: boolean;
-  cache: boolean;
-  githubSync: boolean;
-  memory: boolean;
-  oracle: boolean;
+  services: {
+    oracle: boolean;
+    analytics: boolean;
+    cache: boolean;
+    githubSync: boolean;
+    memory: boolean;
+    openrouter: boolean;
+    smartRouter: boolean;
+  };
+  timestamp: string;
 }
 
 export default function OracleAdminDashboardClient() {
@@ -228,23 +233,23 @@ export default function OracleAdminDashboardClient() {
           <div className="health-checks">
             <div className="check-item">
               <span>Oracle Engine</span>
-              <span className={`dot ${health?.oracle ? 'green' : 'red'}`} />
+              <span className={`dot ${health?.services.oracle ? 'green' : 'red'}`} />
             </div>
             <div className="check-item">
               <span>Sync Service</span>
-              <span className={`dot ${health?.githubSync ? 'green' : 'red'}`} />
+              <span className={`dot ${health?.services.githubSync ? 'green' : 'red'}`} />
             </div>
             <div className="check-item">
               <span>Query Cache</span>
-              <span className={`dot ${health?.cache ? 'green' : 'red'}`} />
+              <span className={`dot ${health?.services.cache ? 'green' : 'red'}`} />
             </div>
             <div className="check-item">
               <span>Memory Storage</span>
-              <span className={`dot ${health?.memory ? 'green' : 'red'}`} />
+              <span className={`dot ${health?.services.memory ? 'green' : 'red'}`} />
             </div>
             <div className="check-item">
               <span>Analytics Service</span>
-              <span className={`dot ${health?.analytics ? 'green' : 'red'}`} />
+              <span className={`dot ${health?.services.analytics ? 'green' : 'red'}`} />
             </div>
           </div>
         </div>

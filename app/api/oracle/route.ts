@@ -13,6 +13,10 @@ import { PortfolioCopilotEngine } from '@/lib/oracle/copilotEngine';
 import { analyticsService } from '@/lib/oracle/analyticsService';
 import { getRepositories } from '@/lib/github/github';
 import { getProjects } from '@/lib/content/index';
+import { initializeOracleStartup } from '@/lib/oracle/startup';
+
+// Execute Startup Validation and error recoveries
+initializeOracleStartup();
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
