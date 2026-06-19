@@ -17,31 +17,98 @@ export class OpenRouterProvider implements IAIProvider {
     const config = request.config || DEFAULT_MODEL_CONFIG;
     const timeoutMs = config.timeoutMs || 30000;
 
-    try {
-      return await this.executeGenerate(request, config.modelName, timeoutMs);
-    } catch (primaryError) {
-      console.warn(`Primary model ${config.modelName} failed. Retrying with stable fallback model...`, primaryError);
-      
-      const fallbackModels = [
-        'meta-llama/llama-3.3-70b-instruct:free',
-        'meta-llama/llama-3.2-3b-instruct:free',
-        'deepseek/deepseek-r1:free',
-        'meta-llama/llama-3-8b-instruct:free'
-      ];
-      
-      for (const fallbackModel of fallbackModels) {
-        try {
-          if (fallbackModel !== config.modelName) {
-            return await this.executeGenerate(request, fallbackModel, 30000);
+    const primaryModel = process.env.PRIMARY_MODEL || config.modelName || 'deepseek/deepseek-r1:free';
+    const fallback1 = process.env.FALLBACK_MODEL_1 || 'meta-llama/llama-3.3-70b-instruct:free';
+    const fallback2 = process.env.FALLBACK_MODEL_2 || 'qwen/qwen3-32b:free';
+    const fallback3 = process.env.FALLBACK_MODEL_3 || 'nvidia/nemotron-3-ultra-550b-a55b:free';
+
+    const modelsToTry = [primaryModel, fallback1, fallback2, fallback3];
+    const uniqueModels = Array.from(new Set(modelsToTry.filter(Boolean)));
+
+    let lastError: any = null;
+
+    for (let i = 0; i < uniqueModels.length; i++) {
+      const currentModel = uniqueModels[i];
+      console.log(`MODEL_ATTEMPT: ${currentModel}`);
+
+      try {
+        const response = await this.executeGenerate(request, currentModel, timeoutMs);
+        console.log(`MODEL_SUCCESS: ${currentModel}`);
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`Model used: ${currentModel}`);
+        }
+        return response;
+      } catch (error: any) {
+        console.log(`MODEL_FAIL: ${currentModel} | Error: ${error.message || error}`);
+        lastError = error;
+
+        // Check if we should retry/failover
+        if (i < uniqueModels.length - 1) {
+          if (this.isRetryableError(error)) {
+            const nextModel = uniqueModels[i + 1];
+            console.log(`MODEL_FALLBACK: ${currentModel} -> ${nextModel}`);
+            continue;
+          } else {
+            console.log(`Non-retryable error encountered. Aborting failover chain.`);
+            break;
           }
-        } catch (fallbackError) {
-          console.warn(`Fallback model ${fallbackModel} also failed:`, fallbackError);
         }
       }
-      
-      // If all fallbacks fail, rethrow the original primary error
-      throw primaryError;
     }
+
+    throw lastError || new Error('All configured models failed to generate a response.');
+  }
+
+  private isRetryableError(error: any): boolean {
+    if (!error) return false;
+
+    // 1. Timeout errors
+    if (error.name === 'AbortError' || error.message?.toLowerCase().includes('timeout') || error.message?.toLowerCase().includes('timed out')) {
+      return true;
+    }
+
+    const status = error.status;
+    const body = error.body || '';
+    const message = error.message || '';
+
+    // 2. HTTP Status checks
+    if (status) {
+      if (status === 429 || (status >= 500 && status < 600)) {
+        return true;
+      }
+      if (status === 401 || status === 400) {
+        return false;
+      }
+    }
+
+    // 3. Provider unavailable / no endpoints error checks
+    const lowercaseBody = body.toLowerCase();
+    const lowercaseMessage = message.toLowerCase();
+
+    const providerUnavailablePhrases = [
+      'provider unavailable',
+      'no endpoints found',
+      'temporarily rate-limited',
+      'rate-limited upstream',
+      'upstream error',
+      'provider error',
+      'resource unavailable',
+      'capacity exceeded'
+    ];
+
+    const isProviderUnavailable = providerUnavailablePhrases.some(phrase => 
+      lowercaseBody.includes(phrase) || lowercaseMessage.includes(phrase)
+    );
+
+    if (isProviderUnavailable) {
+      return true;
+    }
+
+    if (status === 404) {
+      return true;
+    }
+
+    return false;
   }
 
   private async executeGenerate(
@@ -77,7 +144,10 @@ export class OpenRouterProvider implements IAIProvider {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`OpenRouter API returned error status ${response.status}: ${errorText}`);
+        const error = new Error(`OpenRouter API returned error status ${response.status}: ${errorText}`);
+        (error as any).status = response.status;
+        (error as any).body = errorText;
+        throw error;
       }
 
       const data = await response.json();
@@ -89,11 +159,12 @@ export class OpenRouterProvider implements IAIProvider {
       const text = data.choices[0].message?.content || '';
       console.log("OPENROUTER SUCCESS");
 
-      const usage = data.usage ? {
-        promptTokens: data.usage.prompt_tokens,
-        completionTokens: data.usage.completion_tokens,
-        totalTokens: data.usage.total_tokens
-      } : undefined;
+      const usage = {
+        promptTokens: data.usage?.prompt_tokens || 0,
+        completionTokens: data.usage?.completion_tokens || 0,
+        totalTokens: data.usage?.total_tokens || 0,
+        modelUsed: modelName
+      };
 
       return {
         text,
@@ -101,7 +172,9 @@ export class OpenRouterProvider implements IAIProvider {
       };
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error(`OpenRouter API request timed out after ${timeoutMs}ms.`);
+        const timeoutError = new Error(`OpenRouter API request timed out after ${timeoutMs}ms.`);
+        (timeoutError as any).name = 'AbortError';
+        throw timeoutError;
       }
       throw error;
     } finally {

@@ -106,6 +106,20 @@ const MOCK_REPOSITORIES: GitHubRepository[] = [
     topics: ['fastapi', 'timescaledb', 'react', 'leaflet', 'machine-learning'],
     updatedAt: '2026-06-15T18:00:00Z',
     createdAt: '2025-03-20T14:00:00Z'
+  },
+  {
+    id: 301,
+    name: 'oracle-sync-test',
+    fullName: 'surajsamanta/oracle-sync-test',
+    description: 'A test repository for verifying GitHub synchronization functionality.',
+    htmlUrl: 'https://github.com/Suraj-codes1410/oracle-sync-test',
+    homepage: null,
+    starsCount: 0,
+    forksCount: 0,
+    language: 'Next.js',
+    topics: ['typescript', 'github-actions'],
+    updatedAt: '2026-06-19T04:57:11Z',
+    createdAt: '2026-06-18T13:34:56Z'
   }
 ];
 
@@ -127,7 +141,26 @@ interface GitHubRepoResponse {
 export async function getRepositories(): Promise<GitHubRepository[]> {
   const cached = loadCachedRepositories();
   if (cached) {
-    return cached;
+    const cachedNames = new Set(cached.map(r => r.name.toLowerCase()));
+    const merged = cached.map(cachedRepo => {
+      const mock = MOCK_REPOSITORIES.find(m => m.name.toLowerCase() === cachedRepo.name.toLowerCase());
+      if (mock) {
+        return {
+          ...cachedRepo,
+          description: cachedRepo.description || mock.description,
+          language: cachedRepo.language || mock.language,
+          topics: cachedRepo.topics && cachedRepo.topics.length > 0 ? cachedRepo.topics : mock.topics
+        };
+      }
+      return cachedRepo;
+    });
+
+    MOCK_REPOSITORIES.forEach(mockRepo => {
+      if (!cachedNames.has(mockRepo.name.toLowerCase())) {
+        merged.push(mockRepo);
+      }
+    });
+    return merged;
   }
 
   if (process.env.ENABLE_GITHUB_SYNC === 'false') {
@@ -170,7 +203,19 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
     }));
 
     const apiRepoNames = new Set(apiRepos.map(r => r.name.toLowerCase()));
-    const mergedRepos = [...apiRepos];
+    const mergedRepos = apiRepos.map(apiRepo => {
+      const mock = MOCK_REPOSITORIES.find(m => m.name.toLowerCase() === apiRepo.name.toLowerCase());
+      if (mock) {
+        return {
+          ...apiRepo,
+          description: apiRepo.description || mock.description,
+          language: apiRepo.language || mock.language,
+          topics: apiRepo.topics && apiRepo.topics.length > 0 ? apiRepo.topics : mock.topics
+        };
+      }
+      return apiRepo;
+    });
+
     MOCK_REPOSITORIES.forEach(mockRepo => {
       if (!apiRepoNames.has(mockRepo.name.toLowerCase())) {
         mergedRepos.push(mockRepo);

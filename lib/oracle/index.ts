@@ -5,3 +5,7 @@ export * from './config';
 export * from './aiProvider';
 export * from './openRouterProvider';
 export * from './contextSelector';
+export * from './smartRouter';
+export * from './memory';
+export * from './narrativeEngine';
+export * from './copilotEngine';

@@ -12,6 +12,7 @@ export interface AIProviderResponse {
     promptTokens: number;
     completionTokens: number;
     totalTokens: number;
+    modelUsed?: string;
   };
 }
 
