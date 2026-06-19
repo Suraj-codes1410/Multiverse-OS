@@ -7,6 +7,8 @@ import { RepositoryRefreshManager } from '@/lib/github/syncService';
 import { RecruiterInsightEngine } from '@/lib/github/recruiterInsightEngine';
 import { queryCacheService } from '@/lib/oracle/queryCache';
 import { SmartRouter } from '@/lib/oracle/smartRouter';
+import { conversationalMemoryService } from '@/lib/oracle/memory';
+import { PortfolioNarrativeEngine } from '@/lib/oracle/narrativeEngine';
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
@@ -35,7 +37,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { query, repositoryName } = body;
+    const { query, repositoryName, sessionId = 'default-session' } = body;
 
     // 1. Response validation - check if query is present and correct
     if (!query || typeof query !== 'string' || !query.trim()) {
@@ -44,6 +46,10 @@ export async function POST(req: Request) {
         message: 'Query parameter is required and must be a non-empty string.' 
       }, { status: 400 });
     }
+
+    // 1.5. Resolve pronouns in query using conversational memory
+    const { resolvedQuery, hit } = conversationalMemoryService.resolve(sessionId, query);
+    const queryToUse = resolvedQuery;
 
     // 2. Check if API key is configured
     if (!process.env.OPENROUTER_API_KEY) {
@@ -54,9 +60,10 @@ export async function POST(req: Request) {
     }
 
     // 2.5. Query Cache Lookup
-    const cacheKey = repositoryName ? `${query.trim()}::repo:${repositoryName}` : query.trim();
+    const cacheKey = repositoryName ? `${queryToUse.trim()}::repo:${repositoryName}` : queryToUse.trim();
     const cachedResponse = queryCacheService.get(cacheKey);
     if (cachedResponse) {
+      await conversationalMemoryService.store(sessionId, queryToUse, cachedResponse);
       return NextResponse.json({
         text: cachedResponse,
         fresh: false,
@@ -74,11 +81,36 @@ export async function POST(req: Request) {
       });
     }
 
+    // 2.6. Portfolio Narrative Engine Layer
+    const narrativeResult = await PortfolioNarrativeEngine.generate(queryToUse);
+    if (narrativeResult.directAnswerAvailable && narrativeResult.directResponse) {
+      // Store in query cache (using 'narrative-engine' as the model)
+      queryCacheService.set(cacheKey, narrativeResult.directResponse, 'narrative-engine');
+      await conversationalMemoryService.store(sessionId, queryToUse, narrativeResult.directResponse);
+
+      return NextResponse.json({
+        text: narrativeResult.directResponse,
+        fresh: true,
+        fallback: false,
+        empty: false,
+        repeated: false,
+        debug: {
+          narrativeEngine: true,
+          mode: narrativeResult.mode
+        }
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate'
+        }
+      });
+    }
+
     // 2.7. Smart Query Routing Layer
-    const routeResult = await SmartRouter.route(query, repositoryName);
+    const routeResult = await SmartRouter.route(queryToUse, repositoryName);
     if (routeResult.directAnswerAvailable && routeResult.directResponse) {
       // Store in query cache (using 'smart-route' as the model)
       queryCacheService.set(cacheKey, routeResult.directResponse, 'smart-route');
+      await conversationalMemoryService.store(sessionId, queryToUse, routeResult.directResponse);
 
       return NextResponse.json({
         text: routeResult.directResponse,
@@ -101,7 +133,7 @@ export async function POST(req: Request) {
     const fullContext = await contextService.getContext();
 
     // 4. Context Selection Layer - Select only relevant content
-    const selected = await OracleContextSelector.select(query, fullContext);
+    const selected = await OracleContextSelector.select(queryToUse, fullContext);
 
     // 5. Context Compression Layer - Format to structured readable markdown (No raw JSON)
     let compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
@@ -115,7 +147,7 @@ export async function POST(req: Request) {
     }
 
     // Dynamic Recruiter Insights Integration (Phase 4.7B)
-    const recruiterInsight = await RecruiterInsightEngine.evaluateQuery(query);
+    const recruiterInsight = await RecruiterInsightEngine.evaluateQuery(queryToUse);
     if (recruiterInsight) {
       compressedPromptContext += `\n\n### RECRUITER INSIGHT RECOMMENDATIONS (RANKED EVIDENCE-BACKED)
 Matching Dimension: ${recruiterInsight.bestDimensionMatched}
@@ -177,14 +209,14 @@ ${compressedPromptContext}
     const provider = new OpenRouterProvider();
 
     console.log("CALLING OPENROUTER");
-    console.log("Query:", query.trim());
+    console.log("Query:", queryToUse.trim());
     if (repositoryName) {
       console.log("Repository Context Name:", repositoryName);
     }
 
     const userPrompt = repositoryName 
-      ? `[Context: The user is currently viewing the repository page for "${repositoryName}". "This repository" refers to "${repositoryName}".]\n\nQuery: ${query.trim()}`
-      : query.trim();
+      ? `[Context: The user is currently viewing the repository page for "${repositoryName}". "This repository" refers to "${repositoryName}".]\n\nQuery: ${queryToUse.trim()}`
+      : queryToUse.trim();
 
     const response = await provider.generate({
       systemPrompt,
@@ -207,6 +239,9 @@ console.log(response.text);
     // Store in query cache
     const cachedModelUsed = response.usage?.modelUsed || process.env.PRIMARY_MODEL || 'deepseek/deepseek-r1:free';
     queryCacheService.set(cacheKey, response.text, cachedModelUsed);
+
+    // Store in conversational memory
+    await conversationalMemoryService.store(sessionId, queryToUse, response.text);
 
     // 10. Prepare server response and optional debug metrics
     const debugInfo = process.env.NODE_ENV !== 'production' ? {

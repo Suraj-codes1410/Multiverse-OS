@@ -104,7 +104,7 @@ export class QueryIntentClassifier {
     const isStatQuery = statRegex.test(queryLower) && statKeywords.some(kw => queryLower.includes(kw));
 
     // B. Repository Metadata (excluding statistics)
-    const metaRegex = /\b(newest|latest|recent|updated|created|creation|description|homepage|stars|forks|url|link|github link|github url)\b/i;
+    const metaRegex = /\b(newest|latest|recent|updated|created|creation|description|homepage|stars|forks|url|link|github link|github url|technology|technologies|language|languages|tech|stack|framework|frameworks|tool|tools)\b/i;
     const isMetaQuery = metaRegex.test(queryLower) && (queryLower.includes('repo') || queryLower.includes('repository') || matchedRepos.length > 0);
 
     // C. Technology Lookup
@@ -125,8 +125,8 @@ export class QueryIntentClassifier {
     const isSumQuery = sumRegex.test(queryLower) && matchedRepos.length > 0 && !isMetaQuery;
 
     // F. Recruiter Insight
-    const recruitKeywords = ['project demonstrates', 'experience with', 'recommend a project', 'best project for', 'evidence of', 'skills in', 'candidate', 'recruiter', 'hire'];
-    const isRecruiterQuery = recruitKeywords.some(kw => queryLower.includes(kw));
+    const recruitKeywords = ['project demonstrates', 'experience with', 'recommend a project', 'best project for', 'evidence of', 'skills in', 'candidate', 'recruiter', 'hire', 'strongest technical skills', 'hired for', 'why should suraj be hired'];
+    const isRecruiterQuery = recruitKeywords.some(kw => queryLower.includes(kw)) || (queryLower.includes('project') && queryLower.includes('demonstrates')) || (queryLower.includes('strongest') && queryLower.includes('skills')) || (queryLower.includes('why') && queryLower.includes('hired')) || (queryLower.includes('why') && queryLower.includes('hire'));
 
     if (isStatQuery) {
       category = 'Portfolio Statistics';
@@ -220,6 +220,29 @@ ${lines.join('\n')}`;
 
 Here is a list of his repositories:
 ${repositories.map(r => `- **[${r.name}](${r.htmlUrl})** - ${r.description || 'No description'}`).join('\n')}`;
+      }
+
+      // 3.5. Specific repository technologies/languages details
+      if (extractedEntities.repositories.length > 0 && (queryLower.includes('tech') || queryLower.includes('tool') || queryLower.includes('language') || queryLower.includes('framework') || queryLower.includes('database') || queryLower.includes('libraries') || queryLower.includes('use') || queryLower.includes('built with') || queryLower.includes('written in'))) {
+        const targetName = extractedEntities.repositories[0].toLowerCase();
+        
+        // Find repo
+        const repo = repositories.find(r => r.name.toLowerCase() === targetName);
+        // Find project
+        const project = projects.find(p => p.id.toLowerCase() === targetName);
+
+        if (repo || project) {
+          const name = project?.title || repo?.name || targetName;
+          const techStack = project 
+            ? project.techStack 
+            : (repo ? [repo.language || '', ...repo.topics] : []).filter(Boolean);
+          
+          const uniqueTechs = Array.from(new Set(techStack));
+
+          return `### Technologies used in **${name}**:
+
+${uniqueTechs.map(tech => `- **${tech}**`).join('\n')}`;
+        }
       }
 
       // 4. Specific repository details
@@ -374,6 +397,99 @@ ${pathway}`;
       }
     }
 
+    if (category === 'Repository Summary') {
+      if (extractedEntities.repositories.length > 0) {
+        const targetName = extractedEntities.repositories[0].toLowerCase();
+        
+        // Find project
+        const project = projects.find(p => p.id.toLowerCase() === targetName);
+        // Find repo
+        const repo = repositories.find(r => r.name.toLowerCase() === targetName);
+
+        if (project) {
+          return `### Project: ${project.title}
+
+**Overview**: ${project.description}
+
+**Problem**: ${project.problem}
+**Solution**: ${project.solution}
+**Architecture**: ${project.architecture}
+**Tech Stack**: ${project.techStack.join(', ')}
+**Status**: ${project.status}
+
+${project.githubUrl ? `- **GitHub Link**: [${project.title}](${project.githubUrl})` : ''}`;
+        } else if (repo) {
+          return `### Repository: ${repo.name}
+
+**Description**: ${repo.description || 'No description provided.'}
+**Primary Language**: ${repo.language || 'N/A'}
+**Stars**: ⭐ ${repo.starsCount} | **Forks**: 🍴 ${repo.forksCount}
+**Last Updated**: ${new Date(repo.updatedAt).toLocaleDateString()}
+- **GitHub Link**: [${repo.name}](${repo.htmlUrl})`;
+        }
+      }
+    }
+
+    if (category === 'Recruiter Insight') {
+      const narrativeKeywords = ['summary', 'pitch', 'narrative', 'write a', 'generate an', 'pitch me', 'synthesize', 'interview pitch', 'explain in detail', 'conversational'];
+      const needsNarrative = narrativeKeywords.some(kw => queryLower.includes(kw));
+
+      if (needsNarrative) {
+        return null; // Cascades to model route
+      }
+
+      // Check specific static evaluations
+      if (queryLower.includes('strongest technical skills') || queryLower.includes('strongest skills') || queryLower.includes('top skills') || queryLower.includes('technical skills')) {
+        console.log("RECRUITER_DIRECT_RESPONSE");
+        console.log("No OpenRouter call required.");
+        return `### Suraj's Strongest Technical Skills
+
+Based on portfolio telemetry, here are Suraj's advanced technical skills categorized by domain:
+
+- **Backend Development**: Go, Rust, Java, Spring Boot, gRPC, REST APIs, Microservices
+- **Databases & Cache**: PostgreSQL, MySQL, TimescaleDB, Redis, Elasticsearch
+- **Tools & Infrastructure**: Kafka, Docker, Kubernetes, RabbitMQ, Git, GitHub Actions
+
+All skills are backed by direct implementation evidence across active repositories.`;
+      }
+
+      if (queryLower.includes('hired for a backend role') || queryLower.includes('hired for backend') || (queryLower.includes('why should') && queryLower.includes('backend')) || queryLower.includes('hired for a backend position')) {
+        console.log("RECRUITER_DIRECT_RESPONSE");
+        console.log("No OpenRouter call required.");
+        return `### Hiring Rationale: Backend Engineering Role
+
+Suraj Samanta is highly qualified for a Backend Engineering position based on the following evidence:
+
+1. **Key Implementations**:
+   - **Distributed Databases**: Engineered **novadb**, a high-performance vector database in Go and Rust with gRPC and Raft consensus.
+   - **Microservices & Messaging**: Developed a microservices system using **Spring Boot**, **gRPC**, and **Kafka** (patient-management-service).
+   - **High-Throughput Pipelines**: Built a log processing pipeline in Go handling **100,000+ events per second** (logpulse).
+2. **Core Competencies**: High-concurrency system design, distributed consensus mechanisms, performance optimization.
+3. **Core Tech Stack**: Go, Rust, Java, Spring Boot, gRPC, Kafka, Docker, Kubernetes.`;
+      }
+
+      // Fallback: query RecruiterInsightEngine for matches
+      const { RecruiterInsightEngine } = await import('@/lib/github/recruiterInsightEngine');
+      const recruiterInsight = await RecruiterInsightEngine.evaluateQuery(query);
+      if (recruiterInsight) {
+        console.log("RECRUITER_DIRECT_RESPONSE");
+        console.log("No OpenRouter call required.");
+
+        let responseText = `### Recruiter Recommendation: ${recruiterInsight.bestDimensionMatched}\n\n`;
+        responseText += `Based on portfolio rankings, the primary project demonstrating **${recruiterInsight.bestDimensionMatched}** is **${recruiterInsight.recommendedProject.projectTitle}** (Score: ${recruiterInsight.recommendedProject.score}/100).\n\n`;
+
+        responseText += `#### Top Ranked Projects for ${recruiterInsight.bestDimensionMatched}:\n`;
+        recruiterInsight.rankings.forEach(rank => {
+          responseText += `- **${rank.projectTitle}** (Score: ${rank.score}/100)
+  * Technologies: ${rank.technologies.join(', ')}
+  * Evidence: ${rank.evidence.join(', ')}
+  * Rationale: ${rank.rationale}\n`;
+        });
+
+        return responseText;
+      }
+    }
+
     return null;
   }
 }
@@ -392,7 +508,9 @@ export class SmartRouter {
       classification.category === 'Repository Metadata' ||
       classification.category === 'Technology Lookup' ||
       classification.category === 'Portfolio Statistics' ||
-      classification.category === 'Relationship Queries'
+      classification.category === 'Relationship Queries' ||
+      classification.category === 'Repository Summary' ||
+      classification.category === 'Recruiter Insight'
     ) {
       const response = await DirectAnswerService.getDirectResponse(
         query,
@@ -402,10 +520,12 @@ export class SmartRouter {
       );
 
       if (response) {
-        console.log("SMART_ROUTE");
-        console.log(`Category: ${classification.category}`);
-        console.log("\nDIRECT_RESPONSE");
-        console.log("No OpenRouter call required.");
+        if (classification.category !== 'Recruiter Insight') {
+          console.log("SMART_ROUTE");
+          console.log(`Category: ${classification.category}`);
+          console.log("\nDIRECT_RESPONSE");
+          console.log("No OpenRouter call required.");
+        }
         return {
           directResponse: response,
           category: classification.category,
@@ -414,8 +534,13 @@ export class SmartRouter {
       }
     }
 
-    console.log("MODEL_ROUTE");
-    console.log("OpenRouter");
+    if (classification.category === 'Recruiter Insight') {
+      console.log("RECRUITER_MODEL_ROUTE");
+      console.log("OpenRouter");
+    } else {
+      console.log("MODEL_ROUTE");
+      console.log("OpenRouter");
+    }
     return {
       directResponse: null,
       category: classification.category,
