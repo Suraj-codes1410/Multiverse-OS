@@ -42,7 +42,18 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { query, repositoryName, sessionId = 'default-session' } = body;
+    const { query, repositoryName, sessionId = 'default-session', eventType } = body;
+
+    if (eventType === 'PUBLIC_LAUNCH_VIEW') {
+      console.log("PUBLIC_LAUNCH_VIEW");
+      return NextResponse.json({ success: true, event: 'PUBLIC_LAUNCH_VIEW' });
+    }
+    if (eventType === 'SUGGESTED_QUERY_CLICK') {
+      console.log("SUGGESTED_QUERY_CLICK", query);
+    }
+    if (eventType === 'RECRUITER_MODE_CLICK') {
+      console.log("RECRUITER_MODE_CLICK", query);
+    }
 
     // 1. Response validation - check if query is present and correct
     if (!query || typeof query !== 'string' || !query.trim()) {
