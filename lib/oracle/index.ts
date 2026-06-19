@@ -5,3 +5,4 @@ export * from './config';
 export * from './aiProvider';
 export * from './openRouterProvider';
 export * from './contextSelector';
+export * from './smartRouter';

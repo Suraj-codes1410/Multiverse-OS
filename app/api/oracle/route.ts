@@ -6,6 +6,7 @@ import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
 import { RepositoryRefreshManager } from '@/lib/github/syncService';
 import { RecruiterInsightEngine } from '@/lib/github/recruiterInsightEngine';
 import { queryCacheService } from '@/lib/oracle/queryCache';
+import { SmartRouter } from '@/lib/oracle/smartRouter';
 
 // Initialize the GitHub Repository Refresh Manager to run background synchronizations.
 // It will run a startup sync in the background and trigger periodic syncs.
@@ -65,6 +66,29 @@ export async function POST(req: Request) {
         debug: {
           cacheHit: true,
           cacheKey
+        }
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate'
+        }
+      });
+    }
+
+    // 2.7. Smart Query Routing Layer
+    const routeResult = await SmartRouter.route(query, repositoryName);
+    if (routeResult.directAnswerAvailable && routeResult.directResponse) {
+      // Store in query cache (using 'smart-route' as the model)
+      queryCacheService.set(cacheKey, routeResult.directResponse, 'smart-route');
+
+      return NextResponse.json({
+        text: routeResult.directResponse,
+        fresh: true,
+        fallback: false,
+        empty: false,
+        repeated: false,
+        debug: {
+          smartRouted: true,
+          category: routeResult.category
         }
       }, {
         headers: {
