@@ -19,6 +19,60 @@ function setupFetchMock() {
   global.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input.toString();
 
+    if (url.includes('generativelanguage.googleapis.com')) {
+      if (mockFetchFailMode || process.env.PRIMARY_MODEL === 'invalid-primary-model') {
+        return new Response(
+          JSON.stringify({
+            error: { message: "Gemini model rate-limited upstream", status: 404 }
+          }),
+          { status: 404 }
+        );
+      }
+
+      const body = init?.body ? JSON.parse(init.body as string) : {};
+      const userPrompt = body.contents?.[0]?.parts?.[0]?.text || '';
+      const systemPrompt = body.systemInstruction?.parts?.[0]?.text || '';
+
+      let content = `Mocked Gemini Response: Direct answers, mentorship coaching, and portfolio journey analysis successfully parsed.`;
+
+      if (
+        userPrompt.toLowerCase().includes('oracle-sync-test') || 
+        userPrompt.toLowerCase().includes('special_token_1410') ||
+        systemPrompt.toLowerCase().includes('oracle-sync-test')
+      ) {
+        content = `### oracle-sync-test Repository Summary
+This is a mocked summary of the oracle-sync-test repository.
+- **Purpose**: This repository exists to verify GitHub synchronization.
+- **Special Token**: SPECIAL_TOKEN_1410 is present in the repository root.
+- **Technologies Used**: Next.js, TypeScript, and GitHub Actions are active in this project.`;
+      }
+
+      return new Response(
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: content
+                  }
+                ],
+                role: "model"
+              },
+              finishReason: "STOP",
+              index: 0
+            }
+          ],
+          usageMetadata: {
+            promptTokenCount: 15,
+            candidatesTokenCount: 25,
+            totalTokenCount: 40
+          }
+        }),
+        { status: 200 }
+      );
+    }
+
     if (url.includes('openrouter.ai/api/v1/chat/completions')) {
       const body = init?.body ? JSON.parse(init.body as string) : {};
       const model = body.model;

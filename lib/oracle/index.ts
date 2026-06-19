@@ -4,6 +4,8 @@ export * from './service';
 export * from './config';
 export * from './aiProvider';
 export * from './openRouterProvider';
+export * from './geminiProvider';
+export * from './providerFactory';
 export * from './contextSelector';
 export * from './smartRouter';
 export * from './memory';

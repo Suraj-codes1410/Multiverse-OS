@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { contextService } from '@/lib/oracle/service';
-import { OpenRouterProvider } from '@/lib/oracle/openRouterProvider';
+import { ProviderFactory } from '@/lib/oracle/providerFactory';
 import { OracleContextSelector } from '@/lib/oracle/contextSelector';
 import { DEFAULT_MODEL_CONFIG } from '@/lib/oracle/config';
 import { RepositoryRefreshManager } from '@/lib/github/syncService';
@@ -310,8 +310,8 @@ PORTFOLIO CONTEXT:
 ${compressedPromptContext}
 ---`;
 
-    // 8. Invoke OpenRouter AI Provider
-    const provider = new OpenRouterProvider();
+    // 8. Invoke Active AI Provider
+    const provider = ProviderFactory.create();
 
     console.log("CALLING OPENROUTER");
     console.log("Query:", queryToUse.trim());
