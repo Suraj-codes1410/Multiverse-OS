@@ -72,16 +72,16 @@ export class RecruiterInsightService {
 
     // 4. Topic: Scalability
     if (this.containsAny(queryLower, ['scalability', 'scalable', 'high-throughput', 'throughput', 'ingestion', 'performance'])) {
-      const logpulse = profiles.find(p => p.repositoryName.includes('logpulse')) ||
+      const scaledRepo = profiles.find(p => p.repositoryName.includes('patient-management-service')) ||
                         profiles.find(p => p.repositoryName.includes('orbitair'));
       
-      const evidence = ['Kafka', 'Go', '100k+ events/s ingestion target', 'Durable commit-log buffering', 'Horizontal scaling'];
+      const evidence = ['Kafka', 'Java', 'Asynchronous event streaming', 'Decoupled billing microservices', 'Database connection pooling'];
 
       return {
         topic: 'Scalability',
-        recommendedRepository: logpulse?.repositoryName || 'logpulse',
+        recommendedRepository: scaledRepo?.repositoryName || 'patient-management-service',
         evidence,
-        rationale: 'Built to sustain massive event stream velocity (100k+ events/s) using sequential disk I/O optimizations, partitioned broker topologies, and concurrency features in Go.'
+        rationale: 'Demonstrates horizontal scale readiness and message isolation using Kafka event-driven partitions and decoupled database architectures.'
       };
     }
 

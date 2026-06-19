@@ -107,7 +107,7 @@ export class QueryCacheService {
     const queryLower = query.toLowerCase().trim();
 
     // 1. Repository Questions: 30 minutes (1,800,000 ms)
-    const repositoryKeywords = ['repo', 'repository', 'readme', 'oracle-sync-test', 'sahai', 'orbitair', 'novadb', 'aetheragent', 'logpulse', 'ecom', 'swot', 'satcom', 'microservice', 'orbit-ops', 'bookstore', 'ailearning'];
+    const repositoryKeywords = ['repo', 'repository', 'readme', 'oracle-sync-test', 'sahai', 'orbitair', 'ecom', 'swot', 'satcom', 'microservice', 'orbit-ops', 'bookstore', 'ailearning'];
     if (repositoryKeywords.some(kw => queryLower.includes(kw))) {
       return 30 * 60 * 1000;
     }

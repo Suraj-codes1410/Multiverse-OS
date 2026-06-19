@@ -185,7 +185,7 @@ export function analyzeComplexity(
   if (hasBackend) servicesList.push('Backend API Server');
 
   // Detect database service
-  const hasDb = medInfraKeywords.some(k => textContext.includes(k.keywords[0])) || textContext.includes('novadb') || textContext.includes('mongodb');
+  const hasDb = medInfraKeywords.some(k => textContext.includes(k.keywords[0])) || textContext.includes('mongodb');
   if (hasDb) servicesList.push('Storage Database');
 
   // Detect broker service

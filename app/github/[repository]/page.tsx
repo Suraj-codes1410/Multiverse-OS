@@ -42,7 +42,7 @@ export default async function RepositoryDetailPage({ params }: PageProps) {
   ));
 
   const techKeywords = [
-    'spring boot', 'fastapi', 'django', 'hibernate', 'react', 'next.js', 'leaflet', 'kafka', 'rabbitmq', 'grpc', 'docker', 'spring security', 'websockets', 'pinecone', 'timescaledb', 'elasticsearch', 'redis', 'mysql', 'postgresql', 'novadb', 'mongodb', 'sqlite'
+    'spring boot', 'fastapi', 'django', 'hibernate', 'react', 'next.js', 'leaflet', 'kafka', 'rabbitmq', 'grpc', 'docker', 'spring security', 'websockets', 'pinecone', 'timescaledb', 'elasticsearch', 'redis', 'mysql', 'postgresql', 'mongodb', 'sqlite'
   ];
 
   const relatedSkills: string[] = [];

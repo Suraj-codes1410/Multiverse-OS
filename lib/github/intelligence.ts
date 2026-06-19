@@ -18,11 +18,11 @@ export function generateRepositoryIntelligence(
   let projectType = 'Software Repository';
   if (contentToSearch.includes('microservice') || contentToSearch.includes('microservices')) {
     projectType = 'Microservices Architecture';
-  } else if (contentToSearch.includes('vector database') || contentToSearch.includes('similarity search') || contentToSearch.includes('novadb')) {
+  } else if (contentToSearch.includes('vector database') || contentToSearch.includes('similarity search')) {
     projectType = 'Distributed Database Engine';
-  } else if (contentToSearch.includes('multi-agent') || contentToSearch.includes('aetheragent') || contentToSearch.includes('orchestration') || contentToSearch.includes('agent')) {
+  } else if (contentToSearch.includes('multi-agent') || contentToSearch.includes('orchestration') || contentToSearch.includes('agent')) {
     projectType = 'Autonomous Agent Framework';
-  } else if (contentToSearch.includes('logpulse') || contentToSearch.includes('ingestion') || contentToSearch.includes('kafka')) {
+  } else if (contentToSearch.includes('ingestion') || contentToSearch.includes('kafka')) {
     projectType = 'Data Ingestion Pipeline';
   } else if (contentToSearch.includes('aqi') || contentToSearch.includes('forecasting') || contentToSearch.includes('orbitair')) {
     projectType = 'Geospatial Forecasting Platform';

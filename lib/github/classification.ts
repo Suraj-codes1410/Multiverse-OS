@@ -112,7 +112,7 @@ export function classifyRepository(
   const hasAITopic = topics.some(t => ['llm', 'agents', 'ai', 'ml', 'machine-learning', 'rag', 'pinecone', 'pytorch', 'forecasting'].includes(t));
   const hasAIKeyword = hasKeyword(['llm', 'agent', 'agents', 'artificial intelligence', 'machine learning', 'rag', 'retrieval-augmented', 'pinecone', 'pytorch', 'tensorflow', 'deep learning', 'vector search', 'forecasting', 'anomaly detection', 'model training', 'predictive', 'geospatial forecasting', 'neural']);
   
-  if (hasAITopic || hasAIKeyword || intelProjCategory === 'ai & data engineering' || repoNameLower === 'aetheragent' || repoNameLower === 'orbitair' || repoNameLower === 'sahai') {
+  if (hasAITopic || hasAIKeyword || intelProjCategory === 'ai & data engineering' || repoNameLower === 'orbitair' || repoNameLower === 'sahai') {
     categories.add('AI Engineering');
   }
 
@@ -120,7 +120,7 @@ export function classifyRepository(
   const hasDataTopic = topics.some(t => ['data-engineering', 'pipeline', 'ingestion', 'kafka', 'timescaledb', 'timescale', 'elasticsearch', 'stream', 'analytics'].includes(t));
   const hasDataKeyword = hasKeyword(['pipeline', 'ingestion', 'log ingestion', 'data pipeline', 'timescaledb', 'kafka', 'message queue', 'stream processing', 'event-driven streaming', 'geospatial indexing', 'analytics', 'etl', 'hypertable', 'data engineering']);
   
-  if (hasDataTopic || hasDataKeyword || intelProjCategory === 'ai & data engineering' || repoNameLower === 'logpulse' || repoNameLower === 'orbitair') {
+  if (hasDataTopic || hasDataKeyword || intelProjCategory === 'ai & data engineering' || repoNameLower === 'orbitair') {
     categories.add('Data Engineering');
   }
 
@@ -128,7 +128,7 @@ export function classifyRepository(
   const hasDistributedTopic = topics.some(t => ['distributed', 'microservices', 'raft', 'consensus', 'grpc', 'kafka', 'rabbitmq', 'clustering'].includes(t));
   const hasDistributedKeyword = hasKeyword(['distributed', 'microservices', 'microservice', 'raft', 'consensus', 'grpc', 'protobuf', 'kafka', 'rabbitmq', 'message broker', 'event-driven', 'clustering', 'replication', 'high-performance distributed', 'load balancer', 'gateway']);
   
-  if (hasDistributedTopic || hasDistributedKeyword || intelProjCategory === 'distributed systems' || repoNameLower === 'novadb' || repoNameLower === 'patient-management-service' || repoNameLower === 'logpulse' || repoNameLower === 'aetheragent') {
+  if (hasDistributedTopic || hasDistributedKeyword || intelProjCategory === 'distributed systems' || repoNameLower === 'patient-management-service') {
     categories.add('Distributed Systems');
   }
 
@@ -136,7 +136,7 @@ export function classifyRepository(
   const hasDevToolsTopic = topics.some(t => ['framework', 'library', 'cli', 'tool', 'utils', 'sdk', 'developer-tool'].includes(t));
   const hasDevToolsKeyword = hasKeyword(['framework', 'library', 'cli', 'utility', 'developer tools', 'developer utility', 'sdk', 'orchestration framework', 'database engine', 'testing framework', 'pipeline framework', 'agent framework']);
   
-  if (hasDevToolsTopic || hasDevToolsKeyword || repoNameLower === 'novadb' || repoNameLower === 'aetheragent') {
+  if (hasDevToolsTopic || hasDevToolsKeyword) {
     categories.add('Developer Tools');
   }
 

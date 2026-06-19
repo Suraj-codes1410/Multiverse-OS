@@ -134,7 +134,7 @@ export class ProjectRankingService {
             if (textToAnalyze.includes('tensorflow')) { score += 25; evidence.push('TensorFlow Model Optimization'); }
             if (textToAnalyze.includes('rag') || textToAnalyze.includes('retrieval-augmented')) { score += 25; evidence.push('Retrieval-Augmented Generation (RAG)'); }
             if (textToAnalyze.includes('pinecone') || textToAnalyze.includes('vector similarity')) { score += 20; evidence.push('Pinecone High-Dimensional Vector DB'); }
-            if (textToAnalyze.includes('vector database') || textToAnalyze.includes('similarity search') || textToAnalyze.includes('novadb')) { score += 20; evidence.push('Similarity Search Indexes'); }
+            if (textToAnalyze.includes('vector database') || textToAnalyze.includes('similarity search')) { score += 20; evidence.push('Similarity Search Indexes'); }
             if (textToAnalyze.includes('forecasting') || textToAnalyze.includes('predictive')) { score += 15; evidence.push('Predictive Air Quality Forecasting Models'); }
             if (textToAnalyze.includes('llm') || textToAnalyze.includes('agent') || textToAnalyze.includes('openai') || textToAnalyze.includes('gemini')) { score += 20; evidence.push('LLM Agent Orchestrations'); }
 

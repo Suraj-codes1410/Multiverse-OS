@@ -287,14 +287,14 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
           replyMetadata = {
             confidence: 0.90,
             entitiesUsed: ['Kafka (skill)'],
-            projectsUsed: ['patient-management-service', 'logpulse'],
-            repositoriesUsed: ['patient-management-service', 'logpulse'],
+            projectsUsed: ['patient-management-service'],
+            repositoriesUsed: ['patient-management-service'],
             achievementsUsed: [],
             skillsUsed: ['Kafka', 'Java', 'Go']
           };
           replyExplainability = {
             resolvedEntity: 'Kafka (skill)',
-            traversedRelationships: ['skill:kafka -> USED_IN -> Project (2 nodes)'],
+            traversedRelationships: ['skill:kafka -> USED_IN -> Project (1 nodes)'],
             contextSizeTokens: 1180,
             confidenceLevel: 'Medium'
           };

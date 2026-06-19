@@ -15,9 +15,7 @@ export const distributedSystemsCommand: Command = {
       const classifications = p.githubRepository?.classifications || [];
       return classifications.includes('Distributed Systems') || 
              p.intelligence?.projectCategory === 'Distributed Systems' ||
-             p.id === 'novadb' || 
-             p.id === 'patient-management-service' ||
-             p.id === 'logpulse';
+             p.id === 'patient-management-service';
     });
 
     // 2. Compile list of distributed systems related skills

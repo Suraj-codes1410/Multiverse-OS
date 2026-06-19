@@ -69,8 +69,7 @@ export function analyzeArchitecture(
     { name: 'PostgreSQL', keywords: ['postgres', 'postgresql'] },
     { name: 'Elasticsearch', keywords: ['elasticsearch', 'elastic search'] },
     { name: 'SQLite', keywords: ['sqlite'] },
-    { name: 'MongoDB', keywords: ['mongodb', 'mongo '] },
-    { name: 'NovaDB', keywords: ['novadb'] }
+    { name: 'MongoDB', keywords: ['mongodb', 'mongo '] }
   ];
   dbCatalog.forEach(db => {
     const matched = db.keywords.some(kw => textContext.includes(kw));
@@ -93,13 +92,13 @@ export function analyzeArchitecture(
     architecturePattern = 'Backend API + Analytics Dashboard';
   } else if (isMicroservices || repoNameLower === 'patient-management-service') {
     architecturePattern = 'Microservices';
-  } else if (isAnalyticsPlatform || repoNameLower === 'logpulse') {
+  } else if (isAnalyticsPlatform) {
     architecturePattern = 'Analytics Platform';
-  } else if (isEventDriven || repoNameLower === 'aetheragent') {
+  } else if (isEventDriven) {
     architecturePattern = 'Event Driven';
   } else if (isFullStack || repoNameLower === 'sahai') {
     architecturePattern = 'Full Stack';
-  } else if (isApiDriven || repoNameLower === 'novadb') {
+  } else if (isApiDriven) {
     architecturePattern = 'API Driven';
   }
 

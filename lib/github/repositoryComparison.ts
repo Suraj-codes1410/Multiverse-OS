@@ -158,15 +158,6 @@ export class RepositoryComparisonService {
     if (nameLower.includes('patient-management')) {
       return 'Enterprise hospital billing, notifications, and clinical record management using decoupled services.';
     }
-    if (nameLower.includes('novadb')) {
-      return 'Distributed similarity index database engine executing vector search queries across partitions.';
-    }
-    if (nameLower.includes('aetheragent')) {
-      return 'Autonomous multi-agent orchestration executor running parallel stateful task loops.';
-    }
-    if (nameLower.includes('logpulse')) {
-      return 'High-speed real-time logs ingestion and anomaly detection pipeline.';
-    }
     return profile.repositoryDescription;
   }
 }

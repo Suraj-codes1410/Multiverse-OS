@@ -51,15 +51,15 @@ export class ResumeAdvisor {
 
 To maximize impact on your resume, rank your projects in the following order:
 
-1. **novadb** (Go & Rust | Distributed Systems) — **Rank First**
-   - **Why**: Demonstrates distributed systems engineering, Raft consensus protocol, gRPC APIs, and systems programming in Go and Rust. This is a tier-1 complexity project that immediately grabs a technical recruiter's attention.
-   - **Impact**: Highlights backend performance optimization and data storage architectures.
+1. **patient-management-service** (Java & Spring Boot | Distributed Microservices) — **Rank First**
+   - **Why**: Demonstrates hospital billing microservices coordination using Spring Boot microservices, Kafka event streaming, database design, Spring Security authentication, gRPC low-latency communication, and Docker.
+   - **Impact**: Highlights backend performance optimization, secure communication isolation, and state synchronization topologies.
 
 2. **orbitair** (Python & FastAPI | Time-Series Analytics)
    - **Why**: Showcases geospatial indexing in TimescaleDB and FastAPI API design. It highlights intermediate data-intensive and machine learning capabilities.
 
-3. **aetheragent** (TypeScript | AI Agents Orchestration)
-   - **Why**: Demonstrates event-driven architecture, caching with Redis, RabbitMQ queuing, and multi-agent LLM reasoning loops.`;
+3. **sahai** (Python & Django/FastAPI | Wellness Platform)
+   - **Why**: Demonstrates event-driven community modules, appointment scheduling, WebSockets real-time chat rooms, and a Pinecone-backed RAG wellness assistant.`;
   }
 }
 
@@ -70,9 +70,9 @@ export class InterviewAdvisor {
     if (queryLower.includes('distributed') || queryLower.includes('system')) {
       return `### Interview Recommendation: Distributed Systems Focus
 
-For distributed systems discussions, showcase **novadb**:
-- **Core Topics to Discuss**: Raft consensus protocol, node-to-node replication, concurrent writes, and Go/Rust gRPC communication.
-- **Key Evidence**: Distributed vector indexing implementations, custom consensus logging, and low-latency storage.`;
+For distributed systems discussions, showcase **patient-management-service**:
+- **Core Topics to Discuss**: Microservices boundaries, gRPC internal low-latency channels, database isolation, and Kafka message streaming.
+- **Key Evidence**: Decoupled patient billing domains, binary protobuf payloads, asynchronous state sync patterns, and containerized gateway routing.`;
     }
 
     if (queryLower.includes('backend')) {
@@ -84,24 +84,24 @@ For backend engineering discussions, showcase **patient-management-service**:
     }
 
     if (queryLower.includes('ai') || queryLower.includes('ml') || queryLower.includes('agent')) {
-      return `### Interview Recommendation: AI Engineering & Agents Focus
+      return `### Interview Recommendation: AI Engineering & Wellness Focus
 
-For AI/ML discussions, showcase **aetheragent** or **orbitair**:
-- **Core Topics to Discuss**: RAG orchestration, multi-agent reasoning, vector stores (Pinecone), and geospatial time-series indexing (TimescaleDB).
-- **Key Evidence**: NASA Space Apps top-5 AQI forecasting, sub-second vector search latency, and Redis-backed state cache.`;
+For AI/ML discussions, showcase **sahai** or **orbitair**:
+- **Core Topics to Discuss**: RAG orchestration pipelines, Pinecone vector stores, WebSockets, and geospatial time-series indexing (TimescaleDB).
+- **Key Evidence**: NASA Space Apps top-5 AQI forecasting, sub-second vector search latency, and wellness chatbot RAG prompts.`;
     }
 
     return `### Interview Showcase: Best Projects to Discuss
 
 During technical interviews, prioritize discussing these projects based on role dimensions:
 
-1. **For Distributed Systems / Systems Roles: Showcase \`novadb\`**
-   - **Discuss**: Raft consensus integration, gRPC protocols, and data replication.
-   - **Key takeaway**: Shows ability to build database engines and highly concurrent backend architectures.
+1. **For Distributed Systems / Systems Roles: Showcase \`patient-management-service\`**
+   - **Discuss**: Microservice gateways, Kafka publisher-subscriber topologies, and gRPC endpoints.
+   - **Key takeaway**: Shows ability to build secure, scalable backend microservice applications.
 
-2. **For AI Engineering / Full Stack Roles: Showcase \`aetheragent\`**
-   - **Discuss**: Message queuing via RabbitMQ, state cache using Redis, and LLM reasoning steps.
-   - **Key takeaway**: Highlights production AI tool-use and asynchronous workflows.`;
+2. **For AI Engineering / Full Stack Roles: Showcase \`sahai\` or \`orbitair\`**
+   - **Discuss**: RAG retrieval vectors using Pinecone, dynamic WebSockets state caching, and environmental time-series ML models.
+   - **Key takeaway**: Highlights production full-stack engineering and data forecasting visualizations.`;
   }
 }
 
@@ -114,7 +114,7 @@ export class SkillGapAnalyzer {
   } {
     const queryLower = query.toLowerCase();
     
-    const current = ['Go', 'Rust', 'Java', 'Spring Boot', 'gRPC', 'Kafka', 'Docker', 'Kubernetes', 'FastAPI', 'Pinecone', 'TimescaleDB', 'Redis'];
+    const current = ['Java', 'Spring Boot', 'gRPC', 'Kafka', 'Docker', 'Kubernetes', 'FastAPI', 'Pinecone', 'TimescaleDB', 'Redis', 'Python', 'Django', 'React', 'WebSockets'];
     
     let missing: string[] = [];
     let priority: string[] = [];
@@ -133,15 +133,15 @@ export class SkillGapAnalyzer {
       ];
     } else {
       // General Backend / Systems
-      missing = ['CI/CD Orchestration (Jenkins, Ansible)', 'Application Performance Monitoring (Prometheus, Grafana)', 'Unit/Integration Testing frameworks (JUnit for Java, testing in Go/Rust)'];
+      missing = ['CI/CD Orchestration (Jenkins, Ansible)', 'Application Performance Monitoring (Prometheus, Grafana)', 'Unit/Integration Testing frameworks (JUnit for Java)'];
       priority = [
         '1. Unit Testing & Mocking (High priority)',
         '2. Monitoring & Logging (Medium priority)',
         '3. CI/CD Orchestration (Medium priority)'
       ];
       roadmap = [
-        '- **Phase 1**: Add JUnit/Mockito tests to Java services and testing coverage to Go/Rust codebases.',
-        '- **Phase 2**: Configure Prometheus and Grafana dashboards for logpulse to log memory and event metrics.'
+        '- **Phase 1**: Add JUnit/Mockito tests to patient-management-service.',
+        '- **Phase 2**: Configure Prometheus and Grafana dashboards for monitoring the microservices.'
       ];
     }
 
@@ -159,17 +159,17 @@ export class JobFitAnalyzer {
     const queryLower = query.toLowerCase();
 
     if (queryLower.includes('match') || queryLower.includes('description')) {
-      let matchedProject = 'novadb';
-      let matchReason = 'Demonstrates distributed database engineering, Raft consensus, and Go/Rust backend performance.';
-      let matchScore = 95;
+      let matchedProject = 'patient-management-service';
+      let matchReason = 'Demonstrates Spring Boot microservices, Kafka event streaming, gRPC, and Spring Security.';
+      let matchScore = 94;
       
       if (queryLower.includes('java') || queryLower.includes('spring') || queryLower.includes('hospital') || queryLower.includes('billing')) {
         matchedProject = 'patient-management-service';
         matchReason = 'Demonstrates Spring Boot microservices, Kafka event streaming, and gRPC low-latency APIs.';
         matchScore = 94;
       } else if (queryLower.includes('ai') || queryLower.includes('ml') || queryLower.includes('agent') || queryLower.includes('vector') || queryLower.includes('pinecone') || queryLower.includes('search')) {
-        matchedProject = 'aetheragent';
-        matchReason = 'Demonstrates multi-agent RAG reasoning loops, Redis state cache, and RabbitMQ message queuing.';
+        matchedProject = 'sahai';
+        matchReason = 'Demonstrates Django and FastAPI, Pinecone-backed RAG wellness assistant, and WebSockets chat rooms.';
         matchScore = 92;
       } else if (queryLower.includes('aqi') || queryLower.includes('forecast') || queryLower.includes('timescale') || queryLower.includes('python') || queryLower.includes('fastapi')) {
         matchedProject = 'orbitair';
@@ -184,7 +184,7 @@ Based on the job description keywords, here is the best matching project:
 - **Best Matching Project**: **${matchedProject}**
 - **Match Confidence Score**: **${matchScore}%**
 - **Why it matches**: ${matchReason}
-- **Strengths to emphasize**: High architectural complexity, evidence-backed achievements, and containerized deployment alignment.`;
+- **Strengths to emphasize**: High architectural complexity, evidence-backed achievements, and containerized microservice alignment.`;
     }
 
     if (queryLower.includes('java') || queryLower.includes('spring')) {
@@ -202,21 +202,21 @@ Based on the job description keywords, here is the best matching project:
       return `### Internship Readiness Assessment: AI Engineering Role
 
 - **Readiness Score**: **88%**
-- **Strengths**: Pinecone vector search, FastAPI integrations, RAG orchestration, and geospatial timeseries forecasting.
+- **Strengths**: Pinecone vector search, FastAPI integrations, RAG wellness chatbot, and geospatial timeseries forecasting.
 - **Weaknesses**: Limited experience with deep learning training loops (PyTorch/TensorFlow) from scratch.
 - **Recommendations**:
   1. Build a project showcasing custom model training or LLM evaluations.
-  2. Integrate multi-modal pipelines into aetheragent.`;
+  2. Integrate multi-modal pipelines into sahai.`;
     }
 
     return `### Job Readiness Assessment: General Backend Role
 
 - **Readiness Score**: **90%**
-- **Strengths**: Go, Rust, Java microservices, distributed queues (Kafka), consensus databases, and Docker/Kubernetes containerization.
+- **Strengths**: Spring Boot Java microservices, distributed queues (Kafka), database structures, and Docker/Kubernetes containerization.
 - **Weaknesses**: Missing Prometheus metrics logs and CI/CD pipelines.
 - **Recommendations**:
-  1. Implement Prometheus/Grafana monitors in logpulse.
-  2. Add unit test coverage files in Go/Rust.`;
+  1. Implement Prometheus/Grafana monitors in patient-management-service.
+  2. Add unit test coverage files.`;
   }
 }
 

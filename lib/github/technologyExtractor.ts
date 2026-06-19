@@ -32,7 +32,6 @@ const CATALOG: CatalogItem[] = [
   { name: 'Elasticsearch', category: 'Database', keywords: ['elasticsearch', 'elastic search'] },
   { name: 'SQLite', category: 'Database', keywords: ['sqlite'] },
   { name: 'MongoDB', category: 'Database', keywords: ['mongodb', 'mongo '] },
-  { name: 'NovaDB', category: 'Database', keywords: ['novadb'] },
 
   // Visualization
   { name: 'Leaflet', category: 'Visualization', keywords: ['leaflet'] },

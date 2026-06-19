@@ -324,7 +324,7 @@ export class AnalyticsService {
         careerCopilotQueries++;
       }
 
-      const hasBackendKw = /\b(backend|spring boot|springboot|database|java|go|rust|golang|novadb|logpulse|patient-management-service|microservice|concurrency|distributed|grpc|raft)\b/i.test(queryLower);
+      const hasBackendKw = /\b(backend|spring boot|springboot|database|java|go|rust|golang|patient-management-service|microservice|concurrency|distributed|grpc|raft)\b/i.test(queryLower);
       const hasAiKw = /\b(ai|machine learning|vector|rag|pinecone|sahai|orbitair|llm|agents|neural|model)\b/i.test(queryLower);
       const hasResumeKw = /\b(resume|cv|portfolio|interview|hired|hire)\b/i.test(queryLower);
 

@@ -4,48 +4,6 @@ import { GitHubRepository } from '../lib/types';
 
 const MOCK_REPOSITORIES: GitHubRepository[] = [
   {
-    id: 101,
-    name: 'novadb',
-    fullName: 'surajsamanta/novadb',
-    description: 'A high-performance, distributed vector database engineered in Go and Rust.',
-    htmlUrl: 'https://github.com/surajsamanta/novadb',
-    homepage: 'https://novadb.example.com',
-    starsCount: 42,
-    forksCount: 8,
-    language: 'Go',
-    topics: ['go', 'rust', 'vector-database', 'raft', 'grpc'],
-    updatedAt: '2026-06-15T10:00:00Z',
-    createdAt: '2024-02-10T12:00:00Z'
-  },
-  {
-    id: 102,
-    name: 'aetheragent',
-    fullName: 'surajsamanta/aetheragent',
-    description: 'An asynchronous, event-driven orchestration framework for executing complex multi-agent workflows.',
-    htmlUrl: 'https://github.com/surajsamanta/aetheragent',
-    homepage: 'https://aetheragent.example.com',
-    starsCount: 56,
-    forksCount: 12,
-    language: 'TypeScript',
-    topics: ['typescript', 'nodejs', 'llm', 'agents', 'redis', 'rabbitmq'],
-    updatedAt: '2026-06-15T11:00:00Z',
-    createdAt: '2024-05-15T14:30:00Z'
-  },
-  {
-    id: 103,
-    name: 'logpulse',
-    fullName: 'surajsamanta/logpulse',
-    description: 'A robust, real-time log ingestion and processing pipeline designed to handle 100,000+ events per second.',
-    htmlUrl: 'https://github.com/surajsamanta/logpulse',
-    homepage: 'https://logpulse.example.com',
-    starsCount: 31,
-    forksCount: 4,
-    language: 'Go',
-    topics: ['go', 'kafka', 'elasticsearch', 'anomaly-detection', 'pytorch'],
-    updatedAt: '2026-06-15T09:00:00Z',
-    createdAt: '2023-09-01T08:15:00Z'
-  },
-  {
     id: 201,
     name: 'patient-management-service',
     fullName: 'surajsamanta/patient-management-service',

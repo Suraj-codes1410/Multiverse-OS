@@ -461,11 +461,11 @@ All skills are backed by direct implementation evidence across active repositori
 Suraj Samanta is highly qualified for a Backend Engineering position based on the following evidence:
 
 1. **Key Implementations**:
-   - **Distributed Databases**: Engineered **novadb**, a high-performance vector database in Go and Rust with gRPC and Raft consensus.
-   - **Microservices & Messaging**: Developed a microservices system using **Spring Boot**, **gRPC**, and **Kafka** (patient-management-service).
-   - **High-Throughput Pipelines**: Built a log processing pipeline in Go handling **100,000+ events per second** (logpulse).
-2. **Core Competencies**: High-concurrency system design, distributed consensus mechanisms, performance optimization.
-3. **Core Tech Stack**: Go, Rust, Java, Spring Boot, gRPC, Kafka, Docker, Kubernetes.`;
+   - **Microservices & Event-Driven Systems**: Developed a hospital patient billing system using **Spring Boot**, **gRPC**, and **Kafka** ([patient-management-service](https://github.com/Suraj-codes1410/patient-management-service)) containerized via Docker.
+   - **Geospatial Time-Series Analytics**: Developed **orbitair** ([orbitair](https://github.com/Suraj-codes1410/orbitair)), an AQI forecasting platform utilizing FastAPI, TimescaleDB geospatial hypertables, and Leaflet visualizations (NASA Space Apps Challenge top-5 in India).
+   - **RAG & WebSocket Chat**: Engineered **sahai** ([sahai](https://github.com/Suraj-codes1410/sahai)), a wellness platform using Django, FastAPI, Pinecone-backed RAG chatbot, and WebSockets chat rooms (Smart India Hackathon participant).
+2. **Core Competencies**: Microservices architecture, high-concurrency systems, time-series data indexing, and vector similarity search.
+3. **Core Tech Stack**: Java, Python, Spring Boot, FastAPI, Django, Kafka, gRPC, Pinecone, TimescaleDB, Docker, WebSockets.`;
       }
 
       // Fallback: query RecruiterInsightEngine for matches
