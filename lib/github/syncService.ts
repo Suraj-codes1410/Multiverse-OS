@@ -294,9 +294,22 @@ export class GitHubSyncService {
         }
       });
 
-      // 5. Write caches back to disk
-      fs.writeFileSync(this.syncCachePath, JSON.stringify({ repositories: finalizedRepos, lastUpdated: new Date().toISOString() }, null, 2));
-      fs.writeFileSync(this.readmeCachePath, JSON.stringify(updatedReadmeCache, null, 2));
+      // 5. Write caches back to disk/memory
+      const globalAny = global as any;
+      globalAny.githubSyncCache = { repositories: finalizedRepos, lastUpdated: new Date().toISOString() };
+      globalAny.githubReadmeCache = updatedReadmeCache;
+
+      if (process.env.VERCEL === '1') {
+        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Wrote sync cache and readme cache to global memory. Skipping disk write.");
+      } else {
+        try {
+          fs.writeFileSync(this.syncCachePath, JSON.stringify(globalAny.githubSyncCache, null, 2));
+          fs.writeFileSync(this.readmeCachePath, JSON.stringify(globalAny.githubReadmeCache, null, 2));
+        } catch (e) {
+          console.error("SyncService: Failed to write to cache files:", e);
+        }
+      }
+
 
       // 6. Force reload context in ContextService to reflect newly synced data
       await ContextService.getInstance().refreshContext();
@@ -335,6 +348,11 @@ export class RepositoryRefreshManager {
   public async start(options: { intervalMs?: number; performStartupSync?: boolean } = {}) {
     const { intervalMs = 3600000, performStartupSync = true } = options;
 
+    if (process.env.VERCEL === '1') {
+      console.log('VERCEL_COMPATIBLE: Serverless environment detected. Skipping background start/setInterval in RepositoryRefreshManager.');
+      return;
+    }
+
     if (performStartupSync) {
       console.log('RepositoryRefreshManager: Initiating startup sync...');
       this.triggerSync().catch(err => console.error('RepositoryRefreshManager: Startup sync failed:', err));
@@ -349,6 +367,7 @@ export class RepositoryRefreshManager {
       this.triggerSync().catch(err => console.error('RepositoryRefreshManager: Periodic sync failed:', err));
     }, intervalMs);
   }
+
 
   public async triggerSync(): Promise<void> {
     if (this.isSyncing) {
