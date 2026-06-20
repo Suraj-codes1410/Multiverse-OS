@@ -91,7 +91,27 @@ interface HealthStatus {
   timestamp: string;
 }
 
+const getRouteLabelClasses = (route: string) => {
+  const base = 'text-xs px-2 py-0.5 rounded font-semibold ';
+  switch (route) {
+    case 'openrouter':
+      return base + 'bg-blue-500/15 text-blue-400';
+    case 'smart-route':
+      return base + 'bg-emerald-500/15 text-emerald-400';
+    case 'recruiter-insight':
+      return base + 'bg-purple-500/15 text-purple-400';
+    case 'narrative-engine':
+      return base + 'bg-pink-500/15 text-pink-400';
+    case 'copilot-engine':
+      return base + 'bg-amber-500/15 text-amber-400';
+    default:
+      return base + 'bg-gray-500/15 text-gray-400';
+  }
+};
+
 export default function OracleAdminDashboardClient() {
+  console.log("DASHBOARD_RENDER_START");
+
   const [metrics, setMetrics] = useState<MetricSnapshot | null>(null);
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -115,6 +135,7 @@ export default function OracleAdminDashboardClient() {
         const healthData = await healthRes.json();
         setMetrics(metricsData);
         setHealth(healthData);
+        console.log("DASHBOARD_DATA_RECEIVED");
       }
     } catch (e) {
       console.error('Failed to fetch dashboard metrics or health:', e);
@@ -155,65 +176,46 @@ export default function OracleAdminDashboardClient() {
 
   if (loading) {
     return (
-      <div className="loading-screen">
-        <div className="spinner"></div>
-        <p>Loading Oracle Administration Dashboard...</p>
-        <style jsx>{`
-          .loading-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: Inter, sans-serif;
-          }
-          .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-          }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f172a] text-[#f8fafc] font-sans">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-white/10 border-t-blue-500 mb-4"></div>
+        <p className="text-sm font-medium">Loading Oracle Administration Dashboard...</p>
       </div>
     );
   }
 
   const systemHealthy = health?.status === 'healthy';
 
+  console.log("DASHBOARD_RENDER_COMPLETE");
+
   return (
-    <div className="dashboard-container">
+    <div className="max-w-[1400px] mx-auto p-8 w-full bg-[#0b0f19] text-[#f1f5f9] font-sans min-h-screen">
       {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-left">
-          <h1>Oracle Admin</h1>
-          <span className="subtitle">Operational Health & Diagnostics</span>
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#1e293b] pb-6 mb-8 gap-4">
+        <div className="flex flex-col">
+          <h1 className="text-4xl font-extrabold text-[#f8fafc] tracking-tight">Oracle Admin</h1>
+          <span className="text-[#64748b] text-sm mt-1 block">Operational Health & Diagnostics</span>
         </div>
-        <div className="header-right">
+        <div className="flex gap-4 items-center flex-wrap">
           {message && (
-            <div className={`toast-message ${message.type}`}>
+            <div className={`px-4 py-2 rounded-md text-sm ${
+              message.type === 'success' 
+                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+                : 'bg-red-500/15 text-red-500 border border-red-500/30'
+            }`}>
               {message.text}
             </div>
           )}
           <button 
             onClick={() => handleClearCache()} 
             disabled={clearingCache}
-            className="btn btn-danger"
+            className="px-5 py-2.5 rounded-md font-semibold text-sm cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ef4444] text-white hover:bg-[#dc2626]"
           >
             {clearingCache ? 'Clearing...' : 'Clear Cache'}
           </button>
           <button 
             onClick={() => fetchMetricsAndHealth(true)} 
             disabled={refreshing}
-            className="btn btn-primary"
+            className="px-5 py-2.5 rounded-md font-semibold text-sm cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-[#2563eb] text-white hover:bg-[#1d4ed8]"
           >
             {refreshing ? 'Refreshing...' : 'Refresh Metrics'}
           </button>
@@ -221,65 +223,69 @@ export default function OracleAdminDashboardClient() {
       </header>
 
       {/* Overview Cards */}
-      <div className="metrics-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* System Health */}
-        <div className="metric-card health-card">
-          <div className="card-header">
-            <h3>System Status</h3>
-            <span className={`status-badge ${systemHealthy ? 'healthy' : 'unhealthy'}`}>
+        <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-lg font-bold text-[#f1f5f9] m-0">System Status</h3>
+            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+              systemHealthy 
+                ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' 
+                : 'bg-red-500/15 text-red-500 border-red-500/30'
+            }`}>
               {health?.status.toUpperCase() || 'UNKNOWN'}
             </span>
           </div>
-          <div className="health-checks">
-            <div className="check-item">
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-between items-center text-sm text-[#94a3b8]">
               <span>Oracle Engine</span>
-              <span className={`dot ${health?.services.oracle ? 'green' : 'red'}`} />
+              <span className={`w-2 h-2 rounded-full inline-block ${health?.services.oracle ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
             </div>
-            <div className="check-item">
+            <div className="flex justify-between items-center text-sm text-[#94a3b8]">
               <span>Sync Service</span>
-              <span className={`dot ${health?.services.githubSync ? 'green' : 'red'}`} />
+              <span className={`w-2 h-2 rounded-full inline-block ${health?.services.githubSync ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
             </div>
-            <div className="check-item">
+            <div className="flex justify-between items-center text-sm text-[#94a3b8]">
               <span>Query Cache</span>
-              <span className={`dot ${health?.services.cache ? 'green' : 'red'}`} />
+              <span className={`w-2 h-2 rounded-full inline-block ${health?.services.cache ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
             </div>
-            <div className="check-item">
+            <div className="flex justify-between items-center text-sm text-[#94a3b8]">
               <span>Memory Storage</span>
-              <span className={`dot ${health?.services.memory ? 'green' : 'red'}`} />
+              <span className={`w-2 h-2 rounded-full inline-block ${health?.services.memory ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
             </div>
-            <div className="check-item">
+            <div className="flex justify-between items-center text-sm text-[#94a3b8]">
               <span>Analytics Service</span>
-              <span className={`dot ${health?.services.analytics ? 'green' : 'red'}`} />
+              <span className={`w-2 h-2 rounded-full inline-block ${health?.services.analytics ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
             </div>
           </div>
         </div>
 
         {/* Oracle Overview */}
-        <div className="metric-card">
-          <h3>Oracle Overview</h3>
-          <div className="stat-list">
-            <div className="stat-row">
-              <span className="label">Total Queries</span>
-              <span className="val">{metrics?.queries.totalQueries || 0}</span>
+        <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+          <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Oracle Overview</h3>
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Total Queries</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.queries.totalQueries || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Repositories Indexed</span>
-              <span className="val">{metrics?.overview.repositoriesIndexed || 0}</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Repositories Indexed</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.overview.repositoriesIndexed || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Projects Indexed</span>
-              <span className="val">{metrics?.overview.projectsIndexed || 0}</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Projects Indexed</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.overview.projectsIndexed || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Knowledge Graph Size</span>
-              <span className="val">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Knowledge Graph Size</span>
+              <span className="font-semibold text-[#f1f5f9] text-right">
                 {((metrics?.overview.kgNodesCount || 0) + (metrics?.overview.kgRelationsCount || 0))} 
-                <span className="small-text"> ({metrics?.overview.kgNodesCount} nodes, {metrics?.overview.kgRelationsCount} edges)</span>
+                <span className="text-xs text-[#64748b] block">({metrics?.overview.kgNodesCount} nodes, {metrics?.overview.kgRelationsCount} edges)</span>
               </span>
             </div>
-            <div className="stat-row">
-              <span className="label">Last GitHub Sync</span>
-              <span className="val val-date">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Last GitHub Sync</span>
+              <span className="text-xs text-[#cbd5e1] font-semibold">
                 {metrics?.overview.lastSync ? new Date(metrics.overview.lastSync).toLocaleString() : 'Never'}
               </span>
             </div>
@@ -287,139 +293,139 @@ export default function OracleAdminDashboardClient() {
         </div>
 
         {/* Cache Performance */}
-        <div className="metric-card">
-          <h3>Cache Health</h3>
-          <div className="stat-list">
-            <div className="stat-row">
-              <span className="label">Cache Hit Rate</span>
-              <span className="val highlight">{metrics?.cache.hitRate || 0.0}%</span>
+        <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+          <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Cache Health</h3>
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Cache Hit Rate</span>
+              <span className="text-emerald-400 text-lg font-bold">{metrics?.cache.hitRate || 0.0}%</span>
             </div>
-            <div className="progress-bar-container">
-              <div className="progress-bar" style={{ width: `${metrics?.cache.hitRate || 0}%` }}></div>
+            <div className="bg-[#1e293b] rounded-full h-1.5 w-full overflow-hidden -mt-1 mb-1">
+              <div className="bg-emerald-500 h-full rounded-full transition-all duration-300 ease-out" style={{ width: `${metrics?.cache.hitRate || 0}%` }}></div>
             </div>
-            <div className="stat-row">
-              <span className="label">Cache Hits</span>
-              <span className="val">{metrics?.cache.cacheHits || 0}</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Cache Hits</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.cache.cacheHits || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Cache Misses</span>
-              <span className="val">{metrics?.cache.cacheMisses || 0}</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Cache Misses</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.cache.cacheMisses || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Active Entries In Cache</span>
-              <span className="val">{metrics?.cache.cacheSize || 0}</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Active Entries In Cache</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.cache.cacheSize || 0}</span>
             </div>
           </div>
         </div>
 
         {/* System Performance */}
-        <div className="metric-card">
-          <h3>Latency Stats</h3>
-          <div className="stat-list">
-            <div className="stat-row">
-              <span className="label">Avg Response Time</span>
-              <span className="val highlight-blue">{metrics?.performance.averageResponseTime || 0} ms</span>
+        <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+          <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Latency Stats</h3>
+          <div className="flex flex-col gap-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Avg Response Time</span>
+              <span className="text-blue-500 text-lg font-bold">{metrics?.performance.averageResponseTime || 0} ms</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Cache Avg Latency</span>
-              <span className="val">{metrics?.performance.cacheResponseTime || 0} ms</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Cache Avg Latency</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.performance.cacheResponseTime || 0} ms</span>
             </div>
-            <div className="stat-row">
-              <span className="label">OpenRouter Avg Latency</span>
-              <span className="val">{metrics?.performance.openRouterResponseTime || 0} ms</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">OpenRouter Avg Latency</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.performance.openRouterResponseTime || 0} ms</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Detailed Diagnostics Section */}
-      <div className="details-layout">
+      <div className="flex gap-6 flex-col lg:flex-row">
         {/* Left Column */}
-        <div className="details-col flex-2">
+        <div className="flex flex-col flex-[2] gap-6">
           {/* AI Providers & Failover */}
-          <div className="metric-card mt-6">
-            <h3>AI Provider & Model Failover Telemetry</h3>
-            <div className="model-grid">
-              <div className="stat-box">
-                <span className="box-val">{metrics?.providers.openRouterCalls || 0}</span>
-                <span className="box-label">API Requests</span>
+          <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+            <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">AI Provider & Model Failover Telemetry</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.providers.openRouterCalls || 0}</span>
+                <span className="text-xs text-[#94a3b8]">API Requests</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val red-text">{metrics?.providers.openRouterFailures || 0}</span>
-                <span className="box-label">Failures</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-red-500 leading-none mb-1">{metrics?.providers.openRouterFailures || 0}</span>
+                <span className="text-xs text-[#94a3b8]">Failures</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val orange-text">{metrics?.providers.modelFailovers || 0}</span>
-                <span className="box-label">Failovers Triggered</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-amber-500 leading-none mb-1">{metrics?.providers.modelFailovers || 0}</span>
+                <span className="text-xs text-[#94a3b8]">Failovers Triggered</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val">{metrics?.providers.providerSuccessRate || 100}%</span>
-                <span className="box-label">Success Rate</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.providers.providerSuccessRate || 100}%</span>
+                <span className="text-xs text-[#94a3b8]">Success Rate</span>
               </div>
             </div>
-            <div className="stat-row mt-4">
-              <span className="label">Primary Model</span>
-              <span className="val font-mono">deepseek/deepseek-r1:free</span>
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="text-[#94a3b8]">Primary Model</span>
+              <span className="font-mono text-xs bg-[#1f2937] px-1.5 py-0.5 rounded">deepseek/deepseek-r1:free</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Fallback Model 1</span>
-              <span className="val font-mono">meta-llama/llama-3.3-70b-instruct:free</span>
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="text-[#94a3b8]">Fallback Model 1</span>
+              <span className="font-mono text-xs bg-[#1f2937] px-1.5 py-0.5 rounded">meta-llama/llama-3.3-70b-instruct:free</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Upstream 429 Events</span>
-              <span className="val">{metrics?.providers.rateLimit429Events || 0}</span>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-[#94a3b8]">Upstream 429 Events</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.providers.rateLimit429Events || 0}</span>
             </div>
           </div>
 
           {/* Recruiter & Copilot */}
-          <div className="metric-card mt-6">
-            <h3>Recruiter & Career Copilot Analytics</h3>
-            <div className="recruiter-grid">
-              <div className="stat-box">
-                <span className="box-val">{metrics?.recruiter.recruiterQueries || 0}</span>
-                <span className="box-label">Recruiter Queries</span>
+          <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+            <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Recruiter & Career Copilot Analytics</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.recruiter.recruiterQueries || 0}</span>
+                <span className="text-xs text-[#94a3b8]">Recruiter Queries</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val">{metrics?.recruiter.backendEvaluationQueries || 0}</span>
-                <span className="box-label">Backend Evaluations</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.recruiter.backendEvaluationQueries || 0}</span>
+                <span className="text-xs text-[#94a3b8]">Backend Evaluations</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val">{metrics?.recruiter.aiEvaluationQueries || 0}</span>
-                <span className="box-label">AI Evaluations</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.recruiter.aiEvaluationQueries || 0}</span>
+                <span className="text-[#cbd5e1] text-xs text-[#94a3b8]">AI Evaluations</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val">{metrics?.recruiter.resumeQueries || 0}</span>
-                <span className="box-label">Resume Inquiries</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.recruiter.resumeQueries || 0}</span>
+                <span className="text-xs text-[#94a3b8]">Resume Inquiries</span>
               </div>
-              <div className="stat-box">
-                <span className="box-val">{metrics?.recruiter.careerCopilotQueries || 0}</span>
-                <span className="box-label">Career Copilot Queries</span>
+              <div className="bg-[#1f2937] border border-[#374151] rounded-lg p-4 text-center flex flex-col justify-center">
+                <span className="text-2xl font-extrabold text-[#f8fafc] leading-none mb-1">{metrics?.recruiter.careerCopilotQueries || 0}</span>
+                <span className="text-xs text-[#94a3b8]">Career Copilot Queries</span>
               </div>
             </div>
           </div>
 
           {/* Recent Query Log Table */}
-          <div className="metric-card mt-6">
-            <h3>Recent Query Observability Log</h3>
-            <div className="table-responsive">
-              <table className="table">
+          <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+            <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Recent Query Observability Log</h3>
+            <div className="overflow-x-auto mt-2">
+              <table className="w-full border-collapse text-left text-sm">
                 <thead>
-                  <tr>
-                    <th>Query</th>
-                    <th>Route</th>
-                    <th>Latency</th>
-                    <th>Cache Hit</th>
+                  <tr className="border-b border-[#1e293b]">
+                    <th className="px-4 py-3 text-[#94a3b8] font-semibold">Query</th>
+                    <th className="px-4 py-3 text-[#94a3b8] font-semibold">Route</th>
+                    <th className="px-4 py-3 text-[#94a3b8] font-semibold">Latency</th>
+                    <th className="px-4 py-3 text-[#94a3b8] font-semibold">Cache Hit</th>
                   </tr>
                 </thead>
                 <tbody>
                   {metrics?.queries.recentQueries && metrics.queries.recentQueries.length > 0 ? (
                     metrics.queries.recentQueries.map((q, idx) => (
-                      <tr key={idx}>
-                        <td className="query-text" title={q.query}>{q.query}</td>
-                        <td><span className={`route-label ${q.route}`}>{q.route}</span></td>
-                        <td>{q.latencyMs} ms</td>
-                        <td>
-                          <span className={`cache-badge ${q.cacheHit ? 'hit' : 'miss'}`}>
+                      <tr key={idx} className="hover:bg-white/[0.02] transition-colors border-b border-[#1e293b]">
+                        <td className="px-4 py-3 text-[#cbd5e1] max-w-[300px] truncate" title={q.query}>{q.query}</td>
+                        <td className="px-4 py-3"><span className={getRouteLabelClasses(q.route)}>{q.route}</span></td>
+                        <td className="px-4 py-3 text-[#cbd5e1]">{q.latencyMs} ms</td>
+                        <td className="px-4 py-3">
+                          <span className={`text-xs font-bold ${q.cacheHit ? 'text-emerald-400' : 'text-[#64748b]'}`}>
                             {q.cacheHit ? 'HIT' : 'MISS'}
                           </span>
                         </td>
@@ -427,7 +433,7 @@ export default function OracleAdminDashboardClient() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="text-center">No query history logs recorded.</td>
+                      <td colSpan={4} className="px-4 py-8 text-center text-[#64748b]">No query history logs recorded.</td>
                     </tr>
                   )}
                 </tbody>
@@ -437,464 +443,71 @@ export default function OracleAdminDashboardClient() {
         </div>
 
         {/* Right Column */}
-        <div className="details-col flex-1">
+        <div className="flex flex-col flex-1 gap-6">
           {/* Conversational Memory */}
-          <div className="metric-card mt-6">
-            <h3>Conversational Memory</h3>
-            <div className="stat-row">
-              <span className="label">Memory Resolutions</span>
-              <span className="val">{metrics?.memory.memoryResolutions || 0}</span>
+          <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+            <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Conversational Memory</h3>
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="text-[#94a3b8]">Memory Resolutions</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.memory.memoryResolutions || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Resolved Pronouns</span>
-              <span className="val">{metrics?.memory.followUpResolutions || 0}</span>
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="text-[#94a3b8]">Resolved Pronouns</span>
+              <span className="font-semibold text-[#f1f5f9]">{metrics?.memory.followUpResolutions || 0}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">Context Reuse Rate</span>
-              <span className="val highlight">{metrics?.memory.contextReuseRate || 0.0}%</span>
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="text-[#94a3b8]">Context Reuse Rate</span>
+              <span className="text-emerald-400 text-lg font-bold">{metrics?.memory.contextReuseRate || 0.0}%</span>
             </div>
-            <div className="progress-bar-container mt-2">
-              <div className="progress-bar" style={{ width: `${metrics?.memory.contextReuseRate || 0}%` }}></div>
+            <div className="bg-[#1e293b] rounded-full h-1.5 w-full overflow-hidden mb-5">
+              <div className="bg-emerald-500 h-full rounded-full transition-all duration-300 ease-out" style={{ width: `${metrics?.memory.contextReuseRate || 0}%` }}></div>
             </div>
 
-            <h4 className="section-subheading mt-6">Recent Memory Operations</h4>
-            <ul className="event-list">
+            <h4 className="text-sm font-bold text-[#e2e8f0] uppercase tracking-wider mb-3">Recent Memory Operations</h4>
+            <ul className="list-none p-0 m-0 flex flex-col gap-3">
               {metrics?.memory.recentMemoryEvents && metrics.memory.recentMemoryEvents.length > 0 ? (
                 metrics.memory.recentMemoryEvents.slice(-4).map((evt, idx) => (
-                  <li key={idx} className="event-item">
-                    <span className="event-time">{new Date(evt.timestamp).toLocaleTimeString()}</span>
-                    <p className="event-desc">
+                  <li key={idx} className="bg-[#1e293b] rounded-md p-3 border-l-4 border-blue-500">
+                    <span className="text-xs text-[#94a3b8] block mb-1">{new Date(evt.timestamp).toLocaleTimeString()}</span>
+                    <p className="text-[13px] m-0 text-[#e2e8f0]">
                       Stored query context: "{evt.query.slice(0, 45)}{evt.query.length > 45 ? '...' : ''}"
-                      {evt.resolvedMemory && <span className="resolved-flag">Resolved Pronoun</span>}
+                      {evt.resolvedMemory && <span className="bg-[#8b5cf6] text-white text-[10px] px-1 py-0.25 rounded ml-2 font-semibold">Resolved Pronoun</span>}
                     </p>
                   </li>
                 ))
               ) : (
-                <li className="no-events">No conversational sessions stored yet.</li>
+                <li className="text-[#64748b] text-sm text-center py-4">No conversational sessions stored yet.</li>
               )}
             </ul>
           </div>
 
           {/* Cache Metadata details */}
-          <div className="metric-card mt-6">
-            <h3>Cache Metadata</h3>
-            <div className="stat-row">
-              <span className="label">Oldest Entry</span>
-              <p className="small-text-query mt-1">{metrics?.cache.oldestEntry?.query || 'N/A'}</p>
+          <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-6 shadow-md hover:border-[#3b82f6] transition-all duration-200">
+            <h3 className="text-lg font-bold text-[#f1f5f9] mt-0 mb-5">Cache Metadata</h3>
+            <div className="flex flex-col gap-2 mb-4">
+              <span className="text-[#94a3b8] text-sm">Oldest Entry</span>
+              <p className="text-xs text-[#cbd5e1] break-all bg-[#1e293b] p-2 rounded">{metrics?.cache.oldestEntry?.query || 'N/A'}</p>
             </div>
-            <div className="stat-row">
-              <span className="label">Newest Entry</span>
-              <p className="small-text-query mt-1">{metrics?.cache.newestEntry?.query || 'N/A'}</p>
+            <div className="flex flex-col gap-2 mb-6">
+              <span className="text-[#94a3b8] text-sm">Newest Entry</span>
+              <p className="text-xs text-[#cbd5e1] break-all bg-[#1e293b] p-2 rounded">{metrics?.cache.newestEntry?.query || 'N/A'}</p>
             </div>
-            <h4 className="section-subheading mt-6">Most Frequently Hit Cached Queries</h4>
-            <ul className="bullet-list">
+            <h4 className="text-sm font-bold text-[#e2e8f0] uppercase tracking-wider mb-3">Most Frequently Hit Cached Queries</h4>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2">
               {metrics?.cache.mostCachedQueries && metrics.cache.mostCachedQueries.length > 0 ? (
                 metrics.cache.mostCachedQueries.map((q, idx) => (
-                  <li key={idx}>
-                    "{q.query}" <span className="badge-count">{q.count} hits</span>
+                  <li key={idx} className="text-[13px] text-[#cbd5e1] flex justify-between items-center">
+                    <span className="truncate max-w-[200px]" title={q.query}>"{q.query}"</span>
+                    <span className="bg-[#374151] text-[#94a3b8] text-xs px-1.5 py-0.5 rounded flex-shrink-0">{q.count} hits</span>
                   </li>
                 ))
               ) : (
-                <li className="no-events">No cache hits recorded yet.</li>
+                <li className="text-[#64748b] text-sm text-center py-4">No cache hits recorded yet.</li>
               )}
             </ul>
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        body {
-          background-color: #0b0f19;
-          color: #f1f5f9;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-          margin: 0;
-          padding: 0;
-        }
-        .dashboard-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 2rem;
-        }
-        .dashboard-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid #1e293b;
-          padding-bottom: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        .dashboard-header h1 {
-          font-size: 2.25rem;
-          font-weight: 800;
-          color: #f8fafc;
-          margin: 0;
-          letter-spacing: -0.05em;
-        }
-        .dashboard-header .subtitle {
-          color: #64748b;
-          font-size: 0.875rem;
-          margin-top: 0.25rem;
-          display: block;
-        }
-        .header-right {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-        }
-        .toast-message {
-          padding: 0.5rem 1rem;
-          border-radius: 6px;
-          font-size: 0.875rem;
-        }
-        .toast-message.success {
-          background-color: rgba(16, 185, 129, 0.15);
-          color: #10b981;
-          border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .toast-message.error {
-          background-color: rgba(239, 68, 68, 0.15);
-          color: #ef4444;
-          border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        .btn {
-          padding: 0.625rem 1.25rem;
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 0.875rem;
-          cursor: pointer;
-          border: none;
-          transition: all 0.2s ease;
-        }
-        .btn-primary {
-          background-color: #2563eb;
-          color: #ffffff;
-        }
-        .btn-primary:hover {
-          background-color: #1d4ed8;
-        }
-        .btn-danger {
-          background-color: #ef4444;
-          color: #ffffff;
-        }
-        .btn-danger:hover {
-          background-color: #dc2626;
-        }
-        .btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-        .metrics-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1.5rem;
-        }
-        .metric-card {
-          background-color: #111827;
-          border: 1px solid #1e293b;
-          border-radius: 12px;
-          padding: 1.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-        .metric-card:hover {
-          border-color: #3b82f6;
-        }
-        .metric-card h3 {
-          font-size: 1.125rem;
-          font-weight: 700;
-          color: #f1f5f9;
-          margin-top: 0;
-          margin-bottom: 1.25rem;
-        }
-        .card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.25rem;
-        }
-        .card-header h3 {
-          margin-bottom: 0;
-        }
-        .status-badge {
-          padding: 0.25rem 0.75rem;
-          border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 700;
-        }
-        .status-badge.healthy {
-          background-color: rgba(16, 185, 129, 0.15);
-          color: #10b981;
-          border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .status-badge.unhealthy {
-          background-color: rgba(239, 68, 68, 0.15);
-          color: #ef4444;
-          border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        .health-checks {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        .check-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 0.875rem;
-          color: #94a3b8;
-        }
-        .dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          display: inline-block;
-        }
-        .dot.green {
-          background-color: #10b981;
-          box-shadow: 0 0 8px #10b981;
-        }
-        .dot.red {
-          background-color: #ef4444;
-          box-shadow: 0 0 8px #ef4444;
-        }
-        .stat-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        .stat-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 0.875rem;
-        }
-        .stat-row .label {
-          color: #94a3b8;
-        }
-        .stat-row .val {
-          font-weight: 600;
-          color: #f1f5f9;
-        }
-        .stat-row .val.highlight {
-          color: #10b981;
-          font-size: 1.125rem;
-          font-weight: 700;
-        }
-        .stat-row .val.highlight-blue {
-          color: #3b82f6;
-          font-size: 1.125rem;
-          font-weight: 700;
-        }
-        .stat-row .val.val-date {
-          font-size: 0.75rem;
-          color: #cbd5e1;
-        }
-        .progress-bar-container {
-          background-color: #1e293b;
-          border-radius: 9999px;
-          height: 6px;
-          width: 100%;
-          overflow: hidden;
-          margin-top: -0.25rem;
-          margin-bottom: 0.25rem;
-        }
-        .progress-bar {
-          background-color: #10b981;
-          height: 100%;
-          border-radius: 9999px;
-          transition: width 0.3s ease;
-        }
-        .details-layout {
-          display: flex;
-          gap: 1.5rem;
-          flex-wrap: wrap;
-        }
-        .details-col {
-          display: flex;
-          flex-direction: column;
-          min-width: 320px;
-        }
-        .flex-1 { flex: 1; }
-        .flex-2 { flex: 2; }
-        .mt-6 { margin-top: 1.5rem; }
-        .mt-4 { margin-top: 1rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .font-mono {
-          font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-          font-size: 0.75rem;
-          background-color: #1f2937;
-          padding: 0.125rem 0.375rem;
-          border-radius: 4px;
-        }
-        .model-grid, .recruiter-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-          gap: 1rem;
-          margin-bottom: 1.25rem;
-        }
-        .stat-box {
-          background-color: #1f2937;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          padding: 1rem;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-        .stat-box .box-val {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: #f8fafc;
-          line-height: 1;
-          margin-bottom: 0.25rem;
-        }
-        .stat-box .box-val.red-text { color: #ef4444; }
-        .stat-box .box-val.orange-text { color: #f59e0b; }
-        .stat-box .box-label {
-          font-size: 0.75rem;
-          color: #94a3b8;
-        }
-        .table-responsive {
-          overflow-x: auto;
-          margin-top: 0.5rem;
-        }
-        .table {
-          width: 100%;
-          border-collapse: collapse;
-          text-align: left;
-          font-size: 0.875rem;
-        }
-        .table th, .table td {
-          padding: 0.75rem 1rem;
-          border-bottom: 1px solid #1e293b;
-        }
-        .table th {
-          color: #94a3b8;
-          font-weight: 600;
-        }
-        .table tr:hover td {
-          background-color: rgba(255, 255, 255, 0.02);
-        }
-        .query-text {
-          max-width: 300px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          color: #cbd5e1;
-        }
-        .route-label {
-          font-size: 0.75rem;
-          padding: 0.125rem 0.5rem;
-          border-radius: 4px;
-          font-weight: 600;
-        }
-        .route-label.openrouter {
-          background-color: rgba(59, 130, 246, 0.15);
-          color: #3b82f6;
-        }
-        .route-label.smart-route {
-          background-color: rgba(16, 185, 129, 0.15);
-          color: #10b981;
-        }
-        .route-label.recruiter-insight {
-          background-color: rgba(139, 92, 246, 0.15);
-          color: #8b5cf6;
-        }
-        .route-label.narrative-engine {
-          background-color: rgba(236, 72, 153, 0.15);
-          color: #ec4899;
-        }
-        .route-label.copilot-engine {
-          background-color: rgba(245, 158, 11, 0.15);
-          color: #f59e0b;
-        }
-        .cache-badge {
-          font-size: 0.75rem;
-          font-weight: 700;
-        }
-        .cache-badge.hit { color: #10b981; }
-        .cache-badge.miss { color: #64748b; }
-        .section-subheading {
-          font-size: 0.875rem;
-          font-weight: 700;
-          color: #e2e8f0;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 0.75rem;
-        }
-        .event-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        .event-item {
-          background-color: #1e293b;
-          border-radius: 6px;
-          padding: 0.75rem;
-          border-left: 3px solid #3b82f6;
-        }
-        .event-time {
-          font-size: 0.75rem;
-          color: #94a3b8;
-          display: block;
-          margin-bottom: 0.25rem;
-        }
-        .event-desc {
-          font-size: 0.8125rem;
-          margin: 0;
-          color: #e2e8f0;
-        }
-        .resolved-flag {
-          background-color: #8b5cf6;
-          color: #ffffff;
-          font-size: 0.625rem;
-          padding: 0.0625rem 0.25rem;
-          border-radius: 3px;
-          margin-left: 0.5rem;
-          font-weight: 600;
-        }
-        .no-events {
-          color: #64748b;
-          font-size: 0.875rem;
-          text-align: center;
-          padding: 1rem;
-        }
-        .small-text-query {
-          font-size: 0.75rem;
-          color: #cbd5e1;
-          word-break: break-all;
-        }
-        .small-text {
-          font-size: 0.75rem;
-          color: #64748b;
-        }
-        .bullet-list {
-          list-style-type: none;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        .bullet-list li {
-          font-size: 0.8125rem;
-          color: #cbd5e1;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .badge-count {
-          background-color: #374151;
-          color: #94a3b8;
-          font-size: 0.75rem;
-          padding: 0.0625rem 0.375rem;
-          border-radius: 4px;
-        }
-      `}</style>
     </div>
   );
 }
