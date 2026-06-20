@@ -16,29 +16,53 @@ export default function ContactPage() {
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
     
     setIsSubmitting(true);
+    setIsSuccess(false);
+    setErrorMessage(null);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          subject,
+          message,
+          honeypot,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsSuccess(true);
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+        setHoneypot('');
+      } else {
+        setErrorMessage(data.message || 'An error occurred while sending the message.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'A network error occurred. Please try again.');
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-      // Reset form
-      setName('');
-      setEmail('');
-      setSubject('');
-      setMessage('');
-      
-      // Reset success state after 5 seconds
-      setTimeout(() => setIsSuccess(false), 5000);
-    }, 1500);
+    }
   };
+
 
   return (
     <div className="flex-grow py-8">
@@ -173,12 +197,32 @@ export default function ContactPage() {
                 />
               </div>
 
+              {/* Bot honeypot spam-trap field */}
+              <div className="hidden" aria-hidden="true">
+                <input
+                  type="text"
+                  name="honeypot"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
               {isSuccess && (
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-success-green/10 border border-success-green/20 text-success-green font-mono text-xs">
                   <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
                   <span>SUCCESS: Message sent. Thank you, I will get back to you shortly!</span>
                 </div>
               )}
+
+              {errorMessage && (
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 font-mono text-xs">
+                  <span className="font-bold flex-shrink-0">ERROR:</span>
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
 
               <Button
                 type="submit"
