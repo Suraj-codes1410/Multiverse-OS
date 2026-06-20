@@ -1,0 +1,34 @@
+name: Multiverse-OS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript Validation
+        run: npx tsc --noEmit
+
+      - name: Production Build
+        run: npm run build
+
+      - name: Oracle Regression Suite
+        run: npx tsx scratch/oracle-regression-tests.ts
