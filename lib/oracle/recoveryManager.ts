@@ -13,23 +13,32 @@ export class OracleRecoveryManager {
       
       if (!fs.existsSync(cachePath)) {
         console.log("RECOVERY_TRIGGERED", "Cache file missing. Initializing with empty repository list.");
-        fs.writeFileSync(cachePath, JSON.stringify({ repositories: [], lastUpdated: new Date().toISOString() }, null, 2));
+        if (process.env.VERCEL === '1') {
+          console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping recovery cache initialization.");
+        } else {
+          fs.writeFileSync(cachePath, JSON.stringify({ repositories: [], lastUpdated: new Date().toISOString() }, null, 2));
+        }
       } else {
         const content = fs.readFileSync(cachePath, 'utf8');
         JSON.parse(content);
       }
     } catch (error) {
       console.log("RECOVERY_TRIGGERED", "Cache corruption detected. Rebuilding cache file with defaults.");
-      try {
-        const fs = eval('require')('fs');
-        const path = eval('require')('path');
-        const cachePath = path.join(process.cwd(), 'data/github-sync-cache.json');
-        fs.writeFileSync(cachePath, JSON.stringify({ repositories: [], lastUpdated: new Date().toISOString() }, null, 2));
-      } catch (e) {
-        console.error("Failed to write default sync cache during recovery:", e);
+      if (process.env.VERCEL === '1') {
+        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping corrupt cache flush.");
+      } else {
+        try {
+          const fs = eval('require')('fs');
+          const path = eval('require')('path');
+          const cachePath = path.join(process.cwd(), 'data/github-sync-cache.json');
+          fs.writeFileSync(cachePath, JSON.stringify({ repositories: [], lastUpdated: new Date().toISOString() }, null, 2));
+        } catch (e) {
+          console.error("Failed to write default sync cache during recovery:", e);
+        }
       }
     }
   }
+
 
   /**
    * Recovers from analytics corruption or missing analytics file
@@ -42,23 +51,32 @@ export class OracleRecoveryManager {
 
       if (!fs.existsSync(analyticsPath)) {
         console.log("RECOVERY_TRIGGERED", "Analytics file missing. Re-creating empty analytics database.");
-        fs.writeFileSync(analyticsPath, JSON.stringify({ queries: [], providerCalls: [] }, null, 2));
+        if (process.env.VERCEL === '1') {
+          console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping recovery analytics initialization.");
+        } else {
+          fs.writeFileSync(analyticsPath, JSON.stringify({ queries: [], providerCalls: [] }, null, 2));
+        }
       } else {
         const content = fs.readFileSync(analyticsPath, 'utf8');
         JSON.parse(content);
       }
     } catch (error) {
       console.log("RECOVERY_TRIGGERED", "Analytics corruption detected. Flushing and recreating database.");
-      try {
-        const fs = eval('require')('fs');
-        const path = eval('require')('path');
-        const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
-        fs.writeFileSync(analyticsPath, JSON.stringify({ queries: [], providerCalls: [] }, null, 2));
-      } catch (e) {
-        console.error("Failed to write default analytics during recovery:", e);
+      if (process.env.VERCEL === '1') {
+        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping corrupt analytics flush.");
+      } else {
+        try {
+          const fs = eval('require')('fs');
+          const path = eval('require')('path');
+          const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
+          fs.writeFileSync(analyticsPath, JSON.stringify({ queries: [], providerCalls: [] }, null, 2));
+        } catch (e) {
+          console.error("Failed to write default analytics during recovery:", e);
+        }
       }
     }
   }
+
 
   /**
    * Safely fetches repositories, returning empty defaults if context or file loading fails

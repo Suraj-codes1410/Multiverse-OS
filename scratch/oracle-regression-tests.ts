@@ -462,16 +462,21 @@ async function runRegressionSuite() {
       throw new Error('OpenRouter API call count did not increase (expected > 0)');
     }
     
-    const fs = eval('require')('fs');
-    const path = eval('require')('path');
-    const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
-    if (!fs.existsSync(analyticsPath)) {
-      throw new Error('Analytics data was not persisted to file');
+    if (process.env.VERCEL === '1') {
+      console.log('VERCEL_COMPATIBLE: Serverless analytics running in-memory. Skipping filesystem persistence assertions.');
+    } else {
+      const fs = eval('require')('fs');
+      const path = eval('require')('path');
+      const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
+      if (!fs.existsSync(analyticsPath)) {
+        throw new Error('Analytics data was not persisted to file');
+      }
+      const persisted = JSON.parse(fs.readFileSync(analyticsPath, 'utf8'));
+      if (persisted.queries.length !== metrics.queries.totalQueries) {
+        throw new Error('Persisted query count does not match in-memory dashboard query count');
+      }
     }
-    const persisted = JSON.parse(fs.readFileSync(analyticsPath, 'utf8'));
-    if (persisted.queries.length !== metrics.queries.totalQueries) {
-      throw new Error('Persisted query count does not match in-memory dashboard query count');
-    }
+
   }, sessionId);
   results.push(resAnalytics);
 

@@ -18,12 +18,9 @@ import { initializeOracleStartup } from '@/lib/oracle/startup';
 // Execute Startup Validation and error recoveries
 initializeOracleStartup();
 
-// Initialize the GitHub Repository Refresh Manager to run background synchronizations.
-// It will run a startup sync in the background and trigger periodic syncs.
-RepositoryRefreshManager.getInstance().start({
-  intervalMs: parseInt(process.env.GITHUB_SYNC_INTERVAL_MS || '3600000'), // Default 1 hour
-  performStartupSync: true
-});
+// Dedicated sync route manages synchronization on Vercel.
+// Do not start RepositoryRefreshManager at top-level startup to prevent serverless execution timeout.
+
 
 export async function POST(req: Request) {
   console.log("========== ORACLE API HIT ==========");

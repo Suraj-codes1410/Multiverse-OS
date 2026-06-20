@@ -37,6 +37,11 @@ export class AnalyticsService {
         const path = eval('require')('path');
         this.filePath = path.join(process.cwd(), 'data/oracle-analytics.json');
         
+        if (process.env.VERCEL === '1') {
+          console.log("VERCEL_COMPATIBLE: Serverless environment detected. Running Analytics in-memory only.");
+          return;
+        }
+
         // Ensure directory exists
         const dir = path.dirname(this.filePath);
         if (!fs.existsSync(dir)) {
@@ -59,6 +64,7 @@ export class AnalyticsService {
     }
   }
 
+
   public static getInstance(): AnalyticsService {
     if (!AnalyticsService.instance) {
       AnalyticsService.instance = new AnalyticsService();
@@ -67,6 +73,10 @@ export class AnalyticsService {
   }
 
   private save(): void {
+    if (process.env.VERCEL === '1') {
+      // Skip writing telemetry to disk on Vercel
+      return;
+    }
     if (typeof window === 'undefined') {
       try {
         const fs = eval('require')('fs');
@@ -76,6 +86,7 @@ export class AnalyticsService {
       }
     }
   }
+
 
   public recordQuery(record: Omit<QueryRecord, 'timestamp'>): void {
     const fullRecord: QueryRecord = {

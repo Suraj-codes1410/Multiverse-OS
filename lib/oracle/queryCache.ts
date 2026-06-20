@@ -14,13 +14,18 @@ export class CacheManager {
   private constructor() {
     // Periodically evict expired entries to prevent memory growth
     if (typeof window === 'undefined') {
-      this.cleanupInterval = setInterval(() => this.evictExpired(), 60000);
-      // Allow the process to exit even if this timer is active
-      if (this.cleanupInterval && typeof this.cleanupInterval.unref === 'function') {
-        this.cleanupInterval.unref();
+      if (process.env.VERCEL === '1') {
+        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping background cache eviction loop.");
+      } else {
+        this.cleanupInterval = setInterval(() => this.evictExpired(), 60000);
+        // Allow the process to exit even if this timer is active
+        if (this.cleanupInterval && typeof this.cleanupInterval.unref === 'function') {
+          this.cleanupInterval.unref();
+        }
       }
     }
   }
+
 
   public static getInstance(): CacheManager {
     if (!CacheManager.instance) {

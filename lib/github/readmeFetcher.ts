@@ -1,5 +1,11 @@
 import githubConfig from '../../data/github-config.json';
 
+// Initialize global variables to store readme cache in-memory for serverless environments
+const globalAny = global as any;
+if (!globalAny.githubReadmeCache) {
+  globalAny.githubReadmeCache = null;
+}
+
 function getFsAndPath() {
   if (typeof window === 'undefined') {
     try {
@@ -24,18 +30,37 @@ export class ReadmeFetcher {
   static async fetch(repoName: string): Promise<string> {
     const normalizedName = repoName.toLowerCase().trim();
     const { fs, cachePath } = getFsAndPath();
+    const globalAny = global as any;
 
-    // 1. Try to read from cache first, but only if it's not a placeholder
+    // 1. Try to read from in-memory cache first
+    if (globalAny.githubReadmeCache && globalAny.githubReadmeCache[normalizedName]) {
+      const cachedValue = globalAny.githubReadmeCache[normalizedName];
+      if (!cachedValue.includes("No README.md content was retrieved") && 
+          !cachedValue.includes("No README content available") && 
+          !cachedValue.includes("Failed to fetch README")) {
+        return cachedValue;
+      }
+    }
+
+    // 2. Try to read from disk cache next
     if (fs && cachePath && fs.existsSync(cachePath)) {
       try {
         const content = fs.readFileSync(cachePath, 'utf8');
         const cache = JSON.parse(content);
-        if (cache && cache[normalizedName]) {
-          const cachedValue = cache[normalizedName];
-          if (!cachedValue.includes("No README.md content was retrieved") && 
-              !cachedValue.includes("No README content available") && 
-              !cachedValue.includes("Failed to fetch README")) {
-            return cachedValue;
+        if (cache) {
+          // Initialize memory cache from disk cache
+          if (!globalAny.githubReadmeCache) {
+            globalAny.githubReadmeCache = cache;
+          } else {
+            globalAny.githubReadmeCache = { ...cache, ...globalAny.githubReadmeCache };
+          }
+          if (cache[normalizedName]) {
+            const cachedValue = cache[normalizedName];
+            if (!cachedValue.includes("No README.md content was retrieved") && 
+                !cachedValue.includes("No README content available") && 
+                !cachedValue.includes("Failed to fetch README")) {
+              return cachedValue;
+            }
           }
         }
       } catch (e) {
@@ -43,12 +68,12 @@ export class ReadmeFetcher {
       }
     }
 
-    // 2. If sync is disabled in environment, return mock or "No README content available."
+    // 3. If sync is disabled in environment, return mock or "No README content available."
     if (process.env.ENABLE_GITHUB_SYNC === 'false') {
       return this.MOCK_READMES[normalizedName] || 'No README content available.';
     }
 
-    // 3. Perform live API fetch
+    // 4. Perform live API fetch
     const username = githubConfig.username;
     const headers: Record<string, string> = {
       'Accept': 'application/vnd.github.v3.raw',
@@ -66,7 +91,16 @@ export class ReadmeFetcher {
 
       if (response.ok) {
         const text = await response.text();
-        if (fs && cachePath) {
+
+        // Update in-memory cache
+        if (!globalAny.githubReadmeCache) {
+          globalAny.githubReadmeCache = {};
+        }
+        globalAny.githubReadmeCache[normalizedName] = text;
+
+        if (process.env.VERCEL === '1') {
+          console.log("VERCEL_COMPATIBLE: Serverless environment detected. Cached README in memory. Skipping disk write.");
+        } else if (fs && cachePath) {
           try {
             let cache: Record<string, string> = {};
             if (fs.existsSync(cachePath)) {
@@ -85,7 +119,7 @@ export class ReadmeFetcher {
       console.error(`ReadmeFetcher: Error fetching README for ${repoName}:`, error);
     }
 
-    // 4. Return offline mock if available, otherwise return the explicit unavailable message
+    // 5. Return offline mock if available, otherwise return the explicit unavailable message
     return this.MOCK_READMES[normalizedName] || 'No README content available.';
   }
 }

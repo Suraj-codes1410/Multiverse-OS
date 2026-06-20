@@ -1,7 +1,19 @@
 import { GitHubRepository } from '../types';
 import githubConfig from '@/data/github-config.json';
 
+// Initialize global variables to store repository cache in-memory for serverless environments
+const globalAny = global as any;
+if (!globalAny.githubSyncCache) {
+  globalAny.githubSyncCache = null;
+}
+
+
 function loadCachedRepositories(): GitHubRepository[] | null {
+  const globalAny = global as any;
+  if (globalAny.githubSyncCache && Array.isArray(globalAny.githubSyncCache.repositories)) {
+    return globalAny.githubSyncCache.repositories;
+  }
+
   if (typeof window === 'undefined') {
     try {
       const fs = eval('require')('fs');
@@ -11,6 +23,7 @@ function loadCachedRepositories(): GitHubRepository[] | null {
         const content = fs.readFileSync(cachePath, 'utf8');
         const cache = JSON.parse(content);
         if (cache && Array.isArray(cache.repositories)) {
+          globalAny.githubSyncCache = cache;
           return cache.repositories;
         }
       }
@@ -20,6 +33,7 @@ function loadCachedRepositories(): GitHubRepository[] | null {
   }
   return null;
 }
+
 
 // Local fallback cache to avoid rate-limiting issues on GitHub public APIs during development/builds
 const MOCK_REPOSITORIES: GitHubRepository[] = [
