@@ -544,6 +544,32 @@ async function runRegressionSuite() {
   }
 
   // ==========================================
+  // Category 14: Repository URL Validation
+  // ==========================================
+  const c14Queries = [
+    { q: 'Show me the SAHAI repository', expected: ['https://github.com/Suraj-codes1410/Sahai'] },
+    { q: 'Show me the ORBITAIR repository', expected: ['https://github.com/Suraj-codes1410/orbit-ops/tree/OrbitAir_website'] },
+    { q: 'Show me the Patient Management Service repository', expected: ['https://github.com/Suraj-codes1410/Patient-management-services'] },
+    { q: "List Suraj's repositories", expected: [
+      'https://github.com/Suraj-codes1410/Sahai',
+      'https://github.com/Suraj-codes1410/orbit-ops/tree/OrbitAir_website',
+      'https://github.com/Suraj-codes1410/Patient-management-services'
+    ] }
+  ];
+  for (const item of c14Queries) {
+    const res = await runTest('Repository URL Validation', item.q, (data, logs, dur, status) => {
+      if (status !== 200) throw new Error(`HTTP status ${status}`);
+      if (!data.text) throw new Error('Response is empty');
+      for (const url of item.expected) {
+        if (!data.text.includes(url)) {
+          throw new Error(`Expected URL [${url}] not found in response: ${data.text}`);
+        }
+      }
+    }, sessionId);
+    results.push(res);
+  }
+
+  // ==========================================
   // Summary & Performance Metrics
   // ==========================================
   restoreFetchMock();

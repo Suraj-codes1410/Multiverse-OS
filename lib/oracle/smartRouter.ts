@@ -43,7 +43,8 @@ export class QueryIntentClassifier {
     });
 
     const matchedRepos = Array.from(repoAndProjNames).filter(name => {
-      const regex = new RegExp(`\\b${name}\\b`, 'i');
+      const nameSpaced = name.replace(/-/g, ' ');
+      const regex = new RegExp(`\\b${name}\\b|\\b${nameSpaced}\\b`, 'i');
       return regex.test(queryLower);
     });
 
@@ -103,10 +104,10 @@ export class QueryIntentClassifier {
     // A. Portfolio Statistics
     const statRegex = /\b(how many|number of|total count|count of|most popular|most common|most used|list|show)\b/i;
     const statKeywords = ['repos', 'repository', 'repositories', 'project', 'projects', 'skill', 'skills', 'achievement', 'achievements', 'technology', 'technologies', 'languages'];
-    const isStatQuery = statRegex.test(queryLower) && statKeywords.some(kw => queryLower.includes(kw));
+    const isStatQuery = statRegex.test(queryLower) && statKeywords.some(kw => queryLower.includes(kw)) && !(matchedRepos.length > 0 && (queryLower.includes('show') || queryLower.includes('get') || queryLower.includes('view') || queryLower.includes('find') || queryLower.includes('link') || queryLower.includes('url')));
 
     // B. Repository Metadata (excluding statistics)
-    const metaRegex = /\b(newest|latest|recent|updated|created|creation|description|homepage|stars|forks|url|link|github link|github url|technology|technologies|language|languages|tech|stack|framework|frameworks|tool|tools)\b/i;
+    const metaRegex = /\b(newest|latest|recent|updated|created|creation|description|homepage|stars|forks|url|link|github link|github url|technology|technologies|language|languages|tech|stack|framework|frameworks|tool|tools|show|view|get)\b/i;
     const isMetaQuery = metaRegex.test(queryLower) && (queryLower.includes('repo') || queryLower.includes('repository') || matchedRepos.length > 0);
 
     // C. Technology Lookup
@@ -475,9 +476,9 @@ All skills are backed by direct implementation evidence across active repositori
 Suraj Samanta is highly qualified for a Backend Engineering position based on the following evidence:
 
 1. **Key Implementations**:
-   - **Microservices & Event-Driven Systems**: Developed a hospital patient billing system using **Spring Boot**, **gRPC**, and **Kafka** ([patient-management-service](https://github.com/Suraj-codes1410/patient-management-service)) containerized via Docker.
-   - **Geospatial Time-Series Analytics**: Developed **orbitair** ([orbitair](https://github.com/Suraj-codes1410/orbitair)), an AQI forecasting platform utilizing FastAPI, TimescaleDB geospatial hypertables, and Leaflet visualizations (NASA Space Apps Challenge top-5 in India).
-   - **RAG & WebSocket Chat**: Engineered **sahai** ([sahai](https://github.com/Suraj-codes1410/sahai)), a wellness platform using Django, FastAPI, Pinecone-backed RAG chatbot, and WebSockets chat rooms (Smart India Hackathon participant).
+   - **Microservices & Event-Driven Systems**: Developed a hospital patient billing system using **Spring Boot**, **gRPC**, and **Kafka** ([patient-management-service](https://github.com/Suraj-codes1410/Patient-management-services)) containerized via Docker.
+   - **Geospatial Time-Series Analytics**: Developed **orbitair** ([orbitair](https://github.com/Suraj-codes1410/orbit-ops/tree/OrbitAir_website)), an AQI forecasting platform utilizing FastAPI, TimescaleDB geospatial hypertables, and Leaflet visualizations (NASA Space Apps Challenge top-5 in India).
+   - **RAG & WebSocket Chat**: Engineered **sahai** ([sahai](https://github.com/Suraj-codes1410/Sahai)), a wellness platform using Django, FastAPI, Pinecone-backed RAG chatbot, and WebSockets chat rooms (Smart India Hackathon participant).
 2. **Core Competencies**: Microservices architecture, high-concurrency systems, time-series data indexing, and vector similarity search.
 3. **Core Tech Stack**: Java, Python, Spring Boot, FastAPI, Django, Kafka, gRPC, Pinecone, TimescaleDB, Docker, WebSockets.`;
       }

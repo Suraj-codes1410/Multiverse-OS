@@ -22,7 +22,7 @@
       "Event-driven state synchronization requires careful outbox pattern designs to prevent event duplicates.",
       "Spring Security filter chains must be explicitly configured on gateways to ensure unified CORS and RBAC controls."
     ],
-    "githubUrl": "https://github.com/Suraj-codes1410/patient-management-service",
+    "githubUrl": "https://github.com/Suraj-codes1410/Patient-management-services",
     "liveUrl": "",
     "status": "Completed",
     "year": "2025"
@@ -50,7 +50,7 @@
       "WebSockets require resilient connection lifecycle handlers to prevent resource leakage on client disconnections.",
       "Pinecone vector search latency is heavily dependent on embedding chunk sizes; optimized chunking is crucial."
     ],
-    "githubUrl": "https://github.com/Suraj-codes1410/sahai",
+    "githubUrl": "https://github.com/Suraj-codes1410/Sahai",
     "liveUrl": "",
     "status": "Hackathon Project",
     "year": "2025"
@@ -78,7 +78,7 @@
       "TimescaleDB hypertable partitioning is highly effective for running geospatial queries on large datasets.",
       "Explainable AI outputs are critical for helping city planners trust predictive environmental models."
     ],
-    "githubUrl": "https://github.com/Suraj-codes1410/orbitair",
+    "githubUrl": "https://github.com/Suraj-codes1410/orbit-ops/tree/OrbitAir_website",
     "liveUrl": "",
     "status": "Award Winner",
     "year": "2025"
