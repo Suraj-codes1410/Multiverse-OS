@@ -1,6 +1,7 @@
 export interface CommandContext {
   clearTerminal: () => void;
   navigate?: (path: string) => void;
+  openOracle?: () => void;
 }
 
 export interface CommandResult {

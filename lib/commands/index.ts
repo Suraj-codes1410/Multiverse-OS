@@ -11,6 +11,7 @@ import { achievementsCommand } from './achievements';
 import { contactCommand } from './contact';
 import { resumeCommand } from './resume';
 import { homeCommand } from './home';
+import { oracleCommand } from './oracle';
 import { recruiterCommand } from './recruiter';
 import { openCommand } from './open';
 import { projectCommand } from './project';
@@ -42,6 +43,7 @@ registry.register(achievementsCommand);
 registry.register(contactCommand);
 registry.register(resumeCommand);
 registry.register(homeCommand);
+registry.register(oracleCommand);
 registry.register(recruiterCommand);
 registry.register(openCommand);
 registry.register(projectCommand);
@@ -77,6 +79,7 @@ export {
   contactCommand, 
   resumeCommand,
   homeCommand,
+  oracleCommand,
   recruiterCommand,
   openCommand,
   projectCommand,

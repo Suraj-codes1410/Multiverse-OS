@@ -398,64 +398,36 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       <div className="flex-grow overflow-y-auto p-4 space-y-5 flex flex-col scrollbar-thin select-text">
         {messages.length === 0 ? (
           /* Empty State Guided Landing Experience Dashboard */
-          <div className="space-y-6 py-2 animate-in fade-in duration-300">
+          <div className="space-y-5 py-2 animate-in fade-in duration-300">
             {/* Hero Introduction Panel */}
-            <div className="border border-border-subtle bg-[#0a0c16]/50 rounded-xl p-5 text-center relative overflow-hidden">
+            <div className="border border-border-subtle bg-[#0a0c16]/50 rounded-xl p-4 text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-accent-purple/5 to-transparent pointer-events-none" />
-              <div className="w-10 h-10 rounded-full border border-accent-purple/20 bg-accent-purple/10 flex items-center justify-center mx-auto mb-3">
-                <Sparkles className="w-5 h-5 text-accent-purple animate-pulse" />
+              <div className="w-8 h-8 rounded-full border border-accent-purple/20 bg-accent-purple/10 flex items-center justify-center mx-auto mb-2.5">
+                <Sparkles className="w-4 h-4 text-accent-purple animate-pulse" />
               </div>
-              <h1 className="font-mono text-lg font-bold tracking-widest text-text-primary">
+              <h1 className="font-mono text-base font-bold tracking-widest text-text-primary">
                 ORACLE
               </h1>
-              <p className="font-mono text-[10px] uppercase font-semibold text-accent-purple tracking-wider mt-0.5">
-                AI-Powered Portfolio Intelligence System
+              <p className="font-mono text-[9px] uppercase font-semibold text-accent-purple tracking-wider mt-0.5">
+                AI-Powered Portfolio Intelligence
               </p>
-              <p className="text-[11px] text-text-secondary leading-relaxed mt-3">
-                Explore Suraj Samanta's projects, repositories, technical skills, engineering journey, and career insights through a real-time knowledge graph powered by repository intelligence and AI.
+              <p className="text-[11px] text-text-secondary leading-relaxed mt-2.5">
+                Ask questions about Suraj's projects, repositories, skills, and experience. Powered by local intelligence, semantic graph routing, and offline failovers.
               </p>
             </div>
 
-            {/* System Status Badge & Info */}
-            <div className="border border-border-subtle bg-[#0a0c16]/40 rounded-xl p-4 font-mono text-[11px] space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-text-secondary">Oracle Status:</span>
-                <span className={`px-2 py-0.5 rounded border font-bold text-[10px] uppercase flex items-center gap-1.5 ${getStatusColor()}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${healthStatus?.status === 'healthy' ? 'bg-success-green' : 'bg-warning-amber'}`} />
-                  {getStatusText()}
-                </span>
-              </div>
-              <div className="border-t border-border-subtle/50 my-2 pt-2">
-                <div className="text-[10px] uppercase font-bold text-accent-purple/90 tracking-wide mb-1.5">Powered by:</div>
-                <div className="grid grid-cols-2 gap-1.5 text-[10px] text-text-secondary">
-                  <div className="flex items-center gap-1">
-                    <span className="text-accent-cyan">•</span> Knowledge Graph
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-accent-cyan">•</span> Smart Routing
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-accent-cyan">•</span> Repository Intelligence
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-accent-cyan">•</span> AI Reasoning
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Recruiter Quick Actions (Recruiter Mode) */}
+            {/* Recruiter Evaluation Panel (Requirement 7: Recruiter Mode Quick Evaluations) */}
             <div className="space-y-2">
-              <h3 className="font-mono text-[11px] font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
+              <h3 className="font-mono text-[10px] font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-pulse" />
-                Recruiter Quick Actions
+                Recruiter Mode: Quick Evaluations
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Backend Evaluation", query: "Which project best demonstrates backend engineering?" },
-                  { label: "AI Evaluation", query: "Which project best demonstrates AI/ML?" },
-                  { label: "Resume Recommendation", query: "Why should Suraj be hired?" },
-                  { label: "Interview Preparation", query: "Help me prepare for an interview with Suraj." }
+                  { label: "Backend Engineering", query: "Which project best demonstrates backend engineering?" },
+                  { label: "AI Engineering", query: "Which project best demonstrates AI/ML?" },
+                  { label: "Resume Review", query: "Why should Suraj be hired?" },
+                  { label: "Project Recs", query: "What is Suraj's strongest project?" }
                 ].map((action) => (
                   <button
                     key={action.label}
@@ -463,144 +435,52 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
                       console.log("RECRUITER_MODE_CLICK", action.label);
                       handleSend(action.query, 'RECRUITER_MODE_CLICK');
                     }}
-                    className="p-2.5 border border-border-subtle bg-bg-panel/50 hover:bg-[#111424] hover:border-accent-cyan/50 text-left rounded-lg transition-all duration-200 cursor-pointer group"
+                    className="p-2 border border-border-subtle bg-bg-panel/40 hover:bg-[#111424] hover:border-accent-cyan/50 text-left rounded-lg transition-all duration-200 cursor-pointer group"
                   >
                     <div className="font-mono text-[10px] font-bold text-text-primary group-hover:text-accent-cyan transition-colors">
                       {action.label}
                     </div>
                     <div className="text-[9px] text-text-secondary truncate mt-0.5">
-                      {action.query}
+                      Evaluate credentials
                     </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Suggested Queries */}
-            <div className="space-y-3">
-              <h3 className="font-mono text-[11px] font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
+            {/* Suggested Starter Queries (Requirement 5: Oracle Suggested Queries) */}
+            <div className="space-y-2.5">
+              <h3 className="font-mono text-[10px] font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-accent-purple rounded-full" />
-                Suggested Queries
+                Suggested Starter Queries
               </h3>
               
-              <div className="space-y-3">
+              <div className="flex flex-col gap-1.5">
                 {[
-                  {
-                    category: "Projects",
-                    queries: [
-                      "Which project best demonstrates backend engineering?",
-                      "Compare SAHAI and ORBITAIR.",
-                      "What is Suraj's strongest project?"
-                    ]
-                  },
-                  {
-                    category: "Repositories",
-                    queries: [
-                      "List Suraj's repositories.",
-                      "Which repositories use FastAPI?",
-                      "Summarize oracle-sync-test."
-                    ]
-                  },
-                  {
-                    category: "Career",
-                    queries: [
-                      "Why should Suraj be hired?",
-                      "What are Suraj's strongest skills?",
-                      "What should Suraj build next?"
-                    ]
-                  },
-                  {
-                    category: "Journey",
-                    queries: [
-                      "Tell me Suraj's engineering journey.",
-                      "How has Suraj evolved as an engineer?"
-                    ]
-                  }
-                ].map((cat) => (
-                  <div key={cat.category} className="space-y-1">
-                    <span className="font-mono text-[9px] text-text-secondary pl-1 block">
-                      // {cat.category}
-                    </span>
-                    <div className="flex flex-col gap-1.5">
-                      {cat.queries.map((q) => (
-                        <button
-                          key={q}
-                          onClick={() => {
-                            console.log("SUGGESTED_QUERY_CLICK", q);
-                            handleSend(q, 'SUGGESTED_QUERY_CLICK');
-                          }}
-                          className="px-3 py-2 border border-border-subtle bg-bg-panel/30 hover:bg-bg-panel/85 hover:border-accent-purple/40 text-left text-[11px] text-text-secondary hover:text-text-primary transition-all rounded-lg cursor-pointer font-mono"
-                        >
-                          {q}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  "Which project best demonstrates backend engineering?",
+                  "Compare SAHAI and ORBITAIR.",
+                  "Why should Suraj be hired for a backend role?",
+                  "Tell me Suraj's engineering journey.",
+                  "What technologies power ORBITAIR?",
+                  "What are Suraj's strongest technical skills?"
+                ].map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => {
+                      console.log("SUGGESTED_QUERY_CLICK", q);
+                      handleSend(q, 'SUGGESTED_QUERY_CLICK');
+                    }}
+                    className="px-3 py-2 border border-border-subtle bg-bg-panel/30 hover:bg-bg-panel/85 hover:border-accent-purple/40 text-left text-[11px] text-text-secondary hover:text-text-primary transition-all rounded-lg cursor-pointer font-mono"
+                  >
+                    {q}
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Example Conversation Showcase */}
-            <div className="border border-border-subtle bg-[#0a0c16]/30 rounded-xl p-4 space-y-2">
-              <h4 className="font-mono text-[10px] font-bold text-text-primary uppercase tracking-wider">
-                Example Questions:
-              </h4>
-              <ul className="space-y-1.5 font-mono text-[10px] text-text-secondary pl-2 border-l border-border-subtle/50">
-                <li>• Which project best demonstrates backend engineering?</li>
-                <li>• Why should Suraj be hired for a backend role?</li>
-                <li>• What technologies power ORBITAIR?</li>
-              </ul>
-            </div>
-
-            {/* Oracle Capabilities Panel */}
-            <div className="space-y-2">
-              <h3 className="font-mono text-[11px] font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-success-green rounded-full" />
-                Oracle Capabilities
-              </h3>
-              <div className="grid grid-cols-1 gap-2.5">
-                {[
-                  {
-                    title: "Repository Intelligence",
-                    items: ["Live GitHub synchronization", "README understanding", "Technology extraction"]
-                  },
-                  {
-                    title: "Portfolio Intelligence",
-                    items: ["Skill analysis", "Project comparisons", "Recruiter recommendations"]
-                  },
-                  {
-                    title: "Career Intelligence",
-                    items: ["Resume guidance", "Skill gap analysis", "Career recommendations"]
-                  }
-                ].map((cap) => (
-                  <div key={cap.title} className="border border-border-subtle bg-bg-panel/40 rounded-xl p-3">
-                    <div className="font-mono text-[10px] font-bold text-text-primary mb-1.5">{cap.title}</div>
-                    <ul className="space-y-1 text-[10px] text-text-secondary pl-2">
-                      {cap.items.map((item) => (
-                        <li key={item} className="flex items-center gap-1.5">
-                          <span className="text-success-green">•</span> {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Empty State Help Text (Ask Oracle about list) */}
-            <div className="border border-border-subtle/50 bg-bg-panel/30 rounded-xl p-4 text-center font-mono text-[10px] text-text-secondary">
-              <span className="font-bold text-text-primary">Ask Oracle about:</span>
-              <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 mt-2">
-                <span>Projects</span>
-                <span>•</span>
-                <span>Skills</span>
-                <span>•</span>
-                <span>Experience</span>
-                <span>•</span>
-                <span>Repositories</span>
-                <span>•</span>
-                <span>Career Advice</span>
-              </div>
+            {/* Help / Tip Bar */}
+            <div className="border border-border-subtle bg-bg-panel/20 rounded-xl p-3 text-center font-mono text-[10px] text-text-secondary">
+              <span className="text-text-primary">Tip:</span> Ask about specific technologies like <span className="text-accent-cyan font-bold">FastAPI</span>, <span className="text-accent-cyan font-bold">Spring Boot</span>, or <span className="text-accent-cyan font-bold">Kafka</span>.
             </div>
           </div>
         ) : (

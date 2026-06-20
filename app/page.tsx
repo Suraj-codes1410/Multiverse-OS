@@ -5,6 +5,7 @@ import Section from '@/components/Section';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import ProjectCard from '@/components/ProjectCard';
+import HomeConsoleWidgets from '@/components/HomeConsoleWidgets';
 import { getPortfolio, getFeaturedProjects } from '@/lib/data';
 
 export default async function HomePage() {
@@ -73,6 +74,9 @@ export default async function HomePage() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
+
+            {/* Glowing Onboarding Centerpiece Widgets for Oracle & CLI */}
+            <HomeConsoleWidgets />
 
             <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs font-mono text-text-secondary">
               <a href={portfolio.resume} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-accent-cyan transition-colors">

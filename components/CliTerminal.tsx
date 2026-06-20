@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { commandHandler } from '@/lib/commands';
+import { useShell } from './ShellProvider';
 
 interface HistoryLine {
   type: 'input' | 'output';
@@ -17,13 +18,27 @@ interface CliTerminalProps {
 
 export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
   const router = useRouter();
+  const { setOracleOpen } = useShell();
   const [inputValue, setInputValue] = useState('');
   const [history, setHistory] = useState<HistoryLine[]>([
     { type: 'output', text: 'Multiverse OS [Version 2.1.0-GENESIS]' },
     { type: 'output', text: 'Establishing telemetry links... [OK]' },
     { type: 'output', text: 'Secure Enclave: Connected via quantum tunnel.' },
-    { type: 'output', text: 'Type commands below to view them in session history.' },
     { type: 'output', text: '--------------------------------------------------' },
+    { type: 'output', text: 'AVAILABLE COMMANDS:' },
+    { type: 'output', text: '  portfolio    - View professional overview profile.' },
+    { type: 'output', text: '  projects     - View featured engineering projects.' },
+    { type: 'output', text: '  skills       - View technical skills and competencies.' },
+    { type: 'output', text: '  experience   - View career history and milestones.' },
+    { type: 'output', text: '  resume       - Download Suraj\'s latest resume.' },
+    { type: 'output', text: '  contact      - View direct contact details.' },
+    { type: 'output', text: '  oracle       - Launch AI Portfolio Intelligence.' },
+    { type: 'output', text: '  help         - Display all available commands.' },
+    { type: 'output', text: '  repos        - View full GitHub synced repositories.' },
+    { type: 'output', text: '  github       - Link to Suraj\'s GitHub profile.' },
+    { type: 'output', text: '  career       - Request recruiter recommendations.' },
+    { type: 'output', text: '--------------------------------------------------' },
+    { type: 'output', text: 'Click any suggested command below or type command and press Enter.' },
   ]);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,27 +74,28 @@ export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const command = inputValue.trim();
-    if (!command) return;
+  const handleExecuteCommand = async (command: string) => {
+    const trimmedCommand = command.trim();
+    if (!trimmedCommand) return;
 
     // Append command to history
     setHistory((prev) => [
       ...prev,
-      { type: 'input', text: command },
+      { type: 'input', text: trimmedCommand },
     ]);
 
-    setInputValue('');
-
     try {
-      const result = await commandHandler.handle(command, {
+      const result = await commandHandler.handle(trimmedCommand, {
         clearTerminal: () => {
           setHistory([]);
         },
         navigate: (path: string) => {
           router.push(path);
           onClose();
+        },
+        openOracle: () => {
+          onClose();
+          setOracleOpen(true);
         }
       });
 
@@ -103,6 +119,15 @@ export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
         { type: 'output', text: `SYSTEM ERROR: ${err instanceof Error ? err.message : String(err)}` },
       ]);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const command = inputValue.trim();
+    if (!command) return;
+
+    setInputValue('');
+    await handleExecuteCommand(command);
   };
 
   const handleContainerClick = (e: React.MouseEvent) => {
@@ -170,6 +195,30 @@ export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
             }
           })}
           <div ref={bottomRef} />
+        </div>
+
+        {/* Clickable Starter Commands Suggestions */}
+        <div className="px-4 py-2 bg-bg-panel/40 border-t border-border-subtle flex flex-wrap items-center gap-2 select-none">
+          <span className="text-[10px] text-text-secondary uppercase font-mono mr-1">Suggested:</span>
+          {[
+            'projects',
+            'skills',
+            'experience',
+            'resume',
+            'repos',
+            'oracle',
+            'help',
+            'career'
+          ].map((cmd) => (
+            <button
+              key={cmd}
+              onClick={() => handleExecuteCommand(cmd)}
+              type="button"
+              className="px-2 py-1 rounded border border-accent-cyan/15 bg-accent-cyan/5 hover:bg-accent-cyan/15 hover:border-accent-cyan/40 font-mono text-[10px] text-accent-cyan transition-all cursor-pointer"
+            >
+              {cmd}
+            </button>
+          ))}
         </div>
 
         {/* Prompt Input Form */}
