@@ -244,12 +244,12 @@
       "fullName": "Suraj-codes1410/Multiverse-OS",
       "description": null,
       "htmlUrl": "https://github.com/Suraj-codes1410/Multiverse-OS",
-      "homepage": null,
+      "homepage": "https://suraj-multiverse-os.vercel.app",
       "starsCount": 0,
       "forksCount": 0,
       "language": "TypeScript",
       "topics": [],
-      "updatedAt": "2026-06-20T11:39:20Z",
+      "updatedAt": "2026-06-20T12:30:46Z",
       "createdAt": "2026-06-15T12:56:33Z",
       "classifications": [
         "Backend Engineering",
@@ -259,5 +259,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-06-20T11:44:56.499Z"
+  "lastUpdated": "2026-06-20T13:05:53.505Z"
 }
