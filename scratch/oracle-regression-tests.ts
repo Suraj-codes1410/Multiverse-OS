@@ -532,7 +532,7 @@ async function runRegressionSuite() {
   // Verify resume file exists on disk
   const fs = eval('require')('fs');
   const path = eval('require')('path');
-  const diskResumePath = path.join(process.cwd(), 'public', 'resume', 'SurajSamanta_Resume.pdf');
+  const diskResumePath = path.join(process.cwd(), 'public', 'resume', 'SurajSamanta_Resume_v6.pdf');
   if (!fs.existsSync(diskResumePath)) {
     throw new Error(`Resume PDF file does not exist on disk at path: ${diskResumePath}`);
   }
@@ -549,7 +549,7 @@ async function runRegressionSuite() {
       if (!logs.some(l => l.includes('SMART_ROUTE') || l.includes('DIRECT_RESPONSE'))) {
         throw new Error('Resume Intelligence direct response indicator not found in logs');
       }
-      if (!data.text || !data.text.includes('SurajSamanta_Resume.pdf')) {
+      if (!data.text || !data.text.includes('SurajSamanta_Resume_v6.pdf')) {
         throw new Error('Response did not contain the correct resume URL');
       }
     }, sessionId);
