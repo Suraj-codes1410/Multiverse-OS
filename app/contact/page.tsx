@@ -118,9 +118,9 @@ export default function ContactPage() {
                     Download the latest version of Suraj Samanta&apos;s technical resume containing detailed histories, architectures, and academic credentials.
                   </p>
                   <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary">
-                    <span>LAST_UPDATED: June 20, 2026</span>
+                    <span>LAST_UPDATED: June 21, 2026</span>
                     <span className="text-border-subtle">|</span>
-                    <span>FILE_SIZE: 385 KB</span>
+                    <span>FILE_SIZE: 625 KB</span>
                   </div>
                 </div>
                 <Button href={portfolio.resume} target="_blank" variant="outline" size="sm" className="whitespace-nowrap flex-shrink-0 w-full sm:w-auto">
