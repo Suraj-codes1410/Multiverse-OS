@@ -36,16 +36,16 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary">
-        <SharedLayout>
-          <ShellProvider>
+        <ShellProvider>
+          <SharedLayout>
             <BootSequence />
             <Navbar />
             <main className="flex-grow flex flex-col">
               {children}
             </main>
             <Footer />
-          </ShellProvider>
-        </SharedLayout>
+          </SharedLayout>
+        </ShellProvider>
       </body>
     </html>
   );
