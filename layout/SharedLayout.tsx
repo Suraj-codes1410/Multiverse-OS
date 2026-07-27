@@ -1,20 +1,30 @@
 'use client';
 
 import React from 'react';
-import { LayoutProvider } from '@/providers/LayoutProvider';
+import { LayoutProvider, useLayout } from '@/providers/LayoutProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
+import { DesktopShell } from '@/desktop';
+import { MobileShell } from '@/mobile';
 
 export interface SharedLayoutProps {
   children: React.ReactNode;
+}
+
+function LayoutSwitcher({ children }: { children: React.ReactNode }) {
+  const { viewportType } = useLayout();
+
+  if (viewportType === 'desktop') {
+    return <DesktopShell>{children}</DesktopShell>;
+  }
+
+  return <MobileShell>{children}</MobileShell>;
 }
 
 export function SharedLayout({ children }: SharedLayoutProps) {
   return (
     <ThemeProvider>
       <LayoutProvider>
-        <div className="min-h-screen bg-bg-primary text-text-primary antialiased">
-          {children}
-        </div>
+        <LayoutSwitcher>{children}</LayoutSwitcher>
       </LayoutProvider>
     </ThemeProvider>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface LayoutState {
   viewportType: 'desktop' | 'mobile';
@@ -11,6 +11,20 @@ const LayoutContext = createContext<LayoutState | null>(null);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [viewportType, setViewportType] = useState<'desktop' | 'mobile'>('desktop');
+
+  useEffect(() => {
+    const checkViewport = () => {
+      if (window.innerWidth < 1024) {
+        setViewportType('mobile');
+      } else {
+        setViewportType('desktop');
+      }
+    };
+
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
+  }, []);
 
   return (
     <LayoutContext.Provider value={{ viewportType, setViewportType }}>

@@ -28,3 +28,8 @@ export type { WindowMetadata } from './WindowRegistry';
 export { RobotLayer } from './RobotLayer';
 export { OracleLayer } from './OracleLayer';
 export { WidgetLayer } from './WidgetLayer';
+export { MenuBar } from './MenuBar';
+export { Dock } from './Dock';
+export type { DockProps, DockApp } from './Dock';
+export { DesktopWindow } from './DesktopWindow';
+export type { DesktopWindowProps } from './DesktopWindow';

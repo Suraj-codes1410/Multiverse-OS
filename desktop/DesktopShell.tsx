@@ -8,24 +8,71 @@ import { Wallpaper } from './Wallpaper';
 import { RobotLayer } from './RobotLayer';
 import { OracleLayer } from './OracleLayer';
 import { WidgetLayer } from './WidgetLayer';
+import { MenuBar } from './MenuBar';
+import { Dock } from './Dock';
+import { useDesktop } from './DesktopContext';
 
 export interface DesktopShellProps {
   children?: React.ReactNode;
 }
 
+/**
+ * DesktopShell forms the core workspace workstation shell grid layouts.
+ * Mounts the stateful providers (DesktopProvider, DockProvider).
+ */
 export function DesktopShell({ children }: DesktopShellProps) {
   return (
     <DesktopProvider>
       <DockProvider>
-        <div className="relative w-screen h-screen overflow-hidden select-none bg-bg-primary text-text-primary">
-          <Wallpaper />
-          <WidgetLayer />
-          <WindowManager>{children}</WindowManager>
-          <OracleLayer />
-          <RobotLayer />
-        </div>
+        <DesktopShellInner>{children}</DesktopShellInner>
       </DockProvider>
     </DesktopProvider>
   );
 }
+
+/**
+ * DesktopShellInner accesses the active OS context to bind window actions
+ * directly to MenuBar triggers and Dock items selection actions.
+ */
+function DesktopShellInner({ children }: { children: React.ReactNode }) {
+  const { openWindow, activeWindowId } = useDesktop();
+
+  return (
+    /* Fullscreen Desktop Main Grid Container */
+    <div className="relative w-screen h-screen overflow-hidden select-none bg-bg-primary text-text-primary flex flex-col font-sans">
+      
+      {/* Layer 5: System Menu Bar (Fixed top bar) */}
+      <MenuBar />
+
+      {/* Layer 0: Fullscreen Wallpaper (radial background meshes + animated canvas particles) */}
+      <Wallpaper />
+      
+      {/* Layer 1: Ambient Widget System stats overlay */}
+      <WidgetLayer />
+      
+      {/* Layer 2: Desktop active workspace grid utilizing safe margin paddings (top offset for MenuBar) */}
+      <div className="relative flex-grow w-full h-full flex pt-16 px-6 pb-24 z-10 box-border gap-6 overflow-hidden">
+        
+        {/* Workspace center viewport for windows rendering */}
+        <main className="flex-grow h-full relative flex flex-col pointer-events-auto">
+          <WindowManager>
+            {children}
+          </WindowManager>
+        </main>
+        
+      </div>
+
+      {/* Layer 6: System Application Dock (Fixed bottom bar panel connected to context actions) */}
+      <Dock activeAppId={activeWindowId} onAppClick={openWindow} />
+      
+      {/* Layer 3: Oracle Conversational Chat drawer layer */}
+      <OracleLayer />
+      
+      {/* Layer 4: Background Web Agents highlight scanner layer */}
+      <RobotLayer />
+      
+    </div>
+  );
+}
+
 export default DesktopShell;
