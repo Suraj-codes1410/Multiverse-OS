@@ -76,23 +76,23 @@ export function MenuBar() {
       </div>
 
       {/* RIGHT: Clock, Theme Toggle & Controls Placeholders */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3.5">
         {/* Network status placeholder */}
-        <div className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help" title="Network Connected: LTE/Gigabit">
+        <div className="h-7 flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help select-none" title="Network Connected: LTE/Gigabit">
           <Wifi className="w-3.5 h-3.5 text-accent-cyan" />
-          <span className="text-[10px] hidden lg:inline">100 ms</span>
+          <span className="text-[10px] hidden lg:inline font-mono">100 ms</span>
         </div>
 
         {/* Battery status placeholder */}
-        <div className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help" title="Power Source: Battery (Charging)">
+        <div className="h-7 flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help select-none" title="Power Source: Battery (Charging)">
           <Battery className="w-3.5 h-3.5 text-success-green" />
-          <span className="text-[10px] hidden lg:inline">99%</span>
+          <span className="text-[10px] hidden lg:inline font-mono">99%</span>
         </div>
 
         {/* Theme toggler */}
         <button
           onClick={toggleTheme}
-          className="p-1 rounded hover:bg-bg-panel-hover/60 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-bg-panel-hover/60 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer p-0"
           aria-label={`Current Theme: ${themeName}. Click to change theme`}
         >
           {themeName === 'high-contrast' ? (
@@ -108,7 +108,7 @@ export function MenuBar() {
 
         {/* Live system clock */}
         <div 
-          className="text-text-primary font-bold px-2 py-0.5 rounded bg-bg-primary/50 border border-border-subtle/30"
+          className="h-7 px-2.5 flex items-center justify-center text-text-primary font-bold rounded bg-bg-primary/50 border border-border-subtle/30 font-mono text-[11px]"
           aria-live="polite"
         >
           {time}

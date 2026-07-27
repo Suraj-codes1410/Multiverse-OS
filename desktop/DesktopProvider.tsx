@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { DesktopContext, WindowInstance } from './DesktopContext';
 import { windowRegistry } from './WindowRegistry';
 
@@ -15,13 +15,12 @@ export interface DesktopProviderProps {
 export function DesktopProvider({ children }: DesktopProviderProps) {
   const [windows, setWindows] = useState<Record<string, WindowInstance>>({});
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
-  const [maxZIndex, setMaxZIndex] = useState<number>(10);
+  const maxZIndexRef = useRef<number>(10);
 
   const getNextZIndex = useCallback(() => {
-    const nextZ = maxZIndex + 1;
-    setMaxZIndex(nextZ);
-    return nextZ;
-  }, [maxZIndex]);
+    maxZIndexRef.current += 1;
+    return maxZIndexRef.current;
+  }, []);
 
   const openWindow = useCallback((id: string) => {
     setWindows((prev) => {

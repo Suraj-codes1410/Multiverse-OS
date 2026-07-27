@@ -74,7 +74,7 @@ export function WidgetLayer() {
     >
       {/* 1. LEFT SIDE: Desktop Icons Grid */}
       <div 
-        className="absolute left-6 top-16 bottom-24 w-28 flex flex-col gap-4 pointer-events-auto"
+        className="absolute left-6 top-16 bottom-24 w-48 flex flex-col flex-wrap gap-x-3 gap-y-2 pointer-events-auto max-h-[calc(100vh-180px)] items-start justify-start content-start"
         role="grid"
         aria-label="Desktop Shortcuts Grid"
       >
@@ -83,43 +83,38 @@ export function WidgetLayer() {
           const isSelected = selectedIconId === icon.id;
 
           return (
-            <div
+            <button
               key={icon.id}
-              role="row"
-              className="flex justify-center"
+              role="gridcell"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedIconId(icon.id);
+              }}
+              onDoubleClick={() => openWindow(icon.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  if (selectedIconId === icon.id) openWindow(icon.id);
+                  else setSelectedIconId(icon.id);
+                }
+              }}
+              className={`desktop-icon-btn flex flex-col items-center gap-1.5 p-1.5 w-20 rounded-xl transition-all duration-200 border outline-none cursor-pointer text-center group ${
+                isSelected
+                  ? 'bg-bg-panel/40 border-accent-cyan/40 shadow-[0_0_15px_rgba(0,242,254,0.15)] text-accent-cyan'
+                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-panel/10'
+              }`}
+              aria-label={`${icon.label} shortcut. Double click to launch application`}
             >
-              <button
-                role="gridcell"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedIconId(icon.id);
-                }}
-                onDoubleClick={() => openWindow(icon.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    if (selectedIconId === icon.id) openWindow(icon.id);
-                    else setSelectedIconId(icon.id);
-                  }
-                }}
-                className={`desktop-icon-btn flex flex-col items-center gap-1.5 p-2 w-20 rounded-xl transition-all duration-200 border outline-none cursor-pointer text-center group ${
-                  isSelected
-                    ? 'bg-bg-panel/40 border-accent-cyan/40 shadow-[0_0_15px_rgba(0,242,254,0.15)] text-accent-cyan'
-                    : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-panel/10'
-                }`}
-                aria-label={`${icon.label} shortcut. Double click to launch application`}
-              >
-                {/* Icon wrapper with hover physics */}
-                <div className="w-10 h-10 rounded-xl bg-bg-panel/45 border border-border-subtle/50 flex items-center justify-center transition-transform group-hover:scale-105 group-active:scale-95 shadow-md">
-                  <IconComponent className={`w-5 h-5 ${isSelected ? 'text-accent-cyan' : 'text-text-secondary group-hover:text-accent-cyan transition-colors'}`} />
-                </div>
-                
-                {/* Icon label */}
-                <span className="text-[10px] font-mono leading-tight truncate w-full px-0.5">
-                  {icon.label}
-                </span>
-              </button>
-            </div>
+              {/* Icon wrapper with hover physics */}
+              <div className="w-10 h-10 rounded-xl bg-bg-panel/45 border border-border-subtle/50 flex items-center justify-center transition-transform group-hover:scale-105 group-active:scale-95 shadow-md">
+                <IconComponent className={`w-5 h-5 ${isSelected ? 'text-accent-cyan' : 'text-text-secondary group-hover:text-accent-cyan transition-colors'}`} />
+              </div>
+              
+              {/* Icon label */}
+              <span className="text-[10px] font-mono leading-tight truncate w-full px-0.5 select-none">
+                {icon.label}
+              </span>
+            </button>
           );
         })}
       </div>
