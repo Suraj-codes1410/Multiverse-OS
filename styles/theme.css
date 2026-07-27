@@ -1,0 +1,61 @@
+/* ==========================================================================
+   Multiverse-OS Theme Switching Definitions
+   ========================================================================== */
+
+/* 1. Cyberpunk Theme Override */
+[data-theme="cyberpunk"] {
+  --bg-primary: #0a0512;
+  --bg-panel: #140b24;
+  --bg-panel-hover: #22123b;
+  --accent-cyan: #ff007f; /* Cyber neon pink primary */
+  --accent-purple: #00f2fe; /* Cyber neon cyan secondary */
+  --text-primary: #ffffff;
+  --text-secondary: #a89bb8;
+  --border-subtle: #ff007f33;
+  --border-bright: #00f2fe66;
+  --glow-cyan: 0 0 12px rgba(255, 0, 127, 0.35);
+  --glow-purple: 0 0 12px rgba(0, 242, 254, 0.35);
+  --wallpaper-grid-color: rgba(255, 0, 127, 0.05);
+  --wallpaper-glow-primary: rgba(255, 0, 127, 0.08);
+  --wallpaper-glow-secondary: rgba(0, 242, 254, 0.06);
+}
+
+/* 2. Matrix Theme Override */
+[data-theme="matrix"] {
+  --bg-primary: #000a02;
+  --bg-panel: #001504;
+  --bg-panel-hover: #002206;
+  --accent-cyan: #39ff14; /* Matrix neon green primary */
+  --accent-purple: #00ff66; /* Secondary matrix green */
+  --text-primary: #dfffdf;
+  --text-secondary: #66b266;
+  --border-subtle: #39ff1422;
+  --border-bright: #39ff1455;
+  --glow-cyan: 0 0 10px rgba(57, 255, 20, 0.3);
+  --glow-purple: 0 0 10px rgba(0, 255, 102, 0.3);
+  --wallpaper-grid-color: rgba(57, 255, 20, 0.05);
+  --wallpaper-glow-primary: rgba(57, 255, 20, 0.08);
+  --wallpaper-glow-secondary: rgba(0, 255, 102, 0.05);
+}
+
+/* 3. High Contrast Theme Override (Explicit selector for toggle support) */
+[data-theme="high-contrast"] {
+  --bg-primary: #000000;
+  --bg-panel: #000000;
+  --bg-panel-hover: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --border-subtle: #ffffff;
+  --border-bright: #ffffff;
+  --accent-cyan: #00ffff;
+  --accent-purple: #ff00ff;
+  --glow-cyan: none;
+  --glow-purple: none;
+  --window-glow: none;
+  --terminal-glow: none;
+  --oracle-glow: none;
+  --dock-glow: none;
+  --wallpaper-grid-color: rgba(255, 255, 255, 0.1);
+  --wallpaper-glow-primary: transparent;
+  --wallpaper-glow-secondary: transparent;
+}
