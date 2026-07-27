@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { User, Briefcase, Calendar, FileText, Sparkles, Terminal, Mail, Settings } from 'lucide-react';
+import { Home, Briefcase, Calendar, FileText, Sparkles, Terminal, Mail, Settings, Folder, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface DockApp {
@@ -12,21 +12,28 @@ export interface DockApp {
 
 export interface DockProps {
   activeAppId?: string | null;
+  openAppIds?: string[];
   onAppClick?: (appId: string) => void;
 }
 
-export function Dock({ activeAppId = null, onAppClick }: DockProps) {
+/**
+ * Dock component renders the bottom workstation launcher.
+ * Tracks active running status and adds hover animations.
+ */
+export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockProps) {
   const [hoveredAppId, setHoveredAppId] = useState<string | null>(null);
 
   const apps: DockApp[] = [
-    { id: 'hero', label: 'Profile Home', icon: User },
+    { id: 'home', label: 'Profile Home', icon: Home },
     { id: 'projects', label: 'Projects Explorer', icon: Briefcase },
-    { id: 'timeline', label: 'Career Timeline', icon: Calendar },
-    { id: 'resume', label: 'Resume Analyzer', icon: FileText },
+    { id: 'about', label: 'About Suraj', icon: User },
     { id: 'oracle', label: 'Oracle AI Chat', icon: Sparkles },
     { id: 'terminal', label: 'CLI Terminal', icon: Terminal },
+    { id: 'timeline', label: 'Career Timeline', icon: Calendar },
+    { id: 'resume', label: 'Resume Viewer', icon: FileText },
     { id: 'contact', label: 'Get in Touch', icon: Mail },
-    { id: 'settings', label: 'System Settings', icon: Settings },
+    { id: 'explorer', label: 'File Manager', icon: Folder },
+    { id: 'settings', label: 'Control Center', icon: Settings },
   ];
 
   return (
@@ -38,6 +45,7 @@ export function Dock({ activeAppId = null, onAppClick }: DockProps) {
       {apps.map((app) => {
         const IconComponent = app.icon;
         const isActive = activeAppId === app.id;
+        const isOpen = openAppIds.includes(app.id);
         const isHovered = hoveredAppId === app.id;
 
         return (
@@ -73,14 +81,16 @@ export function Dock({ activeAppId = null, onAppClick }: DockProps) {
               tabIndex={0}
             >
               {/* Icon component wrapping with hover scaling */}
-              <div className="transition-transform duration-200 group-hover:scale-120 group-active:scale-95">
+              <div className="transition-transform duration-200 group-hover:scale-125 group-active:scale-95">
                 <IconComponent className="w-5 h-5" />
               </div>
 
-              {/* Active Application Indicator dot */}
-              {isActive && (
-                <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex h-1.5 w-1.5 rounded-full bg-accent-cyan shadow-[0_0_8px_var(--accent-cyan)]" />
-              )}
+              {/* Running / Active Application Indicator dot */}
+              {isActive ? (
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex h-1.5 w-1.5 rounded-full bg-accent-cyan shadow-[0_0_8px_var(--accent-cyan)] animate-pulse" />
+              ) : isOpen ? (
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex h-1 w-1 rounded-full bg-text-secondary/55" />
+              ) : null}
             </button>
           </div>
         );

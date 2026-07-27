@@ -3,6 +3,7 @@
 import React from 'react';
 import { useDesktop } from './DesktopContext';
 import { DesktopWindow } from './DesktopWindow';
+import { HomeWindowContent } from './HomeWindowContent';
 
 export interface WindowManagerProps {
   children?: React.ReactNode;
@@ -20,6 +21,8 @@ export function WindowManager({ children }: WindowManagerProps) {
   // Helper to render mock content for testing layout mechanics
   const renderWindowContent = (id: string) => {
     switch (id) {
+      case 'home':
+        return <HomeWindowContent />;
       case 'sample-1':
         return (
           <div className="flex flex-col gap-3 font-mono text-xs h-full overflow-y-auto select-none">

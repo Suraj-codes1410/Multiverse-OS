@@ -1,12 +1,12 @@
 # Phase 2 Summary Report - Desktop OS Framework
 
-This document outlines the architectural overview, verification details, technical debt, and recommendations before Phase 3 for the completed **Phase 2: Desktop OS Framework**.
+This document outlines the architectural design system, runtime mechanics, visual elevations, accessibility compliance, and outstanding tech debt for the completed **Phase 2: Desktop OS Framework**.
 
 ---
 
-## 🖥️ Desktop OS Framework Architecture
+## 🖥️ New Architecture & Desktop Layering
 
-Below is the overlay z-index layer structure that forms the visual operating system shell:
+The Multiverse-OS desktop environment segregates visual components into clean, stacked layers. Z-index spacing ensures mouse interactions trigger correctly on foreground items (like dragging windows) while background layers remain click-through.
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -28,41 +28,56 @@ Below is the overlay z-index layer structure that forms the visual operating sys
 
 ---
 
-## 📊 Verification Summary
+## 🛠️ Window Runtime Explanation
 
-| Module | Verification Criteria | Status | Notes |
-| :--- | :--- | :--- | :--- |
-| **DesktopShell** | Viewport layout integration | ✓ Passed | Combines all overlay blocks. |
-| **MenuBar** | Clock, theme selector & telemetry | ✓ Passed | Time updates dynamically; theme states cycle. |
-| **Dock** | Hover transitions & tooltips | ✓ Passed | Icons scale on mouse hover; tooltips align. |
-| **WindowManager**| Active window state tracking | ✓ Passed | Handles focus, close, and cascading offsets. |
-| **Floating Windows**| Draggable/resizable absolute frames| ✓ Passed | Dragging and resizing clamp to bounds. |
-| **Desktop Icons** | Selectable grid double-clicks | ✓ Passed | Double-clicking launches applications. |
-| **Widgets** | Real-time system chart updates | ✓ Passed | CPU percentage fluctuates every 2 seconds. |
-| **RobotLayer** | Web-agent scan loop bounding box | ✓ Passed | Crosshair box cycles coordinates. SSR safe. |
-| **OracleLayer** | Dialogue drawer slide-out sync | ✓ Passed | Slides out when Oracle window state opens. |
-| **Accessibility** | ARIA mappings & motion preferences | ✓ Passed | Motion halts when prefers-reduced-motion active. |
-| **Responsiveness**| Responsive tailwind layout grids | ✓ Passed | Sidebar hidden below `1280px`; mobile toggle active. |
+Windows are managed dynamically via a central React Context state system:
+* **Window Instances Registry**: Declarative configurations mapped in [WindowRegistry.ts](file:///C:/Users/Suraj/multiverse-os/desktop/WindowRegistry.ts) store initial dimensions and title markers.
+* **Coordination State Hook**: [DesktopProvider.tsx](file:///C:/Users/Suraj/multiverse-os/desktop/DesktopProvider.tsx) implements hooks tracking window coordinates, sizes, active focus highlights, and min/max states.
+* **Cascading Offsets**: When a window is opened, the manager cascades coordinates `(+35px, +35px)` relative to the existing windows to prevent full overlays.
+* **Z-Index Elevation Stack**: A running `maxZIndex` state increments dynamically. Focusing a window increments `maxZIndex` and updates that window's z-index to bring it to the front.
+* **Clamped Movement Handling**: Header mouse-down event listeners track movement coordinates, clamping values to keep window headers visible under the fixed 40px top menu bar.
 
 ---
 
-## ⚠️ Remaining Technical Debt
+## ⛵ Dock Runtime Explanation
 
-1. **Static Overlay Hydration Lock**
-   * *Description*: AI chat sidebars (`OracleLayer`) and autonomous overlays (`RobotLayer`) are loaded statically.
-   * *Refactor Plan*: Shift these components to lazy, code-split dynamic imports in future phases to optimize initial load times.
-2. **Hardcoded Color Codes**
-   * *Description*: Floating window colored buttons (red/yellow/green macOS control lights) use raw hex codes.
-   * *Refactor Plan*: Replace with Tailwind utility tokens in later phases.
-3. **Responsive Width Thresholds**
-   * *Description*: Wide widgets sidebar hidden on medium screens can clip active windows if coordinates are not centered.
-   * *Refactor Plan*: Ensure window coordinates recalculate dynamically on screen resizing.
+The desktop Dock serves as the primary system launcher bar:
+* **Active focused state**: A pulsing cyan indicator dot (`bg-accent-cyan shadow-[0_0_8px_var(--accent-cyan)]`) renders beneath the focused active application.
+* **Running background applications**: A muted grey indicator dot (`bg-text-secondary/55`) highlights applications that are currently open in the background but not active/focused.
+* **Click triggers**: Direct mapping from Dock items to `openWindow(appId)`. Clicking a minimized application restores and focuses it immediately.
+* **Visual feedback**: Spring-based hover scaling (`hover:scale-125`) and click scaling (`active:scale-95`) provide immediate tactile response.
 
 ---
 
-## 🚀 Recommendations Before Starting Phase 3
+## 🎨 Wallpaper & Material Systems
 
-Prior to starting Phase 3 (Application Redesign and Component Migration):
-1. **Branch Verification**: Verify that the local branch `phase-2-desktop-framework` is active and clean.
-2. **Layout Toggles Test**: Verify that resizing the browser window between mobile sizes and widescreen desktops toggles layouts cleanly.
-3. **Commit Reminder**: **DO NOT COMMIT**. Keep all changes staged in the Git index until explicitly requested by the operator.
+### 1. Wallpaper System
+* **Dynamic Canvas Particles**: An HTML5 Canvas renders animated grid matrices (Matrix rain theme), drifting network grids (default dark theme), or grid lines.
+* **Readability Enhancements**: Canvas drawings are set to low opacity, layering behind soft CSS gradients (`bg-[radial-gradient(ellipse_at_center,var(--wallpaper-glow-primary),transparent_60%)]`) to prevent text readability issues.
+* **Theme Synchronization**: The canvas automatically resets and redraws its particle structure to match active theme changes.
+
+### 2. Material System & Elevation
+We have introduced visual depth using distinct material layers and slate tones, avoiding pure black:
+* **Wallpaper (Base)**: Soft radial gradients.
+* **Desktop Workstation**: Glassmorphic panels with a low backing opacity (`bg-bg-panel/30 border-border-subtle/30 backdrop-blur-md`).
+* **Active Windows**: Raised panels (`bg-bg-panel/75 backdrop-blur-xl border-accent-cyan/35 shadow-[0_20px_50px_rgba(0,242,254,0.15)]`).
+* **Controls & Buttons**: Tactile glass elements (`bg-bg-primary/20 hover:bg-bg-panel-hover/60 border border-transparent hover:border-border-subtle/30`).
+
+---
+
+## ♿ Accessibility Notes
+
+* **Keyboard Navigation**:
+  * Desktop Icons and Dock items support full keyboard Tab focusing. Pressing `Enter` or `Space` selects and launches application windows.
+  * Floating windows accept focus on Tab navigation. Focus states are visually indicated by glowing borders.
+* **Screen Reader Integrity**: All visual shortcuts and controls contain semantic ARIA roles (`role="dialog"`, `role="toolbar"`, `role="grid"`, `aria-label`).
+* **Reduced Motion Compliance**: The wallpaper canvas drawing loop and the Robot web-agent highlights loop detect OS-level `prefers-reduced-motion` settings and immediately freeze animations.
+
+---
+
+## ⚠️ Remaining Work Before Phase 3
+
+* **Application Views Migration**: Migrate legacy pages (Projects, Timeline, About, Contact) into the Window Manager registry, replacing placeholders with high-fidelity React component viewports.
+* **Window Snapping**: Integrate grid or screen corner snapping bounds when dragging window borders.
+* **Code-Splitting Overlay Bundles**: Convert heavy overlay panels (e.g. CLI Terminal, Oracle chat) to lazy-loaded, dynamic imports to optimize site speed.
+* **Clean Git Status**: Push staged files cleanly to the remote branch before beginning components refactoring.

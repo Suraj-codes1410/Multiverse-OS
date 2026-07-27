@@ -131,7 +131,14 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       style={windowStyle}
       onClick={() => focusWindow(id)}
-      className={`flex flex-col rounded-xl overflow-hidden bg-bg-panel/75 border backdrop-blur-xl transition-shadow duration-200 pointer-events-auto select-text shadow-2xl ${
+      onFocus={() => focusWindow(id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          focusWindow(id);
+        }
+      }}
+      tabIndex={0}
+      className={`flex flex-col rounded-xl overflow-hidden bg-bg-panel/75 border backdrop-blur-xl transition-shadow duration-200 pointer-events-auto select-text shadow-2xl focus:outline-none ${
         isActive
           ? 'border-accent-cyan/35 shadow-[0_20px_50px_rgba(0,242,254,0.15)]'
           : 'border-border-subtle/50'

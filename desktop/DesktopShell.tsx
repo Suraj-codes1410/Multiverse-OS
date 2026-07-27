@@ -35,7 +35,8 @@ export function DesktopShell({ children }: DesktopShellProps) {
  * directly to MenuBar triggers and Dock items selection actions.
  */
 function DesktopShellInner({ children }: { children: React.ReactNode }) {
-  const { openWindow, activeWindowId } = useDesktop();
+  const { openWindow, activeWindowId, windows } = useDesktop();
+  const openAppIds = Object.keys(windows).filter((key) => windows[key].isOpen);
 
   return (
     /* Fullscreen Desktop Main Grid Container */
@@ -63,7 +64,7 @@ function DesktopShellInner({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Layer 6: System Application Dock (Fixed bottom bar panel connected to context actions) */}
-      <Dock activeAppId={activeWindowId} onAppClick={openWindow} />
+      <Dock activeAppId={activeWindowId} openAppIds={openAppIds} onAppClick={openWindow} />
       
       {/* Layer 3: Oracle Conversational Chat drawer layer */}
       <OracleLayer />

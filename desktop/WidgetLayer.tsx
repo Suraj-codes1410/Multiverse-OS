@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Terminal, Monitor, Sparkles, Activity, Cpu, Sun, HardDrive, Compass } from 'lucide-react';
+import { Terminal, Sparkles, Cpu, Sun, HardDrive, Compass, Home, Briefcase, User, Calendar, FileText, Mail, Folder, Settings } from 'lucide-react';
 import { useDesktop } from './DesktopContext';
 import { motion } from 'framer-motion';
 
@@ -48,11 +48,16 @@ export function WidgetLayer() {
 
   // Desktop shortcuts registry
   const desktopIcons: DesktopIconMetadata[] = [
-    { id: 'terminal', label: 'CLI Terminal', icon: Terminal },
-    { id: 'dashboard', label: 'Dashboard', icon: Monitor },
-    { id: 'oracle', label: 'Oracle Chat', icon: Sparkles },
-    { id: 'sample-1', label: 'Node Monitor', icon: Activity },
-    { id: 'sample-2', label: 'System Info', icon: Cpu },
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'projects', label: 'Projects', icon: Briefcase },
+    { id: 'about', label: 'About', icon: User },
+    { id: 'oracle', label: 'Oracle', icon: Sparkles },
+    { id: 'terminal', label: 'Terminal', icon: Terminal },
+    { id: 'timeline', label: 'Timeline', icon: Calendar },
+    { id: 'resume', label: 'Resume', icon: FileText },
+    { id: 'contact', label: 'Contact', icon: Mail },
+    { id: 'explorer', label: 'Explorer', icon: Folder },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   // De-select icons if background is clicked
