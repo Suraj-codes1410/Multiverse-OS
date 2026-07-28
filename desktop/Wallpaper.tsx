@@ -276,19 +276,19 @@ export function Wallpaper() {
         <div className="absolute inset-0 w-full h-full pointer-events-auto">
           <Ferrofluid
             colors={["#ffffff", "#ffffff", "#ffffff"]}
-            speed={0.4}
-            scale={1.2}
-            turbulence={1.0}
-            fluidity={0.08}
-            rimWidth={0.25}
-            sharpness={3.5}
-            shimmer={0.2}
-            glow={2.8}
+            speed={0.12}
+            scale={1.8}
+            turbulence={0.35}
+            fluidity={0.15}
+            rimWidth={0.18}
+            sharpness={2.0}
+            shimmer={0.0}
+            glow={1.1}
             flowDirection="down"
-            opacity={1.0}
+            opacity={0.18}
             mouseInteraction={true}
-            mouseStrength={1.5}
-            mouseRadius={0.3}
+            mouseStrength={0.8}
+            mouseRadius={0.2}
           />
         </div>
       ) : (
