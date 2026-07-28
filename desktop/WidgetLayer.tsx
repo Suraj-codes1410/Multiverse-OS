@@ -1,23 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Terminal, Sparkles, Cpu, Sun, HardDrive, Compass, Home, Briefcase, User, Calendar, FileText, Mail, Folder, Settings } from 'lucide-react';
+import { Cpu, Sun, HardDrive, Compass } from 'lucide-react';
 import { useDesktop } from './DesktopContext';
 import { motion } from 'framer-motion';
 
-interface DesktopIconMetadata {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
 /**
  * WidgetLayer renders the desktop background layer.
- * Includes desktop icons on the left and glassmorphic system widgets on the right.
+ * Includes glassmorphic system widgets on the right and ambient UI.
  */
 export function WidgetLayer() {
   const { openWindow } = useDesktop();
-  const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
   
   // Stateful telemetry variables
   const [time, setTime] = useState<string>('');
@@ -40,84 +33,15 @@ export function WidgetLayer() {
   // CPU Fluctuations loop
   useEffect(() => {
     const interval = setInterval(() => {
-      setCpuUsage(Math.floor(8 + Math.random() * 9)); // Fluctuates between 8% and 17%
+      setCpuUsage(Math.floor(8 + Math.random() * 9));
       setRamUsage((4.1 + Math.random() * 0.2).toFixed(2));
     }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  // Desktop shortcuts registry
-  const desktopIcons: DesktopIconMetadata[] = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'projects', label: 'Projects', icon: Briefcase },
-    { id: 'about', label: 'About', icon: User },
-    { id: 'oracle', label: 'Oracle', icon: Sparkles },
-    { id: 'terminal', label: 'Terminal', icon: Terminal },
-    { id: 'timeline', label: 'Timeline', icon: Calendar },
-    { id: 'resume', label: 'Resume', icon: FileText },
-    { id: 'contact', label: 'Contact', icon: Mail },
-    { id: 'explorer', label: 'Explorer', icon: Folder },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
-
-  // De-select icons if background is clicked
-  const handleBackgroundClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('.desktop-icon-btn') || target.closest('.system-widget-card')) return;
-    setSelectedIconId(null);
-  };
-
   return (
-    <div
-      onClick={handleBackgroundClick}
-      className="absolute inset-0 z-10 pointer-events-none flex select-none box-border"
-    >
-      {/* 1. LEFT SIDE: Desktop Icons Grid */}
-      <div 
-        className="absolute left-8 top-20 bottom-24 w-52 flex flex-col flex-wrap gap-x-5 gap-y-4 pointer-events-auto max-h-[calc(100vh-200px)] items-start justify-start content-start"
-        role="grid"
-        aria-label="Desktop Shortcuts Grid"
-      >
-        {desktopIcons.map((icon) => {
-          const IconComponent = icon.icon;
-          const isSelected = selectedIconId === icon.id;
+    <div className="absolute inset-0 z-10 pointer-events-none flex select-none box-border">
 
-          return (
-            <button
-              key={icon.id}
-              role="gridcell"
-              tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedIconId(icon.id);
-              }}
-              onDoubleClick={() => openWindow(icon.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  if (selectedIconId === icon.id) openWindow(icon.id);
-                  else setSelectedIconId(icon.id);
-                }
-              }}
-              className={`desktop-icon-btn flex flex-col items-center gap-2 p-2 w-20 rounded-2xl transition-all duration-300 border outline-none cursor-pointer text-center group ${
-                isSelected
-                  ? 'bg-bg-panel/60 border-accent-cyan/40 shadow-md text-accent-cyan'
-                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-panel/15'
-              }`}
-              aria-label={`${icon.label} shortcut. Double click to launch application`}
-            >
-              {/* Icon wrapper with hover physics */}
-              <div className="w-11 h-11 rounded-2xl bg-bg-panel/35 border border-border-subtle/25 flex items-center justify-center transition-all duration-300 group-hover:-translate-y-0.5 group-active:translate-y-0 shadow-sm group-hover:bg-bg-panel/65 group-hover:shadow-md">
-                <IconComponent className={`w-5 h-5 ${isSelected ? 'text-accent-cyan' : 'text-text-secondary group-hover:text-accent-cyan transition-colors'}`} />
-              </div>
-              
-              {/* Icon label */}
-              <span className="text-[10px] font-sans font-medium tracking-tight leading-tight truncate w-full px-0.5 select-none text-text-primary">
-                {icon.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
 
       {/* 2. RIGHT SIDE: System Dashboard Widgets */}
       <aside 

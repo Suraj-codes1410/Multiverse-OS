@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Home, Briefcase, Calendar, FileText, Sparkles, Terminal, Mail, Settings, Folder, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { playOpenSound } from '@/lib/useOsAudio';
 
 export interface DockApp {
   id: string;
@@ -73,7 +74,7 @@ export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockPr
 
             {/* Dock Item Button */}
             <button
-              onClick={() => onAppClick?.(app.id)}
+              onClick={() => { playOpenSound(); onAppClick?.(app.id); }}
               onFocus={() => setHoveredAppId(app.id)}
               onBlur={() => setHoveredAppId(null)}
               className="relative p-2.5 rounded-xl bg-bg-primary/20 hover:bg-bg-panel-hover/60 border border-transparent hover:border-border-subtle/30 text-text-secondary hover:text-accent-cyan transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-cyan cursor-pointer group"

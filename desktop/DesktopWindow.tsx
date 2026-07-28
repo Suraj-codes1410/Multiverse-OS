@@ -1,8 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDesktop } from './DesktopContext';
 import { motion } from 'framer-motion';
+import {
+  playOpenSound,
+  playCloseSound,
+  playMinimizeSound,
+  playMaximizeSound,
+} from '@/lib/useOsAudio';
 
 export interface DesktopWindowProps {
   id: string;
@@ -35,6 +41,17 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
   }
 
   const isActive = activeWindowId === id;
+
+  // Play open chime once on first render (window opened)
+  const didPlayRef = useRef(false);
+  useEffect(() => {
+    if (!didPlayRef.current && windowInst?.isOpen) {
+      didPlayRef.current = true;
+      // Small delay so the animation starts first
+      const t = setTimeout(() => playOpenSound(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [windowInst?.isOpen]);
 
   // Header dragging mouse event handler
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
@@ -82,35 +99,47 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
     window.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Resize handler mouse event
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
+  // ── 8-direction resize system ──────────────────────────────────────
+  type ResizeEdge = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
+
+  const handleResizeMouseDown = (e: React.MouseEvent, edge: ResizeEdge) => {
     e.preventDefault();
     e.stopPropagation();
     focusWindow(id);
 
-    const startW = windowInst.width;
-    const startH = windowInst.height;
-    const startX = e.clientX;
-    const startY = e.clientY;
+    const startW   = windowInst.width;
+    const startH   = windowInst.height;
+    const startX   = windowInst.x;
+    const startY   = windowInst.y;
+    const mouseX   = e.clientX;
+    const mouseY   = e.clientY;
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const dw = moveEvent.clientX - startX;
-      const dh = moveEvent.clientY - startY;
-      
-      // Minimum window sizes
-      const newW = Math.max(320, startW + dw);
-      const newH = Math.max(220, startH + dh);
-      
+    const onMove = (mv: MouseEvent) => {
+      const dx = mv.clientX - mouseX;
+      const dy = mv.clientY - mouseY;
+
+      let newW = startW, newH = startH, newX = startX, newY = startY;
+
+      // Horizontal
+      if (edge.includes('e')) newW = Math.max(320, startW + dx);
+      if (edge.includes('w')) { newW = Math.max(320, startW - dx); newX = startX + (startW - newW); }
+      // Vertical
+      if (edge.includes('s')) newH = Math.max(220, startH + dy);
+      if (edge.includes('n')) { newH = Math.max(220, startH - dy); newY = startY + (startH - newH); }
+
       updateWindowSize(id, newW, newH);
+      if (edge.includes('w') || edge.includes('n')) {
+        updateWindowPosition(id, newX, newY);
+      }
     };
 
-    const handleMouseUp = () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   };
 
   // Inline styling for precise absolute positioning
@@ -199,7 +228,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         >
           {/* Close */}
           <button
-            onClick={() => closeWindow(id)}
+            onClick={() => { playCloseSound(); closeWindow(id); }}
             className="window-action-btn w-3 h-3 rounded-full bg-[#ff5f56] active:bg-[#bf4941] flex items-center justify-center text-[7px] font-bold text-[#4c0002] transition-colors focus:outline-none cursor-pointer"
             aria-label="Close Window"
           >
@@ -208,7 +237,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
 
           {/* Minimize */}
           <button
-            onClick={() => minimizeWindow(id)}
+            onClick={() => { playMinimizeSound(); minimizeWindow(id); }}
             className="window-action-btn w-3 h-3 rounded-full bg-[#ffbd2e] active:bg-[#beb222] flex items-center justify-center text-[7px] font-bold text-[#5c3e00] transition-colors focus:outline-none cursor-pointer"
             aria-label="Minimize Window"
           >
@@ -217,7 +246,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
 
           {/* Maximize */}
           <button
-            onClick={() => maximizeWindow(id)}
+            onClick={() => { playMaximizeSound(); maximizeWindow(id); }}
             className="window-action-btn w-3 h-3 rounded-full bg-[#27c93f] active:bg-[#1a9c2b] flex items-center justify-center text-[6px] font-bold text-[#006504] transition-colors focus:outline-none cursor-pointer"
             aria-label="Maximize Window"
           >
@@ -259,19 +288,28 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         {children}
       </div>
 
-      {/* WINDOW RESIZE HANDLES (Clamps sizes on drag movements) */}
+      {/* WINDOW RESIZE HANDLES — 8 directions */}
       {!windowInst.isMaximized && (
         <>
-          {/* Diagonal Bottom-Right Resize Handle */}
+          {/* Edges */}
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 'n')}  className="absolute top-0    left-2   right-2  h-1   cursor-n-resize  z-[90]" aria-hidden />
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 's')}  className="absolute bottom-0 left-2   right-2  h-1   cursor-s-resize  z-[90]" aria-hidden />
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 'e')}  className="absolute top-2  right-0  bottom-2 w-1   cursor-e-resize  z-[90]" aria-hidden />
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 'w')}  className="absolute top-2  left-0   bottom-2 w-1   cursor-w-resize  z-[90]" aria-hidden />
+          {/* Corners */}
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 'nw')} className="absolute top-0    left-0   w-3 h-3  cursor-nw-resize z-[91]" aria-hidden />
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 'ne')} className="absolute top-0    right-0  w-3 h-3  cursor-ne-resize z-[91]" aria-hidden />
+          <div onMouseDown={(e) => handleResizeMouseDown(e, 'sw')} className="absolute bottom-0 left-0   w-3 h-3  cursor-sw-resize z-[91]" aria-hidden />
+          {/* SE corner with visual grip dots */}
           <div
-            onMouseDown={handleResizeMouseDown}
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-end justify-end p-0.5"
-            style={{ zIndex: 100 }}
-            aria-hidden="true"
+            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-end justify-end p-0.5 z-[91]"
+            aria-hidden
           >
-            <svg width="8" height="8" viewBox="0 0 8 8" className="text-text-secondary opacity-50">
-              <line x1="6" y1="0" x2="0" y2="6" stroke="currentColor" strokeWidth="1" />
-              <line x1="6" y1="3" x2="3" y2="6" stroke="currentColor" strokeWidth="1" />
+            <svg width="8" height="8" viewBox="0 0 8 8" className="text-text-secondary opacity-40">
+              <circle cx="6" cy="6" r="1" fill="currentColor" />
+              <circle cx="3" cy="6" r="1" fill="currentColor" />
+              <circle cx="6" cy="3" r="1" fill="currentColor" />
             </svg>
           </div>
         </>
