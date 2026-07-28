@@ -37,7 +37,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-primary/70 backdrop-blur-md transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-primary/70 backdrop-blur-md transition-all duration-300 lg:hidden">
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo / Brand */}
