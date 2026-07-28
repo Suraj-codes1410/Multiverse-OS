@@ -21,7 +21,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-border-subtle bg-bg-primary/50 py-10 mt-auto lg:hidden">
+    <footer className="border-t border-border-subtle bg-bg-primary/50 py-10 mt-auto hidden">
       <Container>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-center sm:text-left">

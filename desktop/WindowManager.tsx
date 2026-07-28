@@ -154,7 +154,7 @@ export function WindowManager({ children }: WindowManagerProps) {
 /* ==========================================================================
    APP COMPONENT: ABOUT
    ========================================================================== */
-function AboutAppContent() {
+export function AboutAppContent() {
   const technicalFocus = [
     'Distributed Systems & Consensus Protocols (Raft, Consistent Hashing)',
     'High-Throughput Concurrent Programming in Go & Systems Programming in Rust',
@@ -291,7 +291,7 @@ function AboutAppContent() {
 /* ==========================================================================
    APP COMPONENT: PROJECTS
    ========================================================================== */
-function ProjectsAppContent({ projects }: { projects: Project[] }) {
+export function ProjectsAppContent({ projects }: { projects: Project[] }) {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
@@ -382,7 +382,7 @@ function ProjectsAppContent({ projects }: { projects: Project[] }) {
 /* ==========================================================================
    APP COMPONENT: SKILLS
    ========================================================================== */
-function SkillsAppContent() {
+export function SkillsAppContent() {
   const skills = skillsData as Skill[];
   const projectMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -402,7 +402,7 @@ function SkillsAppContent() {
 /* ==========================================================================
    APP COMPONENT: TIMELINE
    ========================================================================== */
-function TimelineAppContent() {
+export function TimelineAppContent() {
   const milestones = timelineData as TimelineMilestone[];
 
   return (
@@ -417,7 +417,7 @@ function TimelineAppContent() {
 /* ==========================================================================
    APP COMPONENT: RESUME PDF VIEWER
    ========================================================================== */
-function ResumeAppContent() {
+export function ResumeAppContent() {
   return (
     <div className="flex-grow flex flex-col md:flex-row overflow-hidden bg-bg-panel/5 rounded-lg border border-border-subtle/50 h-full font-sans">
       {/* Left side: interactive iframe preview */}
@@ -473,7 +473,7 @@ function ResumeAppContent() {
 /* ==========================================================================
    APP COMPONENT: CONTACT
    ========================================================================== */
-function ContactAppContent() {
+export function ContactAppContent() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -649,7 +649,7 @@ interface ExplorerAppContentProps {
   loading: boolean;
 }
 
-function ExplorerAppContent({ repos, loading }: ExplorerAppContentProps) {
+export function ExplorerAppContent({ repos, loading }: ExplorerAppContentProps) {
   if (loading && repos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center font-mono text-xs text-text-secondary select-none">
@@ -669,7 +669,7 @@ function ExplorerAppContent({ repos, loading }: ExplorerAppContentProps) {
 /* ==========================================================================
    APP COMPONENT: CONTROL PANEL SETTINGS
    ========================================================================== */
-function SettingsAppContent() {
+export function SettingsAppContent() {
   const { windows, activeWindowId } = useDesktop();
   const { themeName, setThemeName } = useTheme();
 
@@ -742,7 +742,7 @@ function SettingsAppContent() {
 /* ==========================================================================
    APP COMPONENT: RECRUITER DASHBOARD
    ========================================================================== */
-function DashboardAppContent({ projects }: { projects: Project[] }) {
+export function DashboardAppContent({ projects }: { projects: Project[] }) {
   const featuredProjects = useMemo(() => projects.filter(p => p.featured), [projects]);
   const skills = skillsData as Skill[];
   const experience = experienceData as Experience[];
