@@ -24,9 +24,10 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 interface MissionBriefingProps {
   project: Project;
+  onBack?: () => void;
 }
 
-export default function MissionBriefing({ project }: MissionBriefingProps) {
+export default function MissionBriefing({ project, onBack }: MissionBriefingProps) {
   // Normalize status styling
   const statusColor = 
     project.status.toLowerCase() === 'completed' || project.status.toLowerCase() === 'synced'
@@ -38,12 +39,21 @@ export default function MissionBriefing({ project }: MissionBriefingProps) {
       <Container>
         {/* Navigation Return */}
         <div className="mb-6 select-none">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 text-xs text-text-secondary hover:text-accent-cyan transition-colors focus:outline-none"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> RETURN_TO_SYSTEM_REPOSITORY
-          </Link>
+          {onBack ? (
+            <button
+              onClick={onBack}
+              className="inline-flex items-center gap-2 text-xs text-text-secondary hover:text-accent-cyan transition-colors focus:outline-none cursor-pointer bg-transparent border-none p-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> RETURN_TO_SYSTEM_REPOSITORY
+            </button>
+          ) : (
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 text-xs text-text-secondary hover:text-accent-cyan transition-colors focus:outline-none"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> RETURN_TO_SYSTEM_REPOSITORY
+            </Link>
+          )}
         </div>
 
         {/* Technical Docket Header */}
