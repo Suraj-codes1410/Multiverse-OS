@@ -165,6 +165,18 @@ export function DesktopProvider({ children }: DesktopProviderProps) {
     });
   }, []);
 
+  // Global listener for decoupled Spotlight search launches
+  React.useEffect(() => {
+    const handleLaunch = (e: Event) => {
+      const appId = (e as CustomEvent).detail;
+      if (appId) {
+        openWindow(appId);
+      }
+    };
+    window.addEventListener('launchApp', handleLaunch);
+    return () => window.removeEventListener('launchApp', handleLaunch);
+  }, [openWindow]);
+
   return (
     <DesktopContext.Provider
       value={{

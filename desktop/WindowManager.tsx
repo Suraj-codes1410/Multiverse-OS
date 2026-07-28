@@ -45,6 +45,8 @@ export interface WindowManagerProps {
  * WindowManager serves as the desktop coordinator layer.
  * Maps open windows from DesktopContext and overlays dragging window frames.
  */
+import { AnimatePresence } from 'framer-motion';
+
 export function WindowManager({ children }: WindowManagerProps) {
   const { windows, closeWindow } = useDesktop();
 
@@ -139,11 +141,13 @@ export function WindowManager({ children }: WindowManagerProps) {
   return (
     <div className="relative w-full h-full overflow-hidden pointer-events-none">
       {/* Dynamic Windows Layer */}
-      {openWindows.map((win) => (
-        <DesktopWindow key={win.id} id={win.id}>
-          {renderWindowContent(win.id)}
-        </DesktopWindow>
-      ))}
+      <AnimatePresence>
+        {openWindows.map((win) => (
+          <DesktopWindow key={win.id} id={win.id}>
+            {renderWindowContent(win.id)}
+          </DesktopWindow>
+        ))}
+      </AnimatePresence>
 
       {/* Render children/original layouts outside the dynamic windows layer */}
       {children}

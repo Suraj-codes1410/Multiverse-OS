@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useReducedMotion } from '@/animations';
 
 // Default boot messages configurable array as required
 const DEFAULT_BOOT_MESSAGES = [
-  'Initializing Multiverse OS...',
-  'Loading Candidate Profile...',
-  'Loading Projects...',
-  'Loading Skills Database...',
-  'System Ready.',
+  'Initializing cognitive OS kernel...',
+  'Loading system appearance themes...',
+  'Verifying offline resume directories...',
+  'Mounting projects explorer metrics...',
+  'Grounding Oracle conversational model...',
+  'Initializing telemetry helper companion...',
+  'OS Startup Nominal.',
 ];
 
 interface BootSequenceProps {
@@ -20,6 +23,7 @@ export default function BootSequence({
   messages = DEFAULT_BOOT_MESSAGES,
   durationMs = 3000,
 }: BootSequenceProps) {
+  const shouldReduceMotion = useReducedMotion();
   const [currentStep, setCurrentStep] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -29,6 +33,7 @@ export default function BootSequence({
   const triggerFadeOut = () => {
     setIsFadingOut(true);
     if (typeof window !== 'undefined') {
+      localStorage.setItem('multiverse_boot_completed_permanent', 'true');
       sessionStorage.setItem('multiverse_boot_completed', 'true');
     }
     // Allow animation to complete before unmounting
@@ -38,13 +43,18 @@ export default function BootSequence({
   };
 
   useEffect(() => {
-    // Check session storage on mount
+    // Accessibility bypass for reduced motion
+    if (shouldReduceMotion) {
+      setIsDismissed(true);
+      return;
+    }
+
+    // Check storage on mount
     if (typeof window !== 'undefined') {
-      const isCompleted = sessionStorage.getItem('multiverse_boot_completed');
-      if (isCompleted === 'true') {
-        setTimeout(() => {
-          setIsDismissed(true);
-        }, 0);
+      const isCompletedSession = sessionStorage.getItem('multiverse_boot_completed') === 'true';
+      const isCompletedPermanent = localStorage.getItem('multiverse_boot_completed_permanent') === 'true';
+      if (isCompletedSession || isCompletedPermanent) {
+        setIsDismissed(true);
         return;
       }
     }
@@ -74,9 +84,9 @@ export default function BootSequence({
       window.removeEventListener('keydown', handleSkip);
       window.removeEventListener('click', handleSkip);
     };
-  }, [messages.length, stepDuration]);
+  }, [messages.length, stepDuration, shouldReduceMotion]);
 
-  if (isDismissed) {
+  if (isDismissed || shouldReduceMotion) {
     return null;
   }
 
@@ -105,10 +115,14 @@ export default function BootSequence({
       <script
         dangerouslySetInnerHTML={{
           __html: `
-            if (typeof window !== 'undefined' && window.sessionStorage && window.sessionStorage.getItem('multiverse_boot_completed') === 'true') {
-              var overlay = document.getElementById('boot-overlay');
-              if (overlay) {
-                overlay.style.display = 'none';
+            if (typeof window !== 'undefined') {
+              var isPerm = window.localStorage && window.localStorage.getItem('multiverse_boot_completed_permanent') === 'true';
+              var isSess = window.sessionStorage && window.sessionStorage.getItem('multiverse_boot_completed') === 'true';
+              if (isPerm || isSess) {
+                var overlay = document.getElementById('boot-overlay');
+                if (overlay) {
+                  overlay.style.display = 'none';
+                }
               }
             }
           `,
@@ -116,7 +130,7 @@ export default function BootSequence({
       />
 
       {/* Cyberpunk Scanline / CRT / Ambient Glow overlays */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(0,242,254,0.06)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(224,106,63,0.06)_0%,transparent_70%)]" />
       <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px]" />
 
       {/* Header Info */}
@@ -151,7 +165,7 @@ export default function BootSequence({
 
       {/* Terminal Loading Log Container */}
       <div className="relative z-10 flex-grow flex flex-col justify-center max-w-xl mx-auto w-full my-8">
-        <div className="border border-accent-cyan/20 rounded bg-bg-panel/40 p-6 backdrop-blur-md shadow-[0_0_24px_rgba(0,242,254,0.03)]">
+        <div className="border border-accent-cyan/20 rounded bg-bg-panel/40 p-6 backdrop-blur-md shadow-[0_0_24px_rgba(224,106,63,0.03)]">
           <div className="space-y-3 min-h-[160px] flex flex-col justify-center font-mono">
             {messages.map((msg, idx) => {
               let statusPrefix = (
@@ -189,7 +203,7 @@ export default function BootSequence({
             </div>
             <div className="w-full bg-border-subtle h-2 rounded border border-border-subtle overflow-hidden">
               <div
-                className="bg-accent-cyan h-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(0,242,254,0.4)]"
+                className="bg-accent-cyan h-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(224,106,63,0.3)]"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>

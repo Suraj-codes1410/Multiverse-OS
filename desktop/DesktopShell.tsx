@@ -62,7 +62,7 @@ function DesktopShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     /* Fullscreen Desktop Main Grid Container */
-    <div className="relative w-screen h-screen overflow-hidden select-none bg-bg-primary text-text-primary flex flex-col font-sans">
+    <div data-context-menu="desktop" className="relative w-screen h-screen overflow-hidden select-none bg-bg-primary text-text-primary flex flex-col font-sans">
       
       {/* Layer 5: System Menu Bar (Fixed top bar) */}
       <MenuBar />

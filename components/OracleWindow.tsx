@@ -162,6 +162,9 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
   const handleSend = async (text: string, eventType?: string) => {
     if (!text.trim()) return;
 
+    // Dispatch global event for Robot companion status response
+    window.dispatchEvent(new CustomEvent('oracleQuery', { detail: text }));
+
     // Use current counter to build user message
     const userMessage = buildMessage('user', text, counter);
     const nextCounter = counter + 1;

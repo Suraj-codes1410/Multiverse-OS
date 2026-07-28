@@ -26,6 +26,25 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
     setActiveAppId(null);
   };
 
+  React.useEffect(() => {
+    const handleLaunch = (e: Event) => {
+      const appId = (e as CustomEvent).detail;
+      if (appId) {
+        if (appId === 'oracle') {
+          setActiveTab('oracle');
+          setActiveAppId(null);
+        } else if (appId === 'terminal') {
+          setActiveTab('terminal');
+          setActiveAppId(null);
+        } else {
+          openApp(appId);
+        }
+      }
+    };
+    window.addEventListener('launchApp', handleLaunch);
+    return () => window.removeEventListener('launchApp', handleLaunch);
+  }, []);
+
   return (
     <NavigationContext.Provider 
       value={{ 

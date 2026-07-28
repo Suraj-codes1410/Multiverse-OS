@@ -29,8 +29,8 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
 
   const windowInst = windows[id];
 
-  // Do not render if not open or minimized
-  if (!windowInst || !windowInst.isOpen || windowInst.isMinimized) {
+  // Do not render if not open
+  if (!windowInst || !windowInst.isOpen) {
     return null;
   }
 
@@ -132,12 +132,31 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         zIndex: windowInst.zIndex,
       };
 
+  // Genie minimize slide down animation arpeggio variants
+  const windowVariants = {
+    open: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      x: 0,
+      pointerEvents: 'auto' as const,
+    },
+    minimized: {
+      opacity: 0,
+      scale: 0.12,
+      y: typeof window !== 'undefined' ? window.innerHeight - windowInst.y - 45 : 300,
+      x: typeof window !== 'undefined' ? (window.innerWidth / 2) - windowInst.x - (windowInst.width / 2) : 0,
+      pointerEvents: 'none' as const,
+    }
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, y: 15 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, y: 15 }}
-      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      variants={windowVariants}
+      animate={windowInst.isMinimized ? 'minimized' : 'open'}
+      initial={{ opacity: 0, scale: 0.95, y: 15 }}
+      exit={{ opacity: 0, scale: 0.95, y: 15 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       style={windowStyle}
       onMouseDownCapture={(e) => {
         const target = e.target as HTMLElement;

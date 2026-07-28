@@ -9,11 +9,7 @@ import { HomeLayout } from './HomeLayout';
 import { OracleLayer } from './OracleLayer';
 import { Wallpaper } from '@/desktop/Wallpaper';
 
-export interface MobileShellProps {
-  children?: React.ReactNode;
-}
-
-export function MobileShell({ children }: MobileShellProps) {
+export function MobileShell() {
   return (
     <NavigationProvider>
       <GestureProvider>

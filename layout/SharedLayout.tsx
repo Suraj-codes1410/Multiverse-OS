@@ -17,14 +17,19 @@ function LayoutSwitcher({ children }: { children: React.ReactNode }) {
     return <DesktopShell>{children}</DesktopShell>;
   }
 
-  return <MobileShell>{children}</MobileShell>;
+  return <MobileShell />;
 }
+
+import { SpotlightSearch } from '@/components/SpotlightSearch';
+import { ContextMenu } from '@/components/ContextMenu';
 
 export function SharedLayout({ children }: SharedLayoutProps) {
   return (
     <ThemeProvider>
       <LayoutProvider>
         <LayoutSwitcher>{children}</LayoutSwitcher>
+        <SpotlightSearch />
+        <ContextMenu />
       </LayoutProvider>
     </ThemeProvider>
   );

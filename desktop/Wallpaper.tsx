@@ -163,22 +163,31 @@ export function Wallpaper() {
           }
         });
       } else if (themeName === 'default') {
-        // Draw fluid mesh gradient for PastelOS
-        blobs.forEach((b) => {
+        // Draw fluid mesh gradient for PastelOS with mouse parallax arpeggiations
+        blobs.forEach((b, idx) => {
           b.x += b.vx;
           b.y += b.vy;
 
-          // Bounce off boundary safely
-          if (b.x - b.radius < -100 || b.x + b.radius > width + 100) b.vx *= -1;
-          if (b.y - b.radius < -100 || b.y + b.radius > height + 100) b.vy *= -1;
+          // Mouse parallax shift
+          const dx = mouse.x === -1000 ? 0 : mouse.x - (width / 2);
+          const dy = mouse.y === -1000 ? 0 : mouse.y - (height / 2);
+          const px = dx * (0.015 + idx * 0.01);
+          const py = dy * (0.015 + idx * 0.01);
 
-          const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
+          const renderX = b.x + px;
+          const renderY = b.y + py;
+
+          // Bounce off boundary safely
+          if (b.x - b.radius < -150 || b.x + b.radius > width + 150) b.vx *= -1;
+          if (b.y - b.radius < -150 || b.y + b.radius > height + 150) b.vy *= -1;
+
+          const grad = ctx.createRadialGradient(renderX, renderY, 0, renderX, renderY, b.radius);
           grad.addColorStop(0, b.color);
           grad.addColorStop(1, 'rgba(220, 235, 232, 0)');
 
           ctx.fillStyle = grad;
           ctx.beginPath();
-          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.arc(renderX, renderY, b.radius, 0, Math.PI * 2);
           ctx.fill();
         });
       } else {

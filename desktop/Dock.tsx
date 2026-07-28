@@ -91,6 +91,13 @@ export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockPr
               ) : isOpen ? (
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex h-1 w-1 rounded-full bg-text-secondary/55" />
               ) : null}
+
+              {/* IMMERSION: Notification Badges */}
+              {app.id === 'oracle' && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent-purple text-white text-[8px] font-mono font-bold rounded-full flex items-center justify-center border border-white shadow-sm scale-90 animate-pulse">
+                  1
+                </span>
+              )}
             </button>
           </div>
         );
