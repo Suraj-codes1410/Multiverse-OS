@@ -248,8 +248,8 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         id="shell-overlay-region"
         className="fixed inset-0 pointer-events-none z-[9990] font-mono text-xs"
       >
-        <CliTerminal isOpen={isCliOpen} onClose={() => setCliOpen(false)} />
-        <OracleWindow isOpen={isOracleOpen} onClose={() => setOracleOpen(false)} />
+        {isCliOpen && <CliTerminal isOpen={isCliOpen} onClose={() => setCliOpen(false)} />}
+        {isOracleOpen && <OracleWindow isOpen={isOracleOpen} onClose={() => setOracleOpen(false)} />}
       </div>
 
       {/* Reusable Notification Overlay Layer */}
