@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useDesktop } from './DesktopContext';
 import { DesktopWindow } from './DesktopWindow';
 import { HomeWindowContent } from './HomeWindowContent';
@@ -108,9 +108,6 @@ export function WindowManager({ children }: WindowManagerProps) {
       case 'contact':
         return <ContactAppContent />;
 
-      case 'oracle':
-        return <OracleWindow isOpen={winOpen('oracle')} onClose={() => closeWindow('oracle')} />;
-
       case 'terminal':
         return <CliTerminal isOpen={winOpen('terminal')} onClose={() => closeWindow('terminal')} />;
 
@@ -122,6 +119,9 @@ export function WindowManager({ children }: WindowManagerProps) {
 
       case 'dashboard':
         return <DashboardAppContent projects={projects} />;
+
+      case 'snake':
+        return <SnakeAppContent />;
 
       default:
         return (
@@ -763,6 +763,250 @@ export function DashboardAppContent({ projects }: { projects: Project[] }) {
         achievements={achievements}
         allProjects={projects}
       />
+    </div>
+  );
+}
+
+/* ==========================================================================
+   APP COMPONENT: RETRO SANK GAME
+   ========================================================================== */
+import { playClickSound, playNotifySound, playMinimizeSound } from '@/lib/useOsAudio';
+
+export function SnakeAppContent() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
+
+  // Game configuration
+  const gridCount = 20;
+  const gameSpeed = 100; // ms per update
+
+  // Game state references to avoid stale closure in loops
+  const snakeRef = useRef<{x: number, y: number}[]>([{ x: 10, y: 10 }]);
+  const dirRef = useRef<{x: number, y: number}>({ x: 1, y: 0 }); // Moving right by default
+  const foodRef = useRef<{x: number, y: number}>({ x: 5, y: 5 });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('multiverse_snake_highscore');
+      if (stored) setHighScore(parseInt(stored, 10));
+    }
+  }, []);
+
+  // Keyboard navigation controller
+  useEffect(() => {
+    const handleKeys = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+        e.preventDefault(); // Stop window scrolling
+      }
+
+      if (e.key === ' ') {
+        setIsPaused(prev => !prev);
+        playClickSound();
+        return;
+      }
+
+      const dir = dirRef.current;
+      if (e.key === 'ArrowUp' && dir.y === 0) dirRef.current = { x: 0, y: -1 };
+      if (e.key === 'ArrowDown' && dir.y === 0) dirRef.current = { x: 0, y: 1 };
+      if (e.key === 'ArrowLeft' && dir.x === 0) dirRef.current = { x: -1, y: 0 };
+      if (e.key === 'ArrowRight' && dir.x === 0) dirRef.current = { x: 1, y: 0 };
+    };
+
+    window.addEventListener('keydown', handleKeys);
+    return () => window.removeEventListener('keydown', handleKeys);
+  }, []);
+
+  // Main game loop timer
+  useEffect(() => {
+    if (isPaused || gameOver) return;
+
+    const spawnFood = () => {
+      let newFood: { x: number; y: number };
+      while (true) {
+        newFood = {
+          x: Math.floor(Math.random() * gridCount),
+          y: Math.floor(Math.random() * gridCount)
+        };
+        const hitsSnake = snakeRef.current.some(s => s.x === newFood.x && s.y === newFood.y);
+        if (!hitsSnake) break;
+      }
+      foodRef.current = newFood;
+    };
+
+    const interval = setInterval(() => {
+      const snake = [...snakeRef.current];
+      const dir = dirRef.current;
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+      // Wall check
+      if (head.x < 0 || head.x >= gridCount || head.y < 0 || head.y >= gridCount) {
+        setGameOver(true);
+        playMinimizeSound();
+        clearInterval(interval);
+        return;
+      }
+
+      // Self hit check
+      if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        setGameOver(true);
+        playMinimizeSound();
+        clearInterval(interval);
+        return;
+      }
+
+      // Move snake
+      snake.unshift(head);
+
+      // Check if food is eaten
+      if (head.x === foodRef.current.x && head.y === foodRef.current.y) {
+        setScore(prev => {
+          const next = prev + 1;
+          if (next > highScore) {
+            setHighScore(next);
+            localStorage.setItem('multiverse_snake_highscore', next.toString());
+          }
+          return next;
+        });
+        playNotifySound();
+        spawnFood();
+      } else {
+        snake.pop();
+      }
+
+      snakeRef.current = snake;
+      drawGame();
+    }, gameSpeed);
+
+    return () => clearInterval(interval);
+  }, [isPaused, gameOver, highScore]);
+
+  // Initial draw
+  useEffect(() => {
+    drawGame();
+  }, []);
+
+  const drawGame = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const size = canvas.width / gridCount;
+
+    // Clear board
+    ctx.fillStyle = '#0a0d14';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw grid mesh lines subtly
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i <= gridCount; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * size, 0);
+      ctx.lineTo(i * size, canvas.height);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, i * size);
+      ctx.lineTo(canvas.width, i * size);
+      ctx.stroke();
+    }
+
+    // Draw Food
+    ctx.fillStyle = '#ff007f'; // cyber pink accent food
+    ctx.shadowColor = '#ff007f';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc((foodRef.current.x + 0.5) * size, (foodRef.current.y + 0.5) * size, size / 2.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0; // Reset shadow
+
+    // Draw Snake
+    snakeRef.current.forEach((segment, idx) => {
+      ctx.fillStyle = idx === 0 ? '#00f2fe' : 'rgba(0, 242, 254, 0.7)'; // head is cyan, tail faded
+      ctx.shadowColor = '#00f2fe';
+      ctx.shadowBlur = idx === 0 ? 6 : 0;
+      
+      ctx.beginPath();
+      const r = size * 0.4; // rounded corner blocks
+      ctx.roundRect(segment.x * size + 1, segment.y * size + 1, size - 2, size - 2, r);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+  };
+
+  const restartGame = () => {
+    snakeRef.current = [{ x: 10, y: 10 }];
+    dirRef.current = { x: 1, y: 0 };
+    foodRef.current = { x: 5, y: 5 };
+    setScore(0);
+    setGameOver(false);
+    setIsPaused(false);
+    playClickSound();
+    setTimeout(() => drawGame(), 10);
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-[#0a0d14] text-text-primary p-4 rounded-xl border border-border-subtle/30 font-sans select-none overflow-hidden justify-between items-center">
+      {/* Scoreboard panel header */}
+      <div className="w-full flex justify-between px-4 py-2 bg-bg-panel/40 border border-border-subtle/40 rounded-lg text-xs font-mono mb-2 items-center">
+        <div className="flex items-center gap-1.5">
+          <span className="text-text-secondary">SCORE:</span>
+          <span className="text-accent-cyan font-bold text-sm">{score}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-text-secondary">HI-SCORE:</span>
+          <span className="text-accent-purple font-bold text-sm">{highScore}</span>
+        </div>
+      </div>
+
+      {/* Main Canvas grid window wrapper */}
+      <div className="relative border border-border-subtle/50 rounded-xl overflow-hidden shadow-2xl flex items-center justify-center">
+        <canvas 
+          ref={canvasRef} 
+          width={360} 
+          height={360} 
+          className="bg-[#0a0d14]"
+        />
+
+        {/* State banner alerts */}
+        {(isPaused || gameOver) && (
+          <div className="absolute inset-0 bg-black/85 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+            {gameOver ? (
+              <>
+                <h3 className="text-sm font-mono font-bold text-accent-cyan tracking-wider mb-1">GAME_OVER</h3>
+                <p className="text-[10px] text-text-secondary mb-4 uppercase font-mono">Final Score: {score}</p>
+                <button 
+                  onClick={restartGame}
+                  className="px-4 py-1.5 rounded-lg border border-[#ff007f]/40 bg-[#ff007f]/10 hover:bg-[#ff007f]/20 hover:text-white font-mono text-[10px] text-text-primary transition-all cursor-pointer"
+                >
+                  TRY_AGAIN
+                </button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-sm font-mono font-bold text-accent-purple tracking-widest mb-1 animate-pulse">GAME_PAUSED</h3>
+                <p className="text-[9px] text-text-secondary/70 mb-4 max-w-[220px] font-mono leading-relaxed">
+                  PRESS [SPACEBAR] OR CLICK BUTTON BELOW TO COMMENCE PLAY. USE DIRECTION ARROWS TO NAVIGATE SNAKE.
+                </p>
+                <button 
+                  onClick={() => setIsPaused(false)}
+                  className="px-4 py-1.5 rounded-lg border border-accent-cyan/40 bg-accent-cyan/10 hover:bg-accent-cyan/20 hover:text-white font-mono text-[10px] text-text-primary transition-all cursor-pointer"
+                >
+                  RESUME_PLAY
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="w-full text-center text-[8px] text-text-secondary/40 font-mono select-none uppercase tracking-widest mt-2">
+        CONTROL: ↑ ↓ ← → // SPACE: PAUSE
+      </div>
     </div>
   );
 }

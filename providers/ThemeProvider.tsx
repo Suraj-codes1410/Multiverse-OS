@@ -12,6 +12,12 @@ const ThemeContext = createContext<ThemeState | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [themeName, setThemeName] = useState<'default' | 'dark' | 'cyberpunk' | 'matrix' | 'high-contrast'>('default');
 
+  React.useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+  }, [themeName]);
+
   return (
     <ThemeContext.Provider value={{ themeName, setThemeName }}>
       {children}

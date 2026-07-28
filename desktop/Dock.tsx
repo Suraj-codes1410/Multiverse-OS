@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Home, Briefcase, Calendar, FileText, Sparkles, Terminal, Mail, Settings, Folder, User } from 'lucide-react';
+import { Home, Briefcase, Calendar, FileText, Sparkles, Terminal, Mail, Settings, Folder, User, Gamepad2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playOpenSound } from '@/lib/useOsAudio';
 
@@ -35,6 +35,7 @@ export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockPr
     { id: 'contact', label: 'Get in Touch', icon: Mail },
     { id: 'explorer', label: 'File Manager', icon: Folder },
     { id: 'settings', label: 'Control Center', icon: Settings },
+    { id: 'snake', label: 'Retro Snake Game', icon: Gamepad2 },
   ];
 
   return (

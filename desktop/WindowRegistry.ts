@@ -17,6 +17,7 @@ export const windowRegistry: Record<string, WindowMetadata> = {
   explorer: { id: 'explorer', title: 'File System Explorer', defaultWidth: 750, defaultHeight: 500 },
   settings: { id: 'settings', title: 'Control Panel Settings', defaultWidth: 600, defaultHeight: 450 },
   dashboard: { id: 'dashboard', title: 'Recruiter Dashboard', defaultWidth: 1024, defaultHeight: 768 },
+  snake: { id: 'snake', title: 'Retro Snake Game', defaultWidth: 500, defaultHeight: 520 },
   'sample-1': { id: 'sample-1', title: 'Sample Node Monitor', defaultWidth: 450, defaultHeight: 300 },
   'sample-2': { id: 'sample-2', title: 'Sample System Telemetry', defaultWidth: 500, defaultHeight: 400 },
 };
