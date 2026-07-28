@@ -71,19 +71,23 @@ export function DesktopProvider({ children }: DesktopProviderProps) {
   }, []);
 
   const focusWindow = useCallback((id: string) => {
-    const nextZ = getNextZIndex();
-    setWindows((prev) => {
-      if (!prev[id]) return prev;
-      return {
-        ...prev,
-        [id]: {
-          ...prev[id],
-          zIndex: nextZ,
-          isMinimized: false,
-        },
-      };
+    setActiveWindowId((currentActive) => {
+      if (currentActive === id) return currentActive;
+      
+      const nextZ = getNextZIndex();
+      setWindows((prev) => {
+        if (!prev[id]) return prev;
+        return {
+          ...prev,
+          [id]: {
+            ...prev[id],
+            zIndex: nextZ,
+            isMinimized: false,
+          },
+        };
+      });
+      return id;
     });
-    setActiveWindowId(id);
   }, [getNextZIndex]);
 
   const minimizeWindow = useCallback((id: string) => {

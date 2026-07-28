@@ -43,7 +43,16 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
     // Only drag on left click and ignore click events on action buttons
     if (e.button !== 0) return;
     const target = e.target as HTMLElement;
-    if (target.closest('.window-action-btn')) return;
+    if (
+      target.closest('.window-action-btn') ||
+      target.closest('button') ||
+      target.closest('a') ||
+      target.closest('input') ||
+      target.closest('select') ||
+      target.closest('textarea')
+    ) {
+      return;
+    }
 
     e.preventDefault();
     focusWindow(id);
@@ -130,7 +139,13 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       exit={{ opacity: 0, scale: 0.96, y: 15 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       style={windowStyle}
-      onClick={() => focusWindow(id)}
+      onMouseDownCapture={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.window-action-btn')) return;
+        if (!isActive) {
+          focusWindow(id);
+        }
+      }}
       onFocus={() => focusWindow(id)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

@@ -78,7 +78,7 @@ export function RobotLayer() {
             }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
-            className="absolute border border-accent-purple/65 bg-accent-purple/5 shadow-[0_0_15px_rgba(168,85,247,0.15)] rounded-lg flex flex-col justify-between p-1.5 box-border"
+            className="absolute border border-accent-purple/65 bg-accent-purple/5 shadow-[0_0_15px_rgba(168,85,247,0.15)] rounded-lg flex flex-col justify-between p-1.5 box-border pointer-events-none"
           >
             {/* Top corner targets crosshairs */}
             <div className="flex justify-between w-full">
