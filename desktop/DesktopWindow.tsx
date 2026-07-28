@@ -35,8 +35,8 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
 
   const windowInst = windows[id];
 
-  // Do not render if not open
-  if (!windowInst || !windowInst.isOpen) {
+  // Do not render if window registry entry is missing
+  if (!windowInst) {
     return null;
   }
 

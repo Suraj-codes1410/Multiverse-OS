@@ -72,7 +72,7 @@ export default function CliTerminal({ isOpen, onClose }: CliTerminalProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  // Mount/unmount is managed cleanly by parent WindowManager. Always execute full hooks list.
 
   const handleExecuteCommand = async (command: string) => {
     const trimmedCommand = command.trim();

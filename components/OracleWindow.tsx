@@ -136,7 +136,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  if (!isOpen) return null;
+  // Mount/unmount is managed cleanly by parent WindowManager. Always execute full hooks list.
 
   const getStatusText = () => {
     if (!healthStatus) return "Connecting...";
