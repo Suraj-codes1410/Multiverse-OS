@@ -45,8 +45,19 @@ export function Wallpaper() {
       alpha: number;
     }
 
+    // Define fluid gradient blob model
+    interface FluidBlob {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      color: string;
+    }
+
     const particlesCount = themeName === 'matrix' ? 80 : 45;
     const particles: Particle[] = [];
+    const blobs: FluidBlob[] = [];
 
     // Matrix characters
     const matrixChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&'.split('');
@@ -62,8 +73,42 @@ export function Wallpaper() {
           chars: Array.from({ length: 15 }, () => matrixChars[Math.floor(Math.random() * matrixChars.length)]),
         });
       }
+    } else if (themeName === 'default') {
+      // 4 large soft pastel colored blobs drifting slowly
+      blobs.push({ 
+        x: width * 0.25, 
+        y: height * 0.25, 
+        vx: 0.08, 
+        vy: 0.05, 
+        radius: Math.min(width, height) * 0.55, 
+        color: 'rgba(198, 222, 217, 0.45)' 
+      });
+      blobs.push({ 
+        x: width * 0.75, 
+        y: height * 0.3, 
+        vx: -0.06, 
+        vy: 0.07, 
+        radius: Math.min(width, height) * 0.6, 
+        color: 'rgba(239, 233, 222, 0.45)' 
+      });
+      blobs.push({ 
+        x: width * 0.3, 
+        y: height * 0.75, 
+        vx: 0.05, 
+        vy: -0.08, 
+        radius: Math.min(width, height) * 0.5, 
+        color: 'rgba(216, 229, 226, 0.5)' 
+      });
+      blobs.push({ 
+        x: width * 0.8, 
+        y: height * 0.8, 
+        vx: -0.05, 
+        vy: -0.05, 
+        radius: Math.min(width, height) * 0.52, 
+        color: 'rgba(232, 223, 211, 0.45)' 
+      });
     } else {
-      // Default & Cyberpunk particles
+      // Cyberpunk & Dark particles
       for (let i = 0; i < particlesCount; i++) {
         particles.push({
           x: Math.random() * width,
@@ -117,12 +162,31 @@ export function Wallpaper() {
             stream.chars.push(matrixChars[Math.floor(Math.random() * matrixChars.length)]);
           }
         });
+      } else if (themeName === 'default') {
+        // Draw fluid mesh gradient for PastelOS
+        blobs.forEach((b) => {
+          b.x += b.vx;
+          b.y += b.vy;
+
+          // Bounce off boundary safely
+          if (b.x - b.radius < -100 || b.x + b.radius > width + 100) b.vx *= -1;
+          if (b.y - b.radius < -100 || b.y + b.radius > height + 100) b.vy *= -1;
+
+          const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
+          grad.addColorStop(0, b.color);
+          grad.addColorStop(1, 'rgba(220, 235, 232, 0)');
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
       } else {
         const { primary, secondary } = getThemeColors();
 
-        // Draw network grid links for default theme
-        if (themeName === 'default') {
-          ctx.strokeStyle = 'rgba(30, 41, 59, 0.15)';
+        // Draw network grid links for dark theme
+        if (themeName === 'dark') {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
           ctx.lineWidth = 0.5;
           for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
@@ -187,6 +251,16 @@ export function Wallpaper() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--wallpaper-glow-primary),transparent_60%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--wallpaper-grid-color)_1px,transparent_1px),linear-gradient(to_bottom,var(--wallpaper-grid-color)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)] opacity-20" />
       
+      {/* Subdued paper-noise texture overlay for PastelOS */}
+      {themeName === 'default' && (
+        <div 
+          className="absolute inset-0 opacity-[0.035]" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+          }}
+        />
+      )}
+
       {/* Animated Wallpaper Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover" />
     </div>

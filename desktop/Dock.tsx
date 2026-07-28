@@ -40,7 +40,7 @@ export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockPr
     <nav
       role="toolbar"
       aria-label="Desktop Applications Dock"
-      className="fixed bottom-4 left-1/2 -translate-x-1/2 h-16 bg-bg-panel/40 border border-border-subtle/50 backdrop-blur-md rounded-2xl flex items-end gap-3 px-4 pb-2 z-50 transition-all duration-300 hover:bg-bg-panel/60 hover:border-border-bright/60 select-none shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 h-16 bg-bg-panel/40 border border-border-subtle/50 backdrop-blur-md rounded-2xl flex items-end gap-3 px-4 pb-2 z-50 transition-all duration-300 hover:bg-bg-panel/60 hover:border-border-bright/60 select-none shadow-xl"
     >
       {apps.map((app) => {
         const IconComponent = app.icon;

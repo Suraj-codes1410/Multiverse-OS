@@ -55,19 +55,19 @@ export function OracleLayer() {
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           role="complementary"
           aria-label="Oracle Assistant Sidebar Drawer"
-          className="absolute inset-y-0 right-0 z-[500] pointer-events-auto border-l border-border-subtle/50 bg-bg-panel/95 backdrop-blur-xl w-96 max-w-full flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.6)] box-border pt-10"
+          className="absolute inset-y-0 right-0 z-[500] pointer-events-auto border-l border-window-border bg-window-bg w-96 max-w-full flex flex-col shadow-xl box-border pt-10"
         >
           {/* HEADER */}
-          <div className="h-12 px-4 border-b border-border-subtle/40 flex items-center justify-between font-mono text-xs select-none">
+          <div className="h-14 px-4 border-b border-window-border flex items-center justify-between font-sans font-medium text-xs select-none">
             <div className="flex items-center gap-2 text-accent-cyan">
-              <Sparkles className="w-4 h-4 animate-pulse" />
-              <span className="font-bold tracking-wider uppercase">ORACLE // NARRATIVE</span>
+              <Sparkles className="w-4 h-4 text-accent-cyan" />
+              <span className="font-semibold tracking-tight uppercase">ORACLE // NARRATIVE</span>
             </div>
             
             {/* Close sidebar */}
             <button
               onClick={() => closeWindow('oracle')}
-              className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
               aria-label="Close Oracle Sidebar"
             >
               <X className="w-4 h-4" />
@@ -85,10 +85,10 @@ export function OracleLayer() {
               >
                 {/* Message Bubble */}
                 <div
-                  className={`p-3 rounded-2xl leading-relaxed shadow ${
+                  className={`p-3 rounded-2xl leading-relaxed shadow-sm text-text-primary border ${
                     msg.sender === 'user'
-                      ? 'bg-accent-cyan/15 border border-accent-cyan/20 text-text-primary rounded-tr-none'
-                      : 'bg-bg-primary/55 border border-border-subtle/40 text-text-secondary rounded-tl-none'
+                      ? 'bg-accent-cyan/10 border-accent-cyan/20 rounded-tr-none'
+                      : 'bg-white border-window-border/50 rounded-tl-none'
                   }`}
                 >
                   {msg.text}
@@ -102,7 +102,7 @@ export function OracleLayer() {
           </div>
 
           {/* CHAT INPUT AREA */}
-          <div className="p-4 border-t border-border-subtle/40 bg-bg-primary/25">
+          <div className="p-4 border-t border-window-border/55 bg-bg-panel/40">
             <form 
               onSubmit={(e) => e.preventDefault()}
               className="relative flex items-center"
@@ -112,7 +112,7 @@ export function OracleLayer() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask about skills, projects, or background..."
-                className="w-full bg-bg-panel/45 border border-border-subtle/60 rounded-xl py-2.5 pl-3 pr-10 font-mono text-[10px] text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-cyan/40 focus:ring-1 focus:ring-accent-cyan/30"
+                className="w-full bg-white border border-window-border rounded-xl py-2.5 pl-4 pr-10 font-sans text-xs text-text-primary placeholder:text-text-secondary/40 focus:outline-none focus:border-accent-cyan/50 focus:ring-1 focus:ring-accent-cyan/15"
               />
               <button
                 type="submit"

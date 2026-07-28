@@ -2,11 +2,79 @@
    Multiverse-OS Theme Switching Definitions
    ========================================================================== */
 
-/* 1. Cyberpunk Theme Override */
+/* 1. Obsidian Dark Theme Override */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #030407;
+  --bg-panel: #0a0c16;
+  --bg-panel-hover: #111424;
+  --card-bg: #111424;
+  --accent-cyan: #00f2fe;
+  --accent-purple: #a855f7;
+  --success-green: #10b981;
+  --warning-amber: #f59e0b;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --border-subtle: #1e293b;
+  --border-bright: #334155;
+
+  /* Glass overrides */
+  --glass-bg-thin: rgba(10, 12, 22, 0.3);
+  --glass-bg-medium: rgba(10, 12, 22, 0.5);
+  --glass-bg-thick: rgba(10, 12, 22, 0.85);
+  --glass-border-subtle: rgba(30, 41, 59, 0.4);
+  --glass-border-bright: rgba(51, 65, 85, 0.6);
+
+  /* Shadow overrides */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --glow-cyan: 0 0 10px rgba(0, 242, 254, 0.15);
+  --glow-purple: 0 0 12px rgba(168, 85, 247, 0.35);
+
+  /* Window overrides */
+  --window-bg: var(--bg-panel);
+  --window-border: var(--border-subtle);
+  --window-glow: var(--glow-cyan);
+  --window-title-color: var(--text-primary);
+
+  /* Terminal overrides */
+  --terminal-bg: #030407;
+  --terminal-text: var(--accent-cyan);
+  --terminal-glow: var(--glow-cyan);
+  --terminal-cursor: var(--accent-cyan);
+  --terminal-header-bg: var(--bg-panel);
+
+  /* Oracle overrides */
+  --oracle-bg: var(--bg-panel);
+  --oracle-accent: var(--accent-purple);
+  --oracle-glow: var(--glow-purple);
+  --oracle-header: var(--bg-panel);
+
+  /* Dock overrides */
+  --dock-bg: rgba(10, 12, 22, 0.85);
+  --dock-border: var(--border-subtle);
+  --dock-glow: var(--glow-cyan);
+
+  /* Robot overrides */
+  --robot-color-idle: var(--success-green);
+  --robot-color-active: var(--accent-cyan);
+  --robot-color-error: var(--warning-amber);
+
+  /* Wallpaper & Mesh overrides */
+  --wallpaper-grid-color: rgba(30, 41, 59, 0.1);
+  --wallpaper-glow-primary: rgba(0, 242, 254, 0.05);
+  --wallpaper-glow-secondary: rgba(168, 85, 247, 0.03);
+}
+
+/* 2. Cyberpunk Theme Override */
 [data-theme="cyberpunk"] {
+  color-scheme: dark;
   --bg-primary: #0a0512;
   --bg-panel: #140b24;
   --bg-panel-hover: #22123b;
+  --card-bg: #22123b;
   --accent-cyan: #ff007f; /* Cyber neon pink primary */
   --accent-purple: #00f2fe; /* Cyber neon cyan secondary */
   --text-primary: #ffffff;
@@ -18,13 +86,35 @@
   --wallpaper-grid-color: rgba(255, 0, 127, 0.05);
   --wallpaper-glow-primary: rgba(255, 0, 127, 0.08);
   --wallpaper-glow-secondary: rgba(0, 242, 254, 0.06);
+
+  --window-bg: var(--bg-panel);
+  --window-border: var(--border-subtle);
+  --window-glow: var(--glow-cyan);
+  --window-title-color: var(--text-primary);
+
+  --terminal-bg: #140b24;
+  --terminal-text: var(--accent-cyan);
+  --terminal-glow: var(--glow-cyan);
+  --terminal-cursor: var(--accent-cyan);
+  --terminal-header-bg: var(--bg-panel);
+
+  --oracle-bg: var(--bg-panel);
+  --oracle-accent: var(--accent-purple);
+  --oracle-glow: var(--glow-purple);
+  --oracle-header: var(--bg-panel);
+
+  --dock-bg: rgba(20, 11, 36, 0.85);
+  --dock-border: var(--border-subtle);
+  --dock-glow: var(--glow-cyan);
 }
 
-/* 2. Matrix Theme Override */
+/* 3. Matrix Theme Override */
 [data-theme="matrix"] {
+  color-scheme: dark;
   --bg-primary: #000a02;
   --bg-panel: #001504;
   --bg-panel-hover: #002206;
+  --card-bg: #002206;
   --accent-cyan: #39ff14; /* Matrix neon green primary */
   --accent-purple: #00ff66; /* Secondary matrix green */
   --text-primary: #dfffdf;
@@ -36,13 +126,35 @@
   --wallpaper-grid-color: rgba(57, 255, 20, 0.05);
   --wallpaper-glow-primary: rgba(57, 255, 20, 0.08);
   --wallpaper-glow-secondary: rgba(0, 255, 102, 0.05);
+
+  --window-bg: var(--bg-panel);
+  --window-border: var(--border-subtle);
+  --window-glow: var(--glow-cyan);
+  --window-title-color: var(--text-primary);
+
+  --terminal-bg: #001504;
+  --terminal-text: var(--accent-cyan);
+  --terminal-glow: var(--glow-cyan);
+  --terminal-cursor: var(--accent-cyan);
+  --terminal-header-bg: var(--bg-panel);
+
+  --oracle-bg: var(--bg-panel);
+  --oracle-accent: var(--accent-purple);
+  --oracle-glow: var(--glow-purple);
+  --oracle-header: var(--bg-panel);
+
+  --dock-bg: rgba(0, 21, 4, 0.85);
+  --dock-border: var(--border-subtle);
+  --dock-glow: var(--glow-cyan);
 }
 
-/* 3. High Contrast Theme Override (Explicit selector for toggle support) */
+/* 4. High Contrast Theme Override */
 [data-theme="high-contrast"] {
+  color-scheme: dark;
   --bg-primary: #000000;
   --bg-panel: #000000;
   --bg-panel-hover: #1a1a1a;
+  --card-bg: #101010;
   --text-primary: #ffffff;
   --text-secondary: #e2e8f0;
   --border-subtle: #ffffff;
@@ -58,4 +170,24 @@
   --wallpaper-grid-color: rgba(255, 255, 255, 0.1);
   --wallpaper-glow-primary: transparent;
   --wallpaper-glow-secondary: transparent;
+
+  --window-bg: var(--bg-panel);
+  --window-border: var(--border-subtle);
+  --window-glow: none;
+  --window-title-color: var(--text-primary);
+
+  --terminal-bg: #000000;
+  --terminal-text: var(--accent-cyan);
+  --terminal-glow: none;
+  --terminal-cursor: var(--accent-cyan);
+  --terminal-header-bg: var(--bg-panel);
+
+  --oracle-bg: var(--bg-panel);
+  --oracle-accent: var(--accent-purple);
+  --oracle-glow: none;
+  --oracle-header: var(--bg-panel);
+
+  --dock-bg: #000000;
+  --dock-border: var(--border-subtle);
+  --dock-glow: none;
 }

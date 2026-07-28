@@ -3,14 +3,14 @@
 import React, { createContext, useContext, useState } from 'react';
 
 export interface ThemeState {
-  themeName: 'default' | 'cyberpunk' | 'matrix' | 'high-contrast';
-  setThemeName: (theme: 'default' | 'cyberpunk' | 'matrix' | 'high-contrast') => void;
+  themeName: 'default' | 'dark' | 'cyberpunk' | 'matrix' | 'high-contrast';
+  setThemeName: (theme: 'default' | 'dark' | 'cyberpunk' | 'matrix' | 'high-contrast') => void;
 }
 
 const ThemeContext = createContext<ThemeState | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [themeName, setThemeName] = useState<'default' | 'cyberpunk' | 'matrix' | 'high-contrast'>('default');
+  const [themeName, setThemeName] = useState<'default' | 'dark' | 'cyberpunk' | 'matrix' | 'high-contrast'>('default');
 
   return (
     <ThemeContext.Provider value={{ themeName, setThemeName }}>

@@ -18,9 +18,9 @@ export default function Card({
   glowOnHover = false,
   onClick,
 }: CardProps) {
-  const baseStyles = 'bg-bg-panel border border-border-subtle rounded-xl p-6 overflow-hidden transition-all duration-300 relative group';
+  const baseStyles = 'bg-card-bg border border-border-subtle rounded-xl p-6 overflow-hidden transition-all duration-300 relative group shadow-sm';
   const hoverStyles = hoverable 
-    ? 'hover:border-border-bright hover:-translate-y-0.5' 
+    ? 'hover:border-border-bright hover:-translate-y-0.5 hover:shadow-md' 
     : '';
   const glowStyles = glowOnHover 
     ? 'hover:shadow-[0_0_20px_rgba(0,242,254,0.1)]'

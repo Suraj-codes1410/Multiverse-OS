@@ -688,9 +688,10 @@ function SettingsAppContent() {
         {/* Section: Themes */}
         <div className="space-y-3">
           <h4 className="font-mono text-[9px] uppercase text-text-secondary/70 tracking-wider">System Appearance Theme</h4>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {[
-              { id: 'default', label: 'Default Dark', accent: 'cyan' },
+              { id: 'default', label: 'PastelOS (Light)', accent: 'terracotta' },
+              { id: 'dark', label: 'Obsidian Dark', accent: 'cyan' },
               { id: 'cyberpunk', label: 'Cyberpunk', accent: 'purple' },
               { id: 'matrix', label: 'Matrix', accent: 'green' },
               { id: 'high-contrast', label: 'High Contrast', accent: 'amber' }

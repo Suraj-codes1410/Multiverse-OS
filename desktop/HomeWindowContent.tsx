@@ -13,13 +13,13 @@ export function HomeWindowContent() {
     <div className="flex-grow overflow-y-auto px-4 py-8 font-sans select-text scrollbar-thin">
       <div className="max-w-3xl mx-auto text-center">
         {/* Warm Premium OS Status Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-500/25 bg-amber-500/5 text-amber-500 text-[10px] font-mono mb-6 uppercase tracking-wider">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-success-green/20 bg-success-green/5 text-success-green text-[10px] font-mono mb-6 uppercase tracking-wider select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-success-green animate-pulse" />
           System Operational // Core Node Online
         </div>
 
         {/* Developer Name */}
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-text-primary mb-3">
+        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-text-primary mb-3">
           {portfolio.name}
         </h1>
 

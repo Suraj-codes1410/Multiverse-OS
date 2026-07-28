@@ -74,7 +74,7 @@ export function WidgetLayer() {
     >
       {/* 1. LEFT SIDE: Desktop Icons Grid */}
       <div 
-        className="absolute left-6 top-16 bottom-24 w-48 flex flex-col flex-wrap gap-x-3 gap-y-2 pointer-events-auto max-h-[calc(100vh-180px)] items-start justify-start content-start"
+        className="absolute left-8 top-20 bottom-24 w-52 flex flex-col flex-wrap gap-x-5 gap-y-4 pointer-events-auto max-h-[calc(100vh-200px)] items-start justify-start content-start"
         role="grid"
         aria-label="Desktop Shortcuts Grid"
       >
@@ -98,20 +98,20 @@ export function WidgetLayer() {
                   else setSelectedIconId(icon.id);
                 }
               }}
-              className={`desktop-icon-btn flex flex-col items-center gap-1.5 p-1.5 w-20 rounded-xl transition-all duration-200 border outline-none cursor-pointer text-center group ${
+              className={`desktop-icon-btn flex flex-col items-center gap-2 p-2 w-20 rounded-2xl transition-all duration-300 border outline-none cursor-pointer text-center group ${
                 isSelected
-                  ? 'bg-bg-panel/40 border-accent-cyan/40 shadow-[0_0_15px_rgba(0,242,254,0.15)] text-accent-cyan'
-                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-panel/10'
+                  ? 'bg-bg-panel/60 border-accent-cyan/40 shadow-md text-accent-cyan'
+                  : 'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-panel/15'
               }`}
               aria-label={`${icon.label} shortcut. Double click to launch application`}
             >
               {/* Icon wrapper with hover physics */}
-              <div className="w-10 h-10 rounded-xl bg-bg-panel/45 border border-border-subtle/50 flex items-center justify-center transition-transform group-hover:scale-105 group-active:scale-95 shadow-md">
+              <div className="w-11 h-11 rounded-2xl bg-bg-panel/35 border border-border-subtle/25 flex items-center justify-center transition-all duration-300 group-hover:-translate-y-0.5 group-active:translate-y-0 shadow-sm group-hover:bg-bg-panel/65 group-hover:shadow-md">
                 <IconComponent className={`w-5 h-5 ${isSelected ? 'text-accent-cyan' : 'text-text-secondary group-hover:text-accent-cyan transition-colors'}`} />
               </div>
               
               {/* Icon label */}
-              <span className="text-[10px] font-mono leading-tight truncate w-full px-0.5 select-none">
+              <span className="text-[10px] font-sans font-medium tracking-tight leading-tight truncate w-full px-0.5 select-none text-text-primary">
                 {icon.label}
               </span>
             </button>
@@ -121,33 +121,33 @@ export function WidgetLayer() {
 
       {/* 2. RIGHT SIDE: System Dashboard Widgets */}
       <aside 
-        className="absolute right-6 top-16 bottom-24 w-80 flex flex-col gap-4 pointer-events-auto overflow-y-auto pr-2 scrollbar-none hidden xl:flex"
+        className="absolute right-8 top-20 bottom-24 w-80 flex flex-col gap-4 pointer-events-auto overflow-y-auto pr-2 scrollbar-none hidden xl:flex"
         aria-label="System Dashboard Widgets"
       >
         {/* Widget 1: Stateful Clock */}
-        <div className="system-widget-card p-4 rounded-2xl bg-bg-panel/30 border border-border-subtle/30 backdrop-blur-md flex flex-col shadow-lg">
-          <span className="font-mono text-3xl font-bold tracking-wider text-text-primary select-text">
+        <div className="system-widget-card p-4.5 rounded-2xl bg-bg-panel/20 border border-border-subtle/30 backdrop-blur-md flex flex-col shadow-md">
+          <span className="font-sans text-3xl font-semibold tracking-tight text-text-primary select-text">
             {time}
           </span>
-          <span className="font-mono text-[10px] text-text-secondary uppercase tracking-widest mt-1">
+          <span className="font-mono text-[9px] text-text-secondary/80 uppercase tracking-widest mt-1">
             {date}
           </span>
         </div>
 
         {/* Widget 2: Weather Placeholder */}
-        <div className="system-widget-card p-4 rounded-2xl bg-bg-panel/30 border border-border-subtle/30 backdrop-blur-md flex items-center gap-4 shadow-lg">
+        <div className="system-widget-card p-4.5 rounded-2xl bg-bg-panel/20 border border-border-subtle/30 backdrop-blur-md flex items-center gap-4 shadow-md">
           <div className="p-3 rounded-xl bg-warning-amber/10 border border-warning-amber/20 flex items-center justify-center">
             <Sun className="w-6 h-6 text-warning-amber animate-spin-slow" />
           </div>
-          <div className="flex flex-col font-mono">
-            <span className="text-[10px] text-text-secondary uppercase tracking-wider">Orbit Base // Clear</span>
-            <span className="text-sm font-bold text-text-primary mt-0.5">21°C</span>
-            <span className="text-[8px] text-text-secondary/70 mt-0.5">WIND: NW 3.2m/s // HUMIDITY: 45%</span>
+          <div className="flex flex-col font-sans">
+            <span className="text-[9px] font-mono text-text-secondary/75 uppercase tracking-wider">Orbit Base // Clear</span>
+            <span className="text-sm font-semibold text-text-primary mt-0.5">21°C</span>
+            <span className="text-[8px] font-mono text-text-secondary/60 mt-0.5">WIND: NW 3.2m/s // HUMIDITY: 45%</span>
           </div>
         </div>
 
         {/* Widget 3: Live System Stats */}
-        <div className="system-widget-card p-4 rounded-2xl bg-bg-panel/30 border border-border-subtle/30 backdrop-blur-md flex flex-col gap-3 shadow-lg">
+        <div className="system-widget-card p-4.5 rounded-2xl bg-bg-panel/20 border border-border-subtle/30 backdrop-blur-md flex flex-col gap-3.5 shadow-md">
           <div className="flex items-center justify-between font-mono text-[9px] text-text-secondary">
             <div className="flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5 text-accent-cyan" />
@@ -156,11 +156,11 @@ export function WidgetLayer() {
             <span className="text-accent-cyan font-bold">{cpuUsage}%</span>
           </div>
           {/* Telemetry percentage bar indicator */}
-          <div className="h-1.5 w-full bg-bg-primary/55 rounded-full overflow-hidden border border-border-subtle/30">
+          <div className="h-1.5 w-full bg-bg-primary/30 rounded-full overflow-hidden border border-border-subtle/20">
             <motion.div 
               animate={{ width: `${cpuUsage}%` }} 
               transition={{ type: 'spring', stiffness: 80 }} 
-              className="h-full bg-accent-cyan shadow-[0_0_8px_var(--accent-cyan)]" 
+              className="h-full bg-accent-cyan" 
             />
           </div>
 
@@ -171,7 +171,7 @@ export function WidgetLayer() {
             </div>
             <span className="text-accent-purple font-bold">{ramUsage} GB / 16.0 GB</span>
           </div>
-          <div className="h-1.5 w-full bg-bg-primary/55 rounded-full overflow-hidden border border-border-subtle/30">
+          <div className="h-1.5 w-full bg-bg-primary/30 rounded-full overflow-hidden border border-border-subtle/20">
             <div 
               style={{ width: `${(parseFloat(ramUsage) / 16) * 100}%` }} 
               className="h-full bg-accent-purple" 
@@ -180,7 +180,7 @@ export function WidgetLayer() {
         </div>
 
         {/* Widget 4: Oracle AI Chat Trigger Link */}
-        <div className="system-widget-card p-4 rounded-2xl bg-bg-panel/30 border border-border-subtle/30 backdrop-blur-md flex flex-col gap-3 shadow-lg hover:border-accent-cyan/30 transition-colors">
+        <div className="system-widget-card p-4.5 rounded-2xl bg-bg-panel/20 border border-border-subtle/30 backdrop-blur-md flex flex-col gap-3.5 shadow-md hover:border-accent-cyan/20 transition-colors">
           <div className="flex items-center gap-2 font-mono text-[10px] text-text-primary">
             <Compass className="w-4 h-4 text-accent-cyan animate-pulse" />
             <span className="font-bold uppercase tracking-wider">Narrative Core Router</span>
@@ -190,7 +190,7 @@ export function WidgetLayer() {
           </p>
           <button
             onClick={() => openWindow('oracle')}
-            className="w-full py-2 rounded-xl bg-bg-primary/45 border border-border-subtle/50 hover:bg-bg-panel-hover/60 hover:text-accent-cyan font-mono text-[10px] text-text-secondary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer text-center"
+            className="w-full py-2 rounded-xl bg-bg-primary/30 border border-border-subtle/30 hover:bg-bg-panel-hover/60 hover:text-accent-cyan font-mono text-[10px] text-text-secondary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer text-center"
           >
             Launch Oracle Dialogue //
           </button>

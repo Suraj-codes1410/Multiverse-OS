@@ -1,22 +1,23 @@
 /* ==========================================================================
-   CSS Custom Properties - Default Theme (Obsidian Dark)
+   CSS Custom Properties - Default Theme (PastelOS Light)
    ========================================================================== */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
   /* --- 1. Colors --- */
-  --bg-primary: #030407;
-  --bg-panel: #0a0c16;
-  --bg-panel-hover: #111424;
-  --accent-cyan: #00f2fe;
-  --accent-purple: #a855f7;
-  --success-green: #10b981;
-  --warning-amber: #f59e0b;
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --border-subtle: #1e293b;
-  --border-bright: #334155;
+  --bg-primary: #DCEBE8;         /* Soft pastel blue-green desktop */
+  --bg-panel: #F7F2EB;           /* Warm ivory / cream window background */
+  --bg-panel-hover: #ECE6DC;     /* Slightly darker warm cream on hover */
+  --card-bg: #FFFFFF;            /* Lighter paper white card background */
+  --accent-cyan: #E06A3F;        /* Terracotta / warm copper accent */
+  --accent-purple: #8FA6B2;      /* Dusty blue secondary */
+  --success-green: #7D8C77;      /* Muted olive green success */
+  --warning-amber: #D1A25E;      /* Soft amber warning */
+  --text-primary: #2B2D2F;        /* Deep graphite/charcoal text */
+  --text-secondary: #6A6D70;      /* Warm gray secondary text */
+  --border-subtle: rgba(43, 45, 47, 0.08); /* Very soft warm charcoal border */
+  --border-bright: rgba(43, 45, 47, 0.15); /* Slightly darker border */
 
   /* --- 2. Spacing --- */
   --spacing-xs: 4px;
@@ -35,57 +36,57 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
 
-  /* --- 4. Glassmorphism --- */
+  /* --- 4. Glassmorphism (Subtle overlays only) --- */
   --glass-blur-sm: blur(4px);
   --glass-blur-md: blur(8px);
-  --glass-blur-lg: blur(16px);
-  --glass-bg-thin: rgba(10, 12, 22, 0.3);
-  --glass-bg-medium: rgba(10, 12, 22, 0.5);
-  --glass-bg-thick: rgba(10, 12, 22, 0.85);
-  --glass-border-subtle: rgba(30, 41, 59, 0.4);
-  --glass-border-bright: rgba(51, 65, 85, 0.6);
+  --glass-blur-lg: blur(12px);
+  --glass-bg-thin: rgba(247, 242, 235, 0.4);
+  --glass-bg-medium: rgba(247, 242, 235, 0.65);
+  --glass-bg-thick: rgba(247, 242, 235, 0.85);
+  --glass-border-subtle: rgba(43, 45, 47, 0.06);
+  --glass-border-bright: rgba(43, 45, 47, 0.1);
 
-  /* --- 5. Elevation (Shadows) --- */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --glow-cyan: 0 0 10px rgba(0, 242, 254, 0.15);
-  --glow-purple: 0 0 12px rgba(168, 85, 247, 0.35);
+  /* --- 5. Elevation (Layered shadows) --- */
+  --shadow-sm: 0 1px 3px rgba(43, 45, 47, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(43, 45, 47, 0.08), 0 2px 4px -1px rgba(43, 45, 47, 0.03);
+  --shadow-lg: 0 12px 28px -4px rgba(43, 45, 47, 0.12), 0 4px 10px -2px rgba(43, 45, 47, 0.05);
+  --shadow-xl: 0 24px 48px -6px rgba(43, 45, 47, 0.14), 0 12px 24px -4px rgba(43, 45, 47, 0.07);
+  --glow-cyan: none;
+  --glow-purple: none;
 
   /* --- 6. Window Layer --- */
   --window-bg: var(--bg-panel);
-  --window-border: var(--border-subtle);
-  --window-glow: var(--glow-cyan);
+  --window-border: rgba(43, 45, 47, 0.12);
+  --window-glow: none;
   --window-title-color: var(--text-primary);
 
   /* --- 7. Terminal Simulator --- */
-  --terminal-bg: #030407;
-  --terminal-text: var(--accent-cyan);
-  --terminal-glow: var(--glow-cyan);
+  --terminal-bg: #FAF6EE;
+  --terminal-text: var(--text-primary);
+  --terminal-glow: none;
   --terminal-cursor: var(--accent-cyan);
-  --terminal-header-bg: var(--bg-panel);
+  --terminal-header-bg: #ECE6DC;
 
   /* --- 8. Oracle AI Assistant --- */
-  --oracle-bg: var(--bg-panel);
-  --oracle-accent: var(--accent-purple);
-  --oracle-glow: var(--glow-purple);
-  --oracle-header: var(--bg-panel);
+  --oracle-bg: #FAF6EE;
+  --oracle-accent: var(--accent-cyan);
+  --oracle-glow: none;
+  --oracle-header: #ECE6DC;
 
   /* --- 9. Control Dock --- */
-  --dock-bg: rgba(10, 12, 22, 0.85);
-  --dock-border: var(--border-subtle);
-  --dock-glow: var(--glow-cyan);
+  --dock-bg: rgba(247, 242, 235, 0.85);
+  --dock-border: rgba(43, 45, 47, 0.1);
+  --dock-glow: none;
 
   /* --- 10. Robot Status --- */
   --robot-color-idle: var(--success-green);
   --robot-color-active: var(--accent-cyan);
-  --robot-color-error: var(--warning-amber);
+  --robot-color-error: #C85B53;
 
   /* --- 11. Wallpaper & Mesh --- */
-  --wallpaper-grid-color: rgba(30, 41, 59, 0.1);
-  --wallpaper-glow-primary: rgba(0, 242, 254, 0.05);
-  --wallpaper-glow-secondary: rgba(168, 85, 247, 0.03);
+  --wallpaper-grid-color: rgba(43, 45, 47, 0.03);
+  --wallpaper-glow-primary: rgba(224, 106, 63, 0.02);
+  --wallpaper-glow-secondary: rgba(143, 166, 178, 0.02);
 
   /* --- 12. Breakpoints --- */
   --breakpoint-sm: 640px;
@@ -95,9 +96,9 @@
   --breakpoint-xxl: 1536px;
 
   /* --- 13. Motion --- */
-  --motion-duration-fast: 0.2s;
-  --motion-duration-normal: 0.3s;
-  --motion-duration-slow: 0.5s;
+  --motion-duration-fast: 0.25s;
+  --motion-duration-normal: 0.35s;
+  --motion-duration-slow: 0.6s;
   --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -118,15 +119,15 @@
 /* System High Contrast Override */
 @media (prefers-contrast: high) {
   :root {
-    --bg-primary: #000000 !important;
-    --bg-panel: #000000 !important;
-    --bg-panel-hover: #1a1a1a !important;
-    --text-primary: #ffffff !important;
-    --text-secondary: #e2e8f0 !important;
-    --border-subtle: #ffffff !important;
-    --border-bright: #ffffff !important;
-    --accent-cyan: #00ffff !important;
-    --accent-purple: #ff00ff !important;
+    --bg-primary: #ffffff !important;
+    --bg-panel: #ffffff !important;
+    --bg-panel-hover: #f0f0f0 !important;
+    --text-primary: #000000 !important;
+    --text-secondary: #333333 !important;
+    --border-subtle: #000000 !important;
+    --border-bright: #000000 !important;
+    --accent-cyan: #e06a3f !important;
+    --accent-purple: #8fa6b2 !important;
     --glow-cyan: none !important;
     --glow-purple: none !important;
     --window-glow: none !important;

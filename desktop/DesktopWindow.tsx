@@ -153,10 +153,10 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         }
       }}
       tabIndex={0}
-      className={`flex flex-col rounded-xl overflow-hidden bg-bg-panel/75 border backdrop-blur-xl transition-shadow duration-200 pointer-events-auto select-text shadow-2xl focus:outline-none ${
+      className={`flex flex-col rounded-2xl overflow-hidden bg-window-bg border border-window-border backdrop-blur-md transition-shadow duration-300 pointer-events-auto select-text shadow-lg focus:outline-none ${
         isActive
-          ? 'border-accent-cyan/35 shadow-[0_20px_50px_rgba(0,242,254,0.15)]'
-          : 'border-border-subtle/50'
+          ? 'shadow-xl ring-1 ring-accent-cyan/15'
+          : 'opacity-[0.99]'
       }`}
       role="dialog"
       aria-label={windowInst.title}
@@ -164,10 +164,10 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       {/* WINDOW HEADER */}
       <div
         onMouseDown={handleHeaderMouseDown}
-        className={`h-9 px-3 flex items-center justify-between cursor-move select-none border-b font-mono text-xs ${
+        className={`h-11 px-4 flex items-center justify-between cursor-move select-none border-b transition-colors duration-200 ${
           isActive
-            ? 'bg-bg-panel-hover/80 text-text-primary border-accent-cyan/20'
-            : 'bg-bg-panel/50 text-text-secondary border-border-subtle/50'
+            ? 'bg-bg-panel-hover/50 text-window-title border-window-border/50 font-medium'
+            : 'bg-bg-panel/30 text-text-secondary/70 border-window-border/30'
         }`}
       >
         {/* Traffic Lights Controls (macOS style red/yellow/green) */}
@@ -205,23 +205,23 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         </div>
 
         {/* Window Title */}
-        <span className="font-semibold tracking-wide truncate max-w-[50%] select-none">
+        <span className="font-sans font-medium text-text-primary tracking-tight truncate max-w-[50%] select-none text-xs">
           {windowInst.title}
         </span>
 
         {/* Dynamic Telemetry Info Node Placeholder */}
-        <div className="w-16 text-right text-[9px] text-text-secondary/70 uppercase tracking-widest hidden md:block">
+        <div className="w-16 text-right text-[9px] text-text-secondary/70 uppercase tracking-widest hidden md:block font-mono">
           {isActive ? 'Active' : 'Muted'}
         </div>
       </div>
 
       {/* WINDOW TOOLBAR PLACEHOLDER */}
       {toolbar ? (
-        <div className="h-8 border-b border-border-subtle/50 bg-bg-panel/30 flex items-center px-3 gap-2">
+        <div className="h-8 border-b border-window-border/40 bg-bg-panel/30 flex items-center px-3 gap-2">
           {toolbar}
         </div>
       ) : (
-        <div className="h-8 border-b border-border-subtle/30 bg-bg-panel/15 flex items-center justify-between px-3 text-[10px] text-text-secondary font-mono select-none">
+        <div className="h-9 border-b border-window-border/30 bg-bg-panel/15 flex items-center justify-between px-4 text-[10px] text-text-secondary/80 font-mono select-none">
           <div className="flex items-center gap-4">
             <span className="cursor-pointer hover:text-text-primary transition-colors">File</span>
             <span className="cursor-pointer hover:text-text-primary transition-colors">Edit</span>
@@ -234,7 +234,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       )}
 
       {/* WINDOW BODY */}
-      <div className="flex-grow w-full overflow-hidden relative bg-bg-primary/20 flex flex-col p-4">
+      <div className="flex-grow w-full overflow-hidden relative bg-window-bg flex flex-col p-5">
         {children}
       </div>
 

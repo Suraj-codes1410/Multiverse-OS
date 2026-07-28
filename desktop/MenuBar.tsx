@@ -31,7 +31,8 @@ export function MenuBar() {
 
   // Theme Toggler
   const toggleTheme = () => {
-    if (themeName === 'default') setThemeName('cyberpunk');
+    if (themeName === 'default') setThemeName('dark');
+    else if (themeName === 'dark') setThemeName('cyberpunk');
     else if (themeName === 'cyberpunk') setThemeName('matrix');
     else if (themeName === 'matrix') setThemeName('high-contrast');
     else setThemeName('default');
@@ -117,6 +118,8 @@ export function MenuBar() {
             <Cpu className="w-3.5 h-3.5 text-success-green" />
           ) : themeName === 'cyberpunk' ? (
             <Moon className="w-3.5 h-3.5 text-accent-purple" />
+          ) : themeName === 'dark' ? (
+            <Moon className="w-3.5 h-3.5 text-text-secondary" />
           ) : (
             <Sun className="w-3.5 h-3.5 text-accent-cyan" />
           )}

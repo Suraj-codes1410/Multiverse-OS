@@ -15,6 +15,15 @@
   --color-border-subtle: var(--border-subtle);
   --color-border-bright: var(--border-bright);
 
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+
+  --color-window-bg: var(--window-bg);
+  --color-window-border: var(--window-border);
+  --color-window-title: var(--window-title-color);
+
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
 }
