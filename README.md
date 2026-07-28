@@ -208,6 +208,18 @@ Below is the complete engineering matrix of the Multiverse-OS platform, divided 
 
 ---
 
+## 🎨 Theme & Visual Customization (PastelOS)
+
+Multiverse-OS supports dynamic workspace theme customization. Rather than relying on simple styling toggles, the system uses responsive CSS Custom Properties to completely alter the visual material layers:
+
+* **PastelOS (Default)**: A light, warm, and minimal editorial default theme. Features a soft pastel blue-green background grid (`#DCEBE8`), warm ivory/cream window backgrounds (`#F7F2EB`), solid paper-white cards (`#FFFFFF`), a friendly custom-designed SVG companion robot, and terracotta accents (`#E06A3F`).
+* **Obsidian Dark**: A clean, low-contrast obsidian developer workspace featuring neon cyan accents.
+* **Cyberpunk**: A retro-futuristic dark mode theme using neon pink and neon cyan glow aesthetics.
+* **Matrix**: A green-on-black digital terminal layout simulating slow-scrolling binary matrices.
+* **High Contrast**: A system-compliant high-accessibility layout utilizing strict black-and-white borders.
+
+---
+
 ## 🛡️ Reliability & Engineering Architecture
 
 The platform is designed to operate continuously under strict resource constraints, featuring several production-grade recovery patterns:
