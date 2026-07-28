@@ -64,8 +64,6 @@ export default function BootSequence({
       setCurrentStep((prev) => {
         if (prev >= messages.length - 1) {
           clearInterval(interval);
-          triggerFadeOut();
-          return prev + 1;
         }
         return prev + 1;
       });
@@ -85,6 +83,13 @@ export default function BootSequence({
       window.removeEventListener('click', handleSkip);
     };
   }, [messages.length, stepDuration, shouldReduceMotion]);
+
+  // Clean side-effect handler when step reaches the end
+  useEffect(() => {
+    if (currentStep >= messages.length) {
+      triggerFadeOut();
+    }
+  }, [currentStep, messages.length]);
 
   if (isDismissed || shouldReduceMotion) {
     return null;
