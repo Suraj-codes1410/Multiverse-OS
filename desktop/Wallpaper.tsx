@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useTheme } from '@/providers';
 import { useReducedMotion } from '@/animations';
+import { Ferrofluid } from '@/components/Ferrofluid';
 
 export function Wallpaper() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -270,8 +271,29 @@ export function Wallpaper() {
         />
       )}
 
-      {/* Animated Wallpaper Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover" />
+      {/* Animated Wallpaper Canvas / WebGL Ferrofluid shader */}
+      {themeName === 'high-contrast' ? (
+        <div className="absolute inset-0 w-full h-full pointer-events-auto">
+          <Ferrofluid
+            colors={["#ffffff", "#ffffff", "#ffffff"]}
+            speed={0.4}
+            scale={1.2}
+            turbulence={1.0}
+            fluidity={0.08}
+            rimWidth={0.25}
+            sharpness={3.5}
+            shimmer={0.2}
+            glow={2.8}
+            flowDirection="down"
+            opacity={1.0}
+            mouseInteraction={true}
+            mouseStrength={1.5}
+            mouseRadius={0.3}
+          />
+        </div>
+      ) : (
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover" />
+      )}
     </div>
   );
 }
