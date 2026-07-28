@@ -141,8 +141,8 @@ export function RobotLayer() {
         )}
       </AnimatePresence>
 
-      {/* 2. AGENT STATUS LIGHT BANNER (Bottom-Right Safe Area) */}
-      <div className="absolute bottom-4 right-8 pointer-events-auto bg-bg-panel/90 border border-window-border backdrop-blur-md pl-3 pr-4 py-2.5 rounded-2xl flex items-center gap-3 select-none font-sans text-[10px] text-text-secondary shadow-lg z-50">
+      {/* 2. AGENT STATUS LIGHT BANNER (Bottom-Right Safe Area — clear of dock) */}
+      <div className="absolute bottom-20 right-6 pointer-events-auto bg-bg-panel/90 border border-window-border backdrop-blur-md pl-3 pr-4 py-2.5 rounded-2xl flex items-center gap-3 select-none font-sans text-[10px] text-text-secondary shadow-lg z-[200]">
         
         {/* Animated Friendly Robot Companion SVG */}
         <div className="relative flex items-center justify-center">

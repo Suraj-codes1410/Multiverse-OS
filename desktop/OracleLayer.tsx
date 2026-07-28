@@ -55,13 +55,13 @@ export function OracleLayer() {
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           role="complementary"
           aria-label="Oracle Assistant Sidebar Drawer"
-          className="absolute inset-y-0 right-0 z-[500] pointer-events-auto border-l border-window-border bg-window-bg w-96 max-w-full flex flex-col shadow-xl box-border pt-10"
+          className="absolute inset-y-0 right-0 z-[500] pointer-events-auto border-l border-accent-purple/20 bg-bg-panel w-96 max-w-full flex flex-col shadow-2xl box-border pt-10"
         >
           {/* HEADER */}
-          <div className="h-14 px-4 border-b border-window-border flex items-center justify-between font-sans font-medium text-xs select-none">
-            <div className="flex items-center gap-2 text-accent-cyan">
-              <Sparkles className="w-4 h-4 text-accent-cyan" />
-              <span className="font-semibold tracking-tight uppercase">ORACLE // NARRATIVE</span>
+          <div className="h-14 px-4 border-b border-accent-purple/15 bg-accent-purple/5 flex items-center justify-between font-sans font-medium text-xs select-none">
+            <div className="flex items-center gap-2 text-accent-purple">
+              <Sparkles className="w-4 h-4 text-accent-purple" />
+              <span className="font-semibold tracking-tight uppercase">Oracle // Intelligence</span>
             </div>
             
             {/* Close sidebar */}
@@ -87,8 +87,8 @@ export function OracleLayer() {
                 <div
                   className={`p-3 rounded-2xl leading-relaxed shadow-sm text-text-primary border ${
                     msg.sender === 'user'
-                      ? 'bg-accent-cyan/10 border-accent-cyan/20 rounded-tr-none'
-                      : 'bg-white border-window-border/50 rounded-tl-none'
+                      ? 'bg-accent-purple/10 border-accent-purple/20 rounded-tr-none text-text-primary'
+                      : 'bg-bg-primary/60 border-border-subtle/40 rounded-tl-none text-text-primary'
                   }`}
                 >
                   {msg.text}
@@ -102,7 +102,7 @@ export function OracleLayer() {
           </div>
 
           {/* CHAT INPUT AREA */}
-          <div className="p-4 border-t border-window-border/55 bg-bg-panel/40">
+          <div className="p-4 border-t border-accent-purple/15 bg-bg-primary/40">
             <form 
               onSubmit={(e) => e.preventDefault()}
               className="relative flex items-center"
@@ -112,12 +112,12 @@ export function OracleLayer() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask about skills, projects, or background..."
-                className="w-full bg-white border border-window-border rounded-xl py-2.5 pl-4 pr-10 font-sans text-xs text-text-primary placeholder:text-text-secondary/40 focus:outline-none focus:border-accent-cyan/50 focus:ring-1 focus:ring-accent-cyan/15"
+                className="w-full bg-bg-panel border border-border-subtle rounded-xl py-2.5 pl-4 pr-10 font-sans text-xs text-text-primary placeholder:text-text-secondary/40 focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/15"
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim()}
-                className="absolute right-2 p-1.5 rounded-lg text-text-secondary hover:text-accent-cyan disabled:text-text-secondary/35 transition-colors cursor-pointer"
+                className="absolute right-2 p-1.5 rounded-lg text-text-secondary hover:text-accent-purple disabled:text-text-secondary/35 transition-colors cursor-pointer"
                 aria-label="Send Query"
               >
                 <Send className="w-3.5 h-3.5" />

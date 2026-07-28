@@ -139,14 +139,12 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       scale: 1,
       y: 0,
       x: 0,
-      pointerEvents: 'auto' as const,
     },
     minimized: {
       opacity: 0,
       scale: 0.12,
       y: typeof window !== 'undefined' ? window.innerHeight - windowInst.y - 45 : 300,
       x: typeof window !== 'undefined' ? (window.innerWidth / 2) - windowInst.x - (windowInst.width / 2) : 0,
-      pointerEvents: 'none' as const,
     }
   };
 
@@ -157,7 +155,11 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       initial={{ opacity: 0, scale: 0.95, y: 15 }}
       exit={{ opacity: 0, scale: 0.95, y: 15 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-      style={windowStyle}
+      style={{
+        ...windowStyle,
+        // Reliably block pointer events on minimized windows via inline style
+        pointerEvents: windowInst.isMinimized ? 'none' : 'auto',
+      }}
       onMouseDownCapture={(e) => {
         const target = e.target as HTMLElement;
         if (target.closest('.window-action-btn')) return;
@@ -172,7 +174,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         }
       }}
       tabIndex={0}
-      className={`flex flex-col rounded-2xl overflow-hidden bg-window-bg border border-window-border backdrop-blur-md transition-shadow duration-300 pointer-events-auto select-text shadow-lg focus:outline-none ${
+      className={`flex flex-col rounded-2xl overflow-hidden bg-window-bg border border-window-border backdrop-blur-md transition-shadow duration-300 select-text shadow-lg focus:outline-none ${
         isActive
           ? 'shadow-xl ring-1 ring-accent-cyan/15'
           : 'opacity-[0.99]'

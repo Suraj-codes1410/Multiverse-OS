@@ -443,6 +443,18 @@
       "resolvedMemory": false,
       "contextReused": true,
       "timestamp": 1785142309025
+    },
+    {
+      "query": "Which project best demonstrates backend engineering?",
+      "normalizedQuery": "which project best demonstrates backend engineering",
+      "latencyMs": 140,
+      "cacheHit": false,
+      "route": "recruiter-insight",
+      "category": "Recruiter Insight",
+      "directAnswer": true,
+      "resolvedMemory": false,
+      "contextReused": false,
+      "timestamp": 1785263522637
     }
   ],
   "providerCalls": [

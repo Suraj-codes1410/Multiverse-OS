@@ -110,24 +110,6 @@ export default function BootSequence({
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* Inline blocking script to hide overlay immediately if already booted in this session.
-          Executes immediately on parser encountering it, preventing layout flash before React hydration. */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (typeof window !== 'undefined') {
-              var isPerm = window.localStorage && window.localStorage.getItem('multiverse_boot_completed_permanent') === 'true';
-              var isSess = window.sessionStorage && window.sessionStorage.getItem('multiverse_boot_completed') === 'true';
-              if (isPerm || isSess) {
-                var overlay = document.getElementById('boot-overlay');
-                if (overlay) {
-                  overlay.style.display = 'none';
-                }
-              }
-            }
-          `,
-        }}
-      />
 
       {/* Cyberpunk Scanline / CRT / Ambient Glow overlays */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(224,106,63,0.06)_0%,transparent_70%)]" />
