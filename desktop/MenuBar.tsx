@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Wifi, Battery, Sun, Moon, Cpu, ShieldAlert } from 'lucide-react';
 import { useTheme } from '@/providers';
+import { DesktopContext } from './DesktopContext';
 
 export function MenuBar() {
   const [time, setTime] = useState<string>('');
   const { themeName, setThemeName } = useTheme();
+  const desktopContext = useContext(DesktopContext);
 
   // Clock Update Effect
   useEffect(() => {
@@ -44,7 +46,12 @@ export function MenuBar() {
       {/* LEFT: Branding & Logo */}
       <div className="flex items-center gap-4">
         {/* Branding Logo wrapper */}
-        <div className="flex items-center gap-2 group cursor-pointer" tabIndex={0} aria-label="System Menu Branding">
+        <div 
+          onClick={() => desktopContext?.openWindow('home')} 
+          className="flex items-center gap-2 group cursor-pointer" 
+          tabIndex={0} 
+          aria-label="System Menu Branding"
+        >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-cyan opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-cyan" />
@@ -56,13 +63,22 @@ export function MenuBar() {
 
         {/* Future menu item anchors placeholders */}
         <nav className="hidden md:flex items-center gap-1" aria-label="Desktop Submenus">
-          <button className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer">
+          <button 
+            onClick={() => desktopContext?.openWindow('settings')} 
+            className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
+          >
             System
           </button>
-          <button className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer">
+          <button 
+            onClick={() => desktopContext?.openWindow('explorer')} 
+            className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
+          >
             View
           </button>
-          <button className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer">
+          <button 
+            onClick={() => desktopContext?.openWindow('terminal')} 
+            className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
+          >
             Terminal
           </button>
         </nav>

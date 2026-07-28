@@ -11,6 +11,7 @@ import { WidgetLayer } from './WidgetLayer';
 import { MenuBar } from './MenuBar';
 import { Dock } from './Dock';
 import { useDesktop } from './DesktopContext';
+import { usePathname } from 'next/navigation';
 
 export interface DesktopShellProps {
   children?: React.ReactNode;
@@ -37,6 +38,27 @@ export function DesktopShell({ children }: DesktopShellProps) {
 function DesktopShellInner({ children }: { children: React.ReactNode }) {
   const { openWindow, activeWindowId, windows } = useDesktop();
   const openAppIds = Object.keys(windows).filter((key) => windows[key].isOpen);
+  const pathname = usePathname();
+
+  // Synchronize route paths changes with window manager launch operations
+  React.useEffect(() => {
+    const mapPathToWindowId = (path: string): string | null => {
+      if (path === '/') return 'home';
+      if (path.startsWith('/projects')) return 'projects';
+      if (path.startsWith('/about')) return 'about';
+      if (path.startsWith('/timeline')) return 'timeline';
+      if (path.startsWith('/skills')) return 'settings';
+      if (path.startsWith('/contact')) return 'contact';
+      if (path.startsWith('/recruiter')) return 'dashboard';
+      if (path.startsWith('/github')) return 'explorer';
+      return null;
+    };
+
+    const targetWinId = mapPathToWindowId(pathname);
+    if (targetWinId) {
+      openWindow(targetWinId);
+    }
+  }, [pathname, openWindow]);
 
   return (
     /* Fullscreen Desktop Main Grid Container */

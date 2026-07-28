@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useEffect, useContext, useRef } from 'react';
+import React from 'react';
 import { useLayout } from '@/providers/LayoutProvider';
-import { DesktopContext } from '@/desktop/DesktopContext';
 import Container from '@/components/Container';
 import Section from '@/components/Section';
 import Card from '@/components/Card';
@@ -17,16 +16,6 @@ export interface ClientHomePageProps {
 
 export default function ClientHomePage({ portfolio, featuredProjects }: ClientHomePageProps) {
   const { viewportType } = useLayout();
-  const desktopContext = useContext(DesktopContext);
-  const hasOpenedHome = useRef(false);
-
-  // Open "home" window by default on desktop boot
-  useEffect(() => {
-    if (viewportType === 'desktop' && desktopContext && !hasOpenedHome.current) {
-      hasOpenedHome.current = true;
-      desktopContext.openWindow('home');
-    }
-  }, [viewportType, desktopContext]);
 
   const technicalAreas = [
     {
