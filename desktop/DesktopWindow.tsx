@@ -227,13 +227,20 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
           onMouseLeave={() => setControlsHovered(false)}
         >
           {/* Close */}
-          <button
-            onClick={() => { playCloseSound(); closeWindow(id); }}
-            className="window-action-btn w-3 h-3 rounded-full bg-[#ff5f56] active:bg-[#bf4941] flex items-center justify-center text-[7px] font-bold text-[#4c0002] transition-colors focus:outline-none cursor-pointer"
-            aria-label="Close Window"
-          >
-            {controlsHovered && '×'}
-          </button>
+          {id !== 'home' ? (
+            <button
+              onClick={() => { playCloseSound(); closeWindow(id); }}
+              className="window-action-btn w-3 h-3 rounded-full bg-[#ff5f56] active:bg-[#bf4941] flex items-center justify-center text-[7px] font-bold text-[#4c0002] transition-colors focus:outline-none cursor-pointer"
+              aria-label="Close Window"
+            >
+              {controlsHovered && '×'}
+            </button>
+          ) : (
+            <div 
+              className="w-3 h-3 rounded-full bg-border-subtle/40 cursor-not-allowed" 
+              title="Home workspace cannot be closed"
+            />
+          )}
 
           {/* Minimize */}
           <button

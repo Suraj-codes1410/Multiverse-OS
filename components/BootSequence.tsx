@@ -106,41 +106,41 @@ export default function BootSequence({
     <div
       id="boot-overlay"
       suppressHydrationWarning={true}
-      className={`fixed inset-0 z-[9999] flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#030407] font-mono text-xs sm:text-sm text-accent-cyan transition-opacity duration-500 select-none ${
+      className={`fixed inset-0 z-[9999] flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#020306] font-mono text-xs sm:text-sm text-accent-cyan transition-opacity duration-500 select-none ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-
       {/* Cyberpunk Scanline / CRT / Ambient Glow overlays */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(224,106,63,0.06)_0%,transparent_70%)]" />
-      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.08)_0%,transparent_60%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_bottom_right,rgba(6,182,212,0.06)_0%,transparent_65%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_50%,rgba(0,0,0,0.3)_50%)] bg-[size:100%_4px]" />
 
       {/* Header Info */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto">
+      <div className="relative z-10 w-full max-w-5xl mx-auto animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:justify-between border-b border-accent-cyan/20 pb-4 mb-6">
           <div>
-            <span className="text-text-primary font-bold">MULTIVERSE OS</span>{' '}
-            <span className="text-accent-purple">[VERSION 2.1.0-PROD]</span>
+            <span className="text-text-primary font-bold tracking-wider">PORTFOLIO.OS // MULTIVERSE</span>{' '}
+            <span className="text-accent-purple font-semibold animate-pulse">[ONLINE]</span>
             <div className="text-text-secondary text-[10px] mt-1 font-mono tracking-wider">
-              ESTABLISHING NEURAL CONTEXT LINK...
+              SYSTEM INITIALIZATION PROTOCOL ACTIVED
             </div>
           </div>
           <div className="text-left sm:text-right mt-2 sm:mt-0 text-[10px] text-text-secondary font-mono">
-            <div>HOST: PORTFOLIO_SERVER</div>
-            <div>STATUS: ONLINE_BOOT</div>
+            <div>NODE: MULTIVERSE-NODE-01</div>
+            <div>SECTOR: MAIN_WORKSPACE</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] sm:text-xs text-text-secondary/60 font-mono">
           <div>
-            <div>&gt; CPU: HYPER-THREADED COGNITIVE CORE (16x)</div>
-            <div>&gt; RAM: 64.0 GB COGNITIVE MEMORY MATRIX</div>
-            <div>&gt; NETWORK: QUANTUM-TUNNELED ENDPOINT</div>
+            <div>&gt; KERNEL: COGNITIVE SYSTEM CORE [v2.2.0]</div>
+            <div>&gt; HOST_ADDR: SURAJ-PORTFOLIO-RUNTIME</div>
+            <div>&gt; SECURITY: ENCRYPTED SHIELD ACTIVE</div>
           </div>
           <div>
-            <div>&gt; PROTOCOL: SECURE SHELL V2 (PORTFOLIO-OS)</div>
-            <div>&gt; STACK: NEXT.JS / REACT / TAILWIND</div>
-            <div>&gt; SECURE ENCLAVE STATUS: ONLINE</div>
+            <div>&gt; GUI: PASTEL WORKSPACE WORKSTATION</div>
+            <div>&gt; RENDERING ENGINE: TURBOPACK CLIENT</div>
+            <div>&gt; AUDIO_CHIPS: SYNTHESIZED WEB_AUDIO_API</div>
           </div>
         </div>
       </div>
