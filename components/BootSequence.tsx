@@ -116,22 +116,22 @@ export default function BootSequence({
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* Subtle organic Strands loader background animation */}
-      <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
+      {/* Glowing organic Strands background animation */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <Strands
-          colors={['#06B6D4', '#7C3AED', '#06B6D4']}
-          count={3}
-          speed={0.3}
-          amplitude={0.8}
-          waviness={0.9}
-          thickness={0.5}
-          glow={1.8}
-          taper={4}
-          spread={1.2}
-          intensity={0.4}
-          saturation={1.2}
-          opacity={0.35}
-          scale={1.2}
+          colors={['#06B6D4', '#7C3AED', '#06B6D4', '#a855f7']}
+          count={5}
+          speed={0.25}
+          amplitude={1.1}
+          waviness={0.8}
+          thickness={0.65}
+          glow={2.4}
+          taper={3}
+          spread={1.4}
+          intensity={0.65}
+          saturation={1.4}
+          opacity={0.75}
+          scale={1.1}
         />
       </div>
 
