@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Cpu, Sun, HardDrive, Compass } from 'lucide-react';
 import { useDesktop } from './DesktopContext';
 import { motion } from 'framer-motion';
+import { onBootPhase, getBootPhase, isReturningVisitor } from '@/lib/bootPhase';
 
 /**
  * WidgetLayer renders the desktop background layer.
@@ -11,6 +12,17 @@ import { motion } from 'framer-motion';
  */
 export function WidgetLayer() {
   const { openWindow } = useDesktop();
+  // Boot reveal — fades in with widgets at ~3.0s
+  const [revealed, setRevealed] = useState(() => getBootPhase() === 'done');
+  useEffect(() => {
+    if (revealed) return;
+    return onBootPhase((phase) => {
+      if (phase === 'reveal' || phase === 'done') {
+        const delay = isReturningVisitor() ? 0 : 500;
+        setTimeout(() => setRevealed(true), delay);
+      }
+    });
+  }, [revealed]);
   
   // Stateful telemetry variables
   const [time, setTime] = useState<string>('');
@@ -40,7 +52,13 @@ export function WidgetLayer() {
   }, []);
 
   return (
-    <div className="absolute inset-0 z-10 pointer-events-none flex select-none box-border">
+    <div
+      className="absolute inset-0 z-10 pointer-events-none flex select-none box-border"
+      style={{
+        opacity: revealed ? 1 : 0,
+        transition: 'opacity 600ms cubic-bezier(0.16,1,0.3,1)',
+      }}
+    >
 
 
       {/* 2. RIGHT SIDE: System Dashboard Widgets */}

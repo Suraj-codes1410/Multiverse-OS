@@ -12,6 +12,7 @@ import { MenuBar } from './MenuBar';
 import { Dock } from './Dock';
 import { useDesktop } from './DesktopContext';
 import { usePathname } from 'next/navigation';
+import { onBootPhase, isReturningVisitor } from '@/lib/bootPhase';
 
 export interface DesktopShellProps {
   children?: React.ReactNode;
@@ -59,6 +60,17 @@ function DesktopShellInner({ children }: { children: React.ReactNode }) {
       openWindow(targetWinId);
     }
   }, [pathname, openWindow]);
+
+  // Auto-open Home window as the final step of the boot sequence reveal
+  React.useEffect(() => {
+    return onBootPhase((phase) => {
+      if (phase === 'done') {
+        // Slight extra delay so the overlay fully dissolves first
+        const delay = isReturningVisitor() ? 100 : 200;
+        setTimeout(() => openWindow('home'), delay);
+      }
+    });
+  }, [openWindow]);
 
   return (
     /* Fullscreen Desktop Main Grid Container */

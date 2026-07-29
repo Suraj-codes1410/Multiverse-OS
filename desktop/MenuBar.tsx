@@ -4,11 +4,25 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Wifi, Battery, Sun, Moon, Cpu, ShieldAlert } from 'lucide-react';
 import { useTheme } from '@/providers';
 import { DesktopContext } from './DesktopContext';
+import { onBootPhase, getBootPhase, isReturningVisitor } from '@/lib/bootPhase';
 
 export function MenuBar() {
   const [time, setTime] = useState<string>('');
   const { themeName, setThemeName } = useTheme();
   const desktopContext = useContext(DesktopContext);
+  // Boot reveal state — starts hidden, fades in when 'reveal' phase fires
+  const [revealed, setRevealed] = useState(() => getBootPhase() === 'done');
+
+  useEffect(() => {
+    if (revealed) return;
+    return onBootPhase((phase) => {
+      if (phase === 'reveal' || phase === 'done') {
+        // Small delay so MenuBar leads the reveal sequence
+        const delay = isReturningVisitor() ? 0 : 100;
+        setTimeout(() => setRevealed(true), delay);
+      }
+    });
+  }, [revealed]);
 
   // Clock Update Effect
   useEffect(() => {
@@ -43,6 +57,10 @@ export function MenuBar() {
       role="menubar"
       aria-label="Desktop System Menu Bar"
       className="fixed top-0 left-0 right-0 h-10 bg-bg-panel/75 border-b border-border-subtle/50 backdrop-blur-md z-50 flex items-center justify-between px-4 select-none font-mono text-xs text-text-primary"
+      style={{
+        opacity: revealed ? 1 : 0,
+        transition: 'opacity 500ms cubic-bezier(0.16,1,0.3,1)',
+      }}
     >
       {/* LEFT: Branding & Logo */}
       <div className="flex items-center gap-4">

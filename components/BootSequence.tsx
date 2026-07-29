@@ -1,218 +1,442 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useReducedMotion } from '@/animations';
-import { Strands } from './Strands';
+/**
+ * BootSequence — Multiverse OS Phase 6.5
+ *
+ * An authentic OS startup experience that reveals the desktop rather than
+ * loading a separate screen. The wallpaper is already rendered underneath;
+ * this overlay blurs/darkens it initially and gradually lifts those filters
+ * as the boot progresses so the desktop naturally materialises.
+ *
+ * Design language: PastelOS — warm cream, terracotta, editorial typography.
+ * NOT cyberpunk, NOT neon, NOT cinematic.
+ */
 
-const DEFAULT_BOOT_MESSAGES = [
-  'Initializing cognitive OS kernel...',
-  'Loading system appearance themes...',
-  'Verifying offline resume directories...',
-  'Mounting projects explorer metrics...',
-  'Grounding Oracle conversational model...',
-  'Initializing telemetry helper companion...',
-  'OS Startup Nominal.',
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useReducedMotion } from '@/animations';
+import {
+  setBootPhase,
+  markBootCompleted,
+  isReturningVisitor,
+} from '@/lib/bootPhase';
+
+// ─────────────────────────────────────────────────────────────────
+// Messages
+// ─────────────────────────────────────────────────────────────────
+
+const FULL_MESSAGES = [
+  'Initializing Window Manager...',
+  'Loading Desktop Environment...',
+  'Initializing Oracle Runtime...',
+  'Preparing Workspace...',
+  'Loading Applications...',
+  'Synchronizing Projects...',
+  'Loading Recruiter Dashboard...',
+  'Initializing AI Services...',
+  'Preparing Developer Environment...',
+  'Workspace Ready.',
 ];
 
-interface BootSequenceProps {
-  messages?: string[];
-  durationMs?: number;
-}
+const SHORT_MESSAGES = ['Initializing...', 'Workspace Ready.'];
 
-export default function BootSequence({
-  messages = DEFAULT_BOOT_MESSAGES,
-  durationMs = 3000,
-}: BootSequenceProps) {
-  const shouldReduceMotion = useReducedMotion();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+// ─────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────
 
-  const stepDuration = durationMs / messages.length;
+type Phase = 'mounting' | 'logo' | 'progress' | 'messages' | 'reveal' | 'dissolve' | 'done';
 
-  const triggerFadeOut = () => {
-    setIsFadingOut(true);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('multiverse_boot_completed', 'true');
-    }
-    setTimeout(() => {
-      setIsDismissed(true);
+// ─────────────────────────────────────────────────────────────────
+// Hooks
+// ─────────────────────────────────────────────────────────────────
+
+function useBootTimeline(
+  reducedMotion: boolean,
+  returning: boolean
+): {
+  phase: Phase;
+  msgIndex: number;
+  msgVisible: boolean;
+  progressPct: number;
+  skip: () => void;
+} {
+  const [phase, setPhase] = useState<Phase>('mounting');
+  const [msgIndex, setMsgIndex] = useState(0);
+  const [msgVisible, setMsgVisible] = useState(false);
+  const [progressPct, setProgressPct] = useState(0);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const animFrame = useRef<number>(0);
+
+  const messages = returning ? SHORT_MESSAGES : FULL_MESSAGES;
+
+  const advance = useCallback((fn: () => void, delay: number) => {
+    const id = setTimeout(fn, delay);
+    timers.current.push(id);
+    return id;
+  }, []);
+
+  const triggerDissolve = useCallback(() => {
+    setPhase('dissolve');
+    setBootPhase('reveal');
+    advance(() => {
+      setPhase('done');
+      setBootPhase('done');
+      markBootCompleted();
     }, 700);
-  };
+  }, [advance]);
 
   useEffect(() => {
-    if (shouldReduceMotion) {
-      setIsDismissed(true);
+    // Skip immediately for reduced-motion users
+    if (reducedMotion) {
+      setPhase('done');
+      setBootPhase('done');
+      markBootCompleted();
       return;
     }
 
-    if (typeof window !== 'undefined') {
-      const isCompletedSession = sessionStorage.getItem('multiverse_boot_completed') === 'true';
-      if (isCompletedSession) {
-        setIsDismissed(true);
-        return;
-      }
+    // ── Shortened path for returning visitors ──────────────────
+    if (returning) {
+      advance(() => { setPhase('logo'); setBootPhase('logo'); }, 100);
+      advance(() => { setPhase('progress'); setBootPhase('progress'); setProgressPct(20); }, 400);
+      advance(() => { setPhase('messages'); setBootPhase('messages'); setMsgVisible(true); }, 600);
+      advance(() => { setMsgIndex(1); setProgressPct(100); }, 900);
+      advance(triggerDissolve, 1200);
+      return cleanup;
     }
 
-    const interval = setInterval(() => {
-      setCurrentStep((prev) => {
-        if (prev >= messages.length - 1) clearInterval(interval);
-        return prev + 1;
-      });
-    }, stepDuration);
+    // ── Full boot sequence ─────────────────────────────────────
+    // 0.0 – mounting (wallpaper already blurred underneath)
+    // 0.3 – logo fades in
+    advance(() => { setPhase('logo'); setBootPhase('logo'); }, 300);
 
-    const handleSkip = () => triggerFadeOut();
-    window.addEventListener('keydown', handleSkip);
-    window.addEventListener('click', handleSkip);
+    // 0.7 – progress line appears
+    advance(() => { setPhase('progress'); setBootPhase('progress'); }, 700);
 
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('keydown', handleSkip);
-      window.removeEventListener('click', handleSkip);
+    // 1.0 – first message
+    advance(() => {
+      setPhase('messages');
+      setBootPhase('messages');
+      setMsgVisible(true);
+    }, 1000);
+
+    // Cycle messages at ~400ms each with a 100ms crossfade
+    let msgTimer = 1000;
+    messages.forEach((_, i) => {
+      const MSG_DUR = 400;
+      const FADE_DUR = 100;
+
+      if (i === 0) return; // already set above
+      msgTimer += MSG_DUR;
+
+      // Fade out current
+      advance(() => setMsgVisible(false), msgTimer - FADE_DUR);
+      // Swap + fade in
+      advance(() => {
+        setMsgIndex(i);
+        setMsgVisible(true);
+      }, msgTimer);
+    });
+
+    // Animate progress bar over the message duration
+    const msgDuration = messages.length * 400;
+    const startTime = Date.now();
+
+    const animateProgress = () => {
+      const elapsed = Date.now() - (startTime + 1000);
+      const raw = Math.min(elapsed / msgDuration, 1);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - raw, 3);
+      setProgressPct(Math.round(eased * 90)); // cap at 90 until reveal
+      if (raw < 1) animFrame.current = requestAnimationFrame(animateProgress);
     };
-  }, [messages.length, stepDuration, shouldReduceMotion]);
+    advance(() => { animFrame.current = requestAnimationFrame(animateProgress); }, 1000);
 
+    // 2.5 – trigger desktop reveal (MenuBar, Dock, Widgets, Robot start animating)
+    advance(() => setBootPhase('reveal'), 2500);
+
+    // 3.8 – progress snaps to 100%
+    advance(() => setProgressPct(100), 3800);
+
+    // 4.2 – overlay dissolves
+    advance(triggerDissolve, 4200);
+
+    return cleanup;
+
+    function cleanup() {
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
+      cancelAnimationFrame(animFrame.current);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const skip = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+    cancelAnimationFrame(animFrame.current);
+    setProgressPct(100);
+    triggerDissolve();
+  }, [triggerDissolve]);
+
+  return { phase, msgIndex, msgVisible, progressPct, skip };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────────
+
+export default function BootSequence() {
+  const reducedMotion = useReducedMotion();
+  const returning = isReturningVisitor();
+
+  const { phase, msgIndex, msgVisible, progressPct, skip } = useBootTimeline(
+    reducedMotion,
+    returning
+  );
+
+  // Skip on any key / click
   useEffect(() => {
-    if (currentStep >= messages.length) triggerFadeOut();
-  }, [currentStep, messages.length]);
+    if (phase === 'done') return;
+    window.addEventListener('keydown', skip);
+    window.addEventListener('click', skip);
+    return () => {
+      window.removeEventListener('keydown', skip);
+      window.removeEventListener('click', skip);
+    };
+  }, [phase, skip]);
 
-  if (isDismissed || shouldReduceMotion) return null;
+  if (phase === 'done') return null;
 
-  const progressPercent = Math.min(100, Math.round((currentStep / messages.length) * 100));
+  const messages = returning ? SHORT_MESSAGES : FULL_MESSAGES;
+  const isDissolving = phase === 'dissolve';
+  const showLogo = phase !== 'mounting';
+  const showProgress = phase === 'progress' || phase === 'messages' || phase === 'reveal' || phase === 'dissolve';
+
+  // Wallpaper filter — gradually reveals during 'reveal' phase
+  const wallpaperFilter = isDissolving
+    ? 'blur(0px) brightness(1) saturate(1)'
+    : phase === 'reveal'
+    ? 'blur(4px) brightness(0.88) saturate(0.75)'
+    : 'blur(20px) brightness(0.72) saturate(0.35)';
 
   return (
-    <div
-      id="boot-overlay"
-      suppressHydrationWarning={true}
-      className={`fixed inset-0 z-[9999] bg-[#030407] transition-opacity duration-700 select-none ${
-        isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
-    >
-      {/* Full-screen Strands — Obsidian dark palette: electric cyan + violet + deep blue */}
-      <div className="absolute inset-0 z-0">
-        <Strands
-          colors={['#00f2fe', '#a855f7', '#4F46E5', '#06B6D4']}
-          count={4}
-          speed={0.2}
-          amplitude={1.0}
-          waviness={0.8}
-          thickness={0.55}
-          glow={2.0}
-          taper={3}
-          spread={1.4}
-          intensity={0.55}
-          saturation={1.3}
-          opacity={0.7}
-          scale={1.15}
-        />
-      </div>
+    <>
+      {/*
+       * Paper grain SVG texture for wallpaper overlay.
+       * Defined once, referenced by CSS in the overlay.
+       */}
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <filter id="boot-grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+            <feBlend in="SourceGraphic" mode="multiply" />
+          </filter>
+        </defs>
+      </svg>
 
-      {/* Deep vignette for depth */}
       <div
-        className="absolute inset-0 z-[1] pointer-events-none"
+        role="status"
+        aria-label="Multiverse OS starting up"
+        aria-live="polite"
+        onClick={skip}
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(3,4,7,0.75) 100%)',
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          // Transition mirrors the wallpaper shift
+          opacity: isDissolving ? 0 : 1,
+          transition: isDissolving
+            ? 'opacity 700ms cubic-bezier(0.16,1,0.3,1)'
+            : 'opacity 500ms cubic-bezier(0.16,1,0.3,1)',
+          cursor: 'default',
+          userSelect: 'none',
+          overflow: 'hidden',
         }}
-      />
-
-      {/* Centered brand identity */}
-      <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-5 pointer-events-none">
-        {/* Monogram / wordmark */}
+      >
+        {/* ── Wallpaper layer ─────────────────────────────────── */}
+        {/*
+         * We reproduce the desktop background (bg-bg-primary = #DCEBE8 for
+         * the default PastelOS theme). A CSS filter blurs / desaturates it
+         * during boot and gradually lifts. The real wallpaper underneath
+         * naturally becomes the desktop wallpaper.
+         */}
         <div
-          className="flex flex-col items-center gap-1"
-          style={{ fontFamily: 'system-ui, sans-serif' }}
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'var(--bg-primary, #DCEBE8)',
+            filter: wallpaperFilter,
+            transition: reducedMotion
+              ? 'none'
+              : 'filter 1400ms cubic-bezier(0.16,1,0.3,1)',
+          }}
         >
-          {/* Top label */}
-          <p
-            style={{
-              fontSize: '0.6rem',
-              letterSpacing: '0.45em',
-              textTransform: 'uppercase',
-              color: 'rgba(0,242,254,0.55)',
-              fontWeight: 500,
-              margin: 0,
-            }}
-          >
-            PORTFOLIO
-          </p>
+          {/* Soft radial mesh — mirrors Wallpaper.tsx default blobs */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse 80% 60% at 25% 25%, rgba(198,222,217,0.5) 0%, transparent 70%)',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse 70% 55% at 75% 30%, rgba(239,233,222,0.5) 0%, transparent 70%)',
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse 65% 60% at 30% 75%, rgba(216,229,226,0.45) 0%, transparent 70%)',
+          }} />
 
-          {/* Main title */}
-          <h1
-            style={{
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-              fontWeight: 700,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: '#F7F2EB',
-              margin: 0,
-              lineHeight: 1,
-              textShadow: '0 0 40px rgba(224,106,63,0.25)',
-            }}
-          >
-            MULTIVERSE
-          </h1>
-
-          {/* Accent word on its own line */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div
-              style={{
-                width: '2rem',
-                height: '1px',
-                background: 'rgba(0,242,254,0.35)',
-              }}
-            />
-            <span
-              style={{
-                fontSize: 'clamp(0.6rem, 1.2vw, 0.85rem)',
-                fontWeight: 600,
-                letterSpacing: '0.55em',
-                textTransform: 'uppercase',
-                color: '#00f2fe',
-              }}
-            >
-              OS
-            </span>
-            <div
-              style={{
-                width: '2rem',
-                height: '1px',
-                background: 'rgba(0,242,254,0.35)',
-              }}
-            />
-          </div>
+          {/* Paper grain texture overlay */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            opacity: 0.045,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }} />
         </div>
 
-        {/* Current boot message */}
-        <p
+        {/* ── Center content ──────────────────────────────────── */}
+        <div
+          aria-hidden="false"
           style={{
-            fontSize: '0.65rem',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: 'rgba(247,242,235,0.3)',
-            fontFamily: 'monospace',
-            margin: 0,
-            marginTop: '0.5rem',
+            position: 'relative',
+            zIndex: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1.5rem',
+            opacity: showLogo ? 1 : 0,
+            transform: showLogo ? 'translateY(0)' : 'translateY(8px)',
+            transition: reducedMotion
+              ? 'none'
+              : 'opacity 600ms cubic-bezier(0.16,1,0.3,1), transform 600ms cubic-bezier(0.16,1,0.3,1)',
           }}
         >
-          {messages[Math.min(currentStep, messages.length - 1)]}
-        </p>
-      </div>
+          {/* ── Logo ─────────────────────────────────────────── */}
+          <div style={{ textAlign: 'center' }}>
+            {/* Primary wordmark */}
+            <h1
+              style={{
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
+                fontSize: 'clamp(1.75rem, 4vw, 3rem)',
+                fontWeight: 300,
+                letterSpacing: '0.18em',
+                color: '#111213',
+                margin: 0,
+                lineHeight: 1.1,
+              }}
+            >
+              MULTIVERSE
+              <span style={{
+                fontWeight: 600,
+                color: 'var(--accent-cyan, #E06A3F)',
+                marginLeft: '0.5rem',
+              }}>
+                // OS
+              </span>
+            </h1>
 
-      {/* Thin cyan progress line at the bottom */}
-      <div
-        className="absolute bottom-0 left-0 right-0 z-[3]"
-        style={{ height: '2px', background: 'rgba(0,242,254,0.1)' }}
-      >
+            {/* Subtitle */}
+            <p
+              style={{
+                fontFamily: 'var(--font-inter), system-ui, sans-serif',
+                fontSize: 'clamp(0.6rem, 1.2vw, 0.75rem)',
+                fontWeight: 400,
+                letterSpacing: '0.35em',
+                textTransform: 'uppercase',
+                color: '#3A3D40',
+                margin: '0.6rem 0 0',
+              }}
+            >
+              Personal Operating System
+            </p>
+          </div>
+
+          {/* ── Thin divider ─────────────────────────────────── */}
+          <div
+            aria-hidden="true"
+            style={{
+              width: '2.5rem',
+              height: '1px',
+              background: 'rgba(43, 45, 47, 0.3)',
+            }}
+          />
+
+          {/* ── Initialization message ───────────────────────── */}
+          <p
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
+              fontSize: '0.65rem',
+              fontWeight: 400,
+              letterSpacing: '0.12em',
+              color: '#3A3D40',
+              margin: 0,
+              height: '1.1em',
+              opacity: msgVisible ? 0.95 : 0,
+              transition: reducedMotion ? 'none' : 'opacity 180ms ease',
+            }}
+          >
+            {messages[msgIndex]}
+          </p>
+        </div>
+
+        {/* ── Progress line ───────────────────────────────────── */}
         <div
+          aria-hidden="true"
           style={{
-            height: '100%',
-            width: `${progressPercent}%`,
-            background: '#00f2fe',
-            transition: 'width 0.3s ease-out',
-            boxShadow: '0 0 16px rgba(0,242,254,0.7)',
+            position: 'absolute',
+            bottom: '2.5rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'min(240px, 40vw)',
+            height: '1px',
+            background: 'rgba(43, 45, 47, 0.15)',
+            borderRadius: '1px',
+            overflow: 'hidden',
+            opacity: showProgress ? 1 : 0,
+            transition: reducedMotion ? 'none' : 'opacity 400ms ease',
           }}
-        />
+        >
+          <div
+            style={{
+              height: '100%',
+              width: `${progressPct}%`,
+              background: 'var(--accent-cyan, #E06A3F)',
+              borderRadius: '1px',
+              transition: reducedMotion
+                ? 'none'
+                : 'width 300ms cubic-bezier(0.16,1,0.3,1)',
+            }}
+          />
+        </div>
+
+        {/* ── Skip hint ───────────────────────────────────────── */}
+        {showProgress && (
+          <p
+            style={{
+              position: 'absolute',
+              bottom: '1rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              fontFamily: 'var(--font-inter), system-ui, sans-serif',
+              fontSize: '0.55rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: '#5A5D60',
+              opacity: 0.5,
+              margin: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Press any key to skip
+          </p>
+        )}
       </div>
-    </div>
+    </>
   );
 }

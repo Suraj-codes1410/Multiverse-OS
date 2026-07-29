@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { useReducedMotion } from '@/animations';
+import { onBootPhase, getBootPhase, isReturningVisitor } from '@/lib/bootPhase';
 
 interface ScanNode {
   x: number;
@@ -18,6 +19,17 @@ export function RobotLayer() {
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [scanNodes, setScanNodes] = useState<ScanNode[]>([]);
+  // Boot reveal — robot appears last at ~3.5s
+  const [revealed, setRevealed] = useState(() => getBootPhase() === 'done');
+  useEffect(() => {
+    if (revealed) return;
+    return onBootPhase((phase) => {
+      if (phase === 'reveal' || phase === 'done') {
+        const delay = isReturningVisitor() ? 0 : 1000;
+        setTimeout(() => setRevealed(true), delay);
+      }
+    });
+  }, [revealed]);
 
   // Robot reactions & immersion states
   const [companionStatus, setCompanionStatus] = useState<'idle' | 'scanning' | 'thinking' | 'excited'>('scanning');
@@ -102,7 +114,13 @@ export function RobotLayer() {
   }
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-[100] overflow-hidden">
+    <div
+      className="absolute inset-0 pointer-events-none z-[100] overflow-hidden"
+      style={{
+        opacity: revealed ? 1 : 0,
+        transition: 'opacity 700ms cubic-bezier(0.16,1,0.3,1)',
+      }}
+    >
       
       {/* 1. STATEFUL SCANNING HIGHLIGHT TARGET BOUNDING BOX */}
       <AnimatePresence mode="wait">

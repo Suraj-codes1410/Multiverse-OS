@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home, Briefcase, Calendar, FileText, Sparkles, Terminal, Mail, Settings, Folder, User, Gamepad2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playOpenSound } from '@/lib/useOsAudio';
+import { onBootPhase, getBootPhase, isReturningVisitor } from '@/lib/bootPhase';
 
 export interface DockApp {
   id: string;
@@ -23,6 +24,18 @@ export interface DockProps {
  */
 export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockProps) {
   const [hoveredAppId, setHoveredAppId] = useState<string | null>(null);
+  // Boot reveal — slides up from 20px below
+  const [revealed, setRevealed] = useState(() => getBootPhase() === 'done');
+
+  useEffect(() => {
+    if (revealed) return;
+    return onBootPhase((phase) => {
+      if (phase === 'reveal' || phase === 'done') {
+        const delay = isReturningVisitor() ? 0 : 300;
+        setTimeout(() => setRevealed(true), delay);
+      }
+    });
+  }, [revealed]);
 
   const apps: DockApp[] = [
     { id: 'home', label: 'Profile Home', icon: Home },
@@ -43,6 +56,11 @@ export function Dock({ activeAppId = null, openAppIds = [], onAppClick }: DockPr
       role="toolbar"
       aria-label="Desktop Applications Dock"
       className="fixed bottom-4 left-1/2 -translate-x-1/2 h-16 bg-bg-panel/40 border border-border-subtle/50 backdrop-blur-md rounded-2xl flex items-end gap-3 px-4 pb-2 z-50 transition-all duration-300 hover:bg-bg-panel/60 hover:border-border-bright/60 select-none shadow-xl"
+      style={{
+        opacity: revealed ? 1 : 0,
+        transform: revealed ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(20px)',
+        transition: 'opacity 500ms cubic-bezier(0.16,1,0.3,1), transform 600ms cubic-bezier(0.16,1,0.3,1)',
+      }}
     >
       {apps.map((app) => {
         const IconComponent = app.icon;
