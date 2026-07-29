@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useReducedMotion } from '@/animations';
+import { Strands } from './Strands';
 
 // Default boot messages configurable array as required
 const DEFAULT_BOOT_MESSAGES = [
@@ -24,7 +25,6 @@ export default function BootSequence({
   durationMs = 3000,
 }: BootSequenceProps) {
   const shouldReduceMotion = useReducedMotion();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -90,69 +90,7 @@ export default function BootSequence({
     }
   }, [currentStep, messages.length]);
 
-  // Immersive Matrix Code rain canvas cascade
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    const alphabet = '010110010101101010101001011010110101010101010101';
-    const fontSize = 11;
-    const columns = Math.floor(width / fontSize) + 1;
-    const rainDrops: number[] = [];
-
-    for (let x = 0; x < columns; x++) {
-      rainDrops[x] = Math.random() * -100;
-    }
-
-    let animationId: number;
-
-    const draw = () => {
-      ctx.fillStyle = 'rgba(2, 3, 6, 0.08)';
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.fillStyle = 'rgba(0, 242, 254, 0.12)'; // Cyan rain matching OS
-      ctx.font = fontSize + 'px monospace';
-
-      for (let i = 0; i < rainDrops.length; i++) {
-        const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-        
-        // Randomly tint some drops purple for depth
-        if (Math.random() > 0.96) {
-          ctx.fillStyle = 'rgba(168, 85, 247, 0.22)';
-        } else {
-          ctx.fillStyle = 'rgba(0, 242, 254, 0.12)';
-        }
-
-        ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-
-        if (rainDrops[i] * fontSize > height && Math.random() > 0.975) {
-          rainDrops[i] = 0;
-        }
-        rainDrops[i]++;
-      }
-      animationId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [shouldReduceMotion]);
 
   if (isDismissed || shouldReduceMotion) {
     return null;
@@ -178,8 +116,24 @@ export default function BootSequence({
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* 3D Code Rain Cascade Canvas Backdrop */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-40" />
+      {/* Subtle organic Strands loader background animation */}
+      <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
+        <Strands
+          colors={['#06B6D4', '#7C3AED', '#06B6D4']}
+          count={3}
+          speed={0.3}
+          amplitude={0.8}
+          waviness={0.9}
+          thickness={0.5}
+          glow={1.8}
+          taper={4}
+          spread={1.2}
+          intensity={0.4}
+          saturation={1.2}
+          opacity={0.35}
+          scale={1.2}
+        />
+      </div>
 
       {/* Cyberpunk Scanline / CRT / Ambient Glow overlays */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.08)_0%,transparent_60%)]" />
