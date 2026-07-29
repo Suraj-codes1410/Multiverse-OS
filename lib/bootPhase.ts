@@ -54,3 +54,13 @@ export function markBootCompleted(): void {
     sessionStorage.setItem('multiverse_boot_completed', 'true');
   }
 }
+
+let _landingChoice: 'home' | 'terminal' = 'home';
+
+export function getLandingChoice(): 'home' | 'terminal' {
+  return _landingChoice;
+}
+
+export function setLandingChoice(choice: 'home' | 'terminal') {
+  _landingChoice = choice;
+}

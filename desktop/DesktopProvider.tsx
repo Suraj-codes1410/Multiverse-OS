@@ -32,8 +32,8 @@ export function DesktopProvider({ children }: DesktopProviderProps) {
 
       // Position offset cascades to prevent total overlay overlaps
       const staggerCount = Object.keys(prev).filter((k) => prev[k].isOpen).length;
-      const defaultX = 100 + (staggerCount % 6) * 35;
-      const defaultY = 80 + (staggerCount % 6) * 35;
+      const defaultX = id === 'home' ? 80 : 100 + (staggerCount % 6) * 35;
+      const defaultY = id === 'home' ? 40 : 80 + (staggerCount % 6) * 35;
 
       const nextZ = getNextZIndex();
       setActiveWindowId(id);

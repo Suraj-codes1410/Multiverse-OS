@@ -55,8 +55,9 @@ SharedLayout
 'progress'  → Progress line appears                       (0.7s)
 'messages'  → Initialization messages cycling            (1.0s)
 'reveal'    → Desktop shell components animate in        (2.5s)
-'dissolve'  → Overlay fades out                          (4.2s)
-'done'      → BootSequence returns null, Home opens      (4.9s)
+'choice'    → Landing Selection Prompt is shown           (3.9s)
+'dissolve'  → Overlay fades out on user selection         (after select)
+'done'      → BootSequence returns null, chosen app opens (done + 200ms)
 ```
 
 Phase is broadcast via `lib/bootPhase.ts` using native `CustomEvent` on `window`.
@@ -76,10 +77,11 @@ Phase is broadcast via `lib/bootPhase.ts` using native `CustomEvent` on `window`
 | 2.8s  | Dock slides up + fades in (300ms offset) |
 | 3.0s  | WidgetLayer fades in (500ms offset) |
 | 3.5s  | RobotLayer fades in (1000ms offset) |
-| 3.8s  | Progress snaps to 100% |
-| 4.2s  | Overlay dissolves (700ms fade) |
-| 4.4s  | `bootPhase → 'done'` dispatched |
-| 4.6s  | Home window opens (200ms after 'done') |
+| 3.9s  | Progress snaps to 100% and Landing Selector prompt appears |
+| User  | Clicking "Windows User" sets choice to `'home'` & triggers dissolve |
+| User  | Clicking "Terminal User" sets choice to `'terminal'` & triggers dissolve |
+| +0.7s | Overlay dissolves (700ms fade) |
+| +0.9s | Chosen app window (Home or CLI Terminal) opens |
 
 ---
 
