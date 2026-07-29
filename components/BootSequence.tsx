@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useReducedMotion } from '@/animations';
 import { Strands } from './Strands';
 
-// Default boot messages configurable array as required
 const DEFAULT_BOOT_MESSAGES = [
   'Initializing cognitive OS kernel...',
   'Loading system appearance themes...',
@@ -17,7 +16,7 @@ const DEFAULT_BOOT_MESSAGES = [
 
 interface BootSequenceProps {
   messages?: string[];
-  durationMs?: number; // Configurable duration (default 3000ms, which is between 2-4 seconds)
+  durationMs?: number;
 }
 
 export default function BootSequence({
@@ -36,20 +35,17 @@ export default function BootSequence({
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('multiverse_boot_completed', 'true');
     }
-    // Allow animation to complete before unmounting
     setTimeout(() => {
       setIsDismissed(true);
-    }, 500);
+    }, 700);
   };
 
   useEffect(() => {
-    // Accessibility bypass for reduced motion
     if (shouldReduceMotion) {
       setIsDismissed(true);
       return;
     }
 
-    // Check storage on mount
     if (typeof window !== 'undefined') {
       const isCompletedSession = sessionStorage.getItem('multiverse_boot_completed') === 'true';
       if (isCompletedSession) {
@@ -58,21 +54,14 @@ export default function BootSequence({
       }
     }
 
-    // Run the boot sequence steps
     const interval = setInterval(() => {
       setCurrentStep((prev) => {
-        if (prev >= messages.length - 1) {
-          clearInterval(interval);
-        }
+        if (prev >= messages.length - 1) clearInterval(interval);
         return prev + 1;
       });
     }, stepDuration);
 
-    // Skip handler: skip on any keydown or click
-    const handleSkip = () => {
-      triggerFadeOut();
-    };
-
+    const handleSkip = () => triggerFadeOut();
     window.addEventListener('keydown', handleSkip);
     window.addEventListener('click', handleSkip);
 
@@ -83,149 +72,146 @@ export default function BootSequence({
     };
   }, [messages.length, stepDuration, shouldReduceMotion]);
 
-  // Clean side-effect handler when step reaches the end
   useEffect(() => {
-    if (currentStep >= messages.length) {
-      triggerFadeOut();
-    }
+    if (currentStep >= messages.length) triggerFadeOut();
   }, [currentStep, messages.length]);
 
+  if (isDismissed || shouldReduceMotion) return null;
 
-
-  if (isDismissed || shouldReduceMotion) {
-    return null;
-  }
-
-  // Calculate remaining seconds
-  const remainingSeconds = Math.max(
-    0,
-    Math.ceil((durationMs - currentStep * stepDuration) / 1000)
-  );
-
-  // Calculate percentage
-  const progressPercent = Math.min(
-    100,
-    Math.round((currentStep / messages.length) * 100)
-  );
+  const progressPercent = Math.min(100, Math.round((currentStep / messages.length) * 100));
 
   return (
     <div
       id="boot-overlay"
       suppressHydrationWarning={true}
-      className={`fixed inset-0 z-[9999] flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#020306] font-mono text-xs sm:text-sm text-accent-cyan transition-opacity duration-500 select-none ${
+      className={`fixed inset-0 z-[9999] bg-[#030407] transition-opacity duration-700 select-none ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* Glowing organic Strands background animation */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* Full-screen Strands — Obsidian dark palette: electric cyan + violet + deep blue */}
+      <div className="absolute inset-0 z-0">
         <Strands
-          colors={['#06B6D4', '#7C3AED', '#06B6D4', '#a855f7']}
-          count={5}
-          speed={0.25}
-          amplitude={1.1}
+          colors={['#00f2fe', '#a855f7', '#4F46E5', '#06B6D4']}
+          count={4}
+          speed={0.2}
+          amplitude={1.0}
           waviness={0.8}
-          thickness={0.65}
-          glow={2.4}
+          thickness={0.55}
+          glow={2.0}
           taper={3}
           spread={1.4}
-          intensity={0.65}
-          saturation={1.4}
-          opacity={0.75}
-          scale={1.1}
+          intensity={0.55}
+          saturation={1.3}
+          opacity={0.7}
+          scale={1.15}
         />
       </div>
 
-      {/* Cyberpunk Scanline / CRT / Ambient Glow overlays */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.08)_0%,transparent_60%)]" />
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_bottom_right,rgba(6,182,212,0.06)_0%,transparent_65%)]" />
-      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_50%,rgba(0,0,0,0.3)_50%)] bg-[size:100%_4px]" />
+      {/* Deep vignette for depth */}
+      <div
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(3,4,7,0.75) 100%)',
+        }}
+      />
 
-      {/* Header Info */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto animate-fade-in">
-        <div className="flex flex-col sm:flex-row sm:justify-between border-b border-accent-cyan/20 pb-4 mb-6">
-          <div>
-            <span className="text-text-primary font-bold tracking-wider">PORTFOLIO.OS // MULTIVERSE</span>{' '}
-            <span className="text-accent-purple font-semibold animate-pulse">[ONLINE]</span>
-            <div className="text-text-secondary text-[10px] mt-1 font-mono tracking-wider">
-              SYSTEM INITIALIZATION PROTOCOL ACTIVED
-            </div>
-          </div>
-          <div className="text-left sm:text-right mt-2 sm:mt-0 text-[10px] text-text-secondary font-mono">
-            <div>NODE: MULTIVERSE-NODE-01</div>
-            <div>SECTOR: MAIN_WORKSPACE</div>
+      {/* Centered brand identity */}
+      <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-5 pointer-events-none">
+        {/* Monogram / wordmark */}
+        <div
+          className="flex flex-col items-center gap-1"
+          style={{ fontFamily: 'system-ui, sans-serif' }}
+        >
+          {/* Top label */}
+          <p
+            style={{
+              fontSize: '0.6rem',
+              letterSpacing: '0.45em',
+              textTransform: 'uppercase',
+              color: 'rgba(0,242,254,0.55)',
+              fontWeight: 500,
+              margin: 0,
+            }}
+          >
+            PORTFOLIO
+          </p>
+
+          {/* Main title */}
+          <h1
+            style={{
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#F7F2EB',
+              margin: 0,
+              lineHeight: 1,
+              textShadow: '0 0 40px rgba(224,106,63,0.25)',
+            }}
+          >
+            MULTIVERSE
+          </h1>
+
+          {/* Accent word on its own line */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div
+              style={{
+                width: '2rem',
+                height: '1px',
+                background: 'rgba(0,242,254,0.35)',
+              }}
+            />
+            <span
+              style={{
+                fontSize: 'clamp(0.6rem, 1.2vw, 0.85rem)',
+                fontWeight: 600,
+                letterSpacing: '0.55em',
+                textTransform: 'uppercase',
+                color: '#00f2fe',
+              }}
+            >
+              OS
+            </span>
+            <div
+              style={{
+                width: '2rem',
+                height: '1px',
+                background: 'rgba(0,242,254,0.35)',
+              }}
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] sm:text-xs text-text-secondary/60 font-mono">
-          <div>
-            <div>&gt; KERNEL: COGNITIVE SYSTEM CORE [v2.2.0]</div>
-            <div>&gt; HOST_ADDR: SURAJ-PORTFOLIO-RUNTIME</div>
-            <div>&gt; SECURITY: ENCRYPTED SHIELD ACTIVE</div>
-          </div>
-          <div>
-            <div>&gt; GUI: PASTEL WORKSPACE WORKSTATION</div>
-            <div>&gt; RENDERING ENGINE: TURBOPACK CLIENT</div>
-            <div>&gt; AUDIO_CHIPS: SYNTHESIZED WEB_AUDIO_API</div>
-          </div>
-        </div>
+        {/* Current boot message */}
+        <p
+          style={{
+            fontSize: '0.65rem',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: 'rgba(247,242,235,0.3)',
+            fontFamily: 'monospace',
+            margin: 0,
+            marginTop: '0.5rem',
+          }}
+        >
+          {messages[Math.min(currentStep, messages.length - 1)]}
+        </p>
       </div>
 
-      {/* Terminal Loading Log Container */}
-      <div className="relative z-10 flex-grow flex flex-col justify-center max-w-xl mx-auto w-full my-8">
-        <div className="border border-accent-cyan/20 rounded bg-bg-panel/40 p-6 backdrop-blur-md shadow-[0_0_24px_rgba(224,106,63,0.03)]">
-          <div className="space-y-3 min-h-[160px] flex flex-col justify-center font-mono">
-            {messages.map((msg, idx) => {
-              let statusPrefix = (
-                <span className="text-text-secondary/30">[ WAIT ]</span>
-              );
-              let textClass = 'text-text-secondary/40';
-
-              if (currentStep > idx) {
-                statusPrefix = <span className="text-success-green">[  OK  ]</span>;
-                textClass = 'text-text-primary';
-              } else if (currentStep === idx) {
-                statusPrefix = (
-                  <span className="text-accent-cyan animate-pulse">[ LOAD ]</span>
-                );
-                textClass = 'text-accent-cyan font-bold';
-              }
-
-              return (
-                <div
-                  key={idx}
-                  className={`flex items-start gap-3 transition-all duration-300 ${textClass}`}
-                >
-                  <span className="font-mono flex-shrink-0">{statusPrefix}</span>
-                  <span className="flex-grow font-mono">{msg}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-8">
-            <div className="flex justify-between text-[10px] text-text-secondary mb-1 font-mono">
-              <span>BOOT_PROGRESS</span>
-              <span>{progressPercent}%</span>
-            </div>
-            <div className="w-full bg-border-subtle h-2 rounded border border-border-subtle overflow-hidden">
-              <div
-                className="bg-accent-cyan h-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(224,106,63,0.3)]"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Info / Skip Instructions */}
-      <div className="relative z-10 text-center pt-4 border-t border-accent-cyan/10 w-full max-w-5xl mx-auto">
-        <div className="text-[10px] text-text-secondary/60 animate-pulse tracking-widest uppercase font-mono">
-          Press any key or click anywhere to skip boot sequence
-        </div>
-        <div className="text-[9px] text-text-secondary/40 mt-1 font-mono">
-          (SYSTEM WILL AUTOMATICALLY INITIALIZE IN {remainingSeconds}s)
-        </div>
+      {/* Thin cyan progress line at the bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-[3]"
+        style={{ height: '2px', background: 'rgba(0,242,254,0.1)' }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${progressPercent}%`,
+            background: '#00f2fe',
+            transition: 'width 0.3s ease-out',
+            boxShadow: '0 0 16px rgba(0,242,254,0.7)',
+          }}
+        />
       </div>
     </div>
   );

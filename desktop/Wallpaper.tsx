@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import { useTheme } from '@/providers';
 import { useReducedMotion } from '@/animations';
 import { Ferrofluid } from '@/components/Ferrofluid';
+import { LetterGlitch } from '@/components/LetterGlitch';
 
 export function Wallpaper() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -14,12 +15,10 @@ export function Wallpaper() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Reset canvas completely if high contrast or reduced motion is active
-    if (themeName === 'high-contrast' || shouldReduceMotion) {
+    // Skip canvas for themes that use their own WebGL/canvas renderer
+    if (themeName === 'high-contrast' || themeName === 'matrix' || shouldReduceMotion) {
       const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
       return;
     }
 
@@ -56,25 +55,11 @@ export function Wallpaper() {
       color: string;
     }
 
-    const particlesCount = themeName === 'matrix' ? 80 : 45;
+    const particlesCount = 45;
     const particles: Particle[] = [];
     const blobs: FluidBlob[] = [];
 
-    // Matrix characters
-    const matrixChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&'.split('');
-    const matrixStreams: { x: number; y: number; speed: number; chars: string[] }[] = [];
-    
-    if (themeName === 'matrix') {
-      const columns = Math.floor(width / 20);
-      for (let i = 0; i < columns; i++) {
-        matrixStreams.push({
-          x: i * 20,
-          y: Math.random() * -height,
-          speed: 1.5 + Math.random() * 3,
-          chars: Array.from({ length: 15 }, () => matrixChars[Math.floor(Math.random() * matrixChars.length)]),
-        });
-      }
-    } else if (themeName === 'default') {
+    if (themeName === 'default') {
       // 4 large soft pastel colored blobs drifting slowly
       blobs.push({ 
         x: width * 0.25, 
@@ -142,28 +127,7 @@ export function Wallpaper() {
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
 
-      if (themeName === 'matrix') {
-        ctx.font = '14px monospace';
-        matrixStreams.forEach((stream) => {
-          stream.chars.forEach((char, index) => {
-            const charY = stream.y + index * 16;
-            if (charY > 0 && charY < height) {
-              const alpha = index / stream.chars.length;
-              ctx.fillStyle = `rgba(57, 255, 20, ${alpha * 0.8})`;
-              ctx.fillText(char, stream.x, charY);
-            }
-          });
-          stream.y += stream.speed;
-          if (stream.y > height) {
-            stream.y = Math.random() * -200;
-            stream.speed = 1.5 + Math.random() * 3;
-          }
-          if (Math.random() < 0.02) {
-            stream.chars.shift();
-            stream.chars.push(matrixChars[Math.floor(Math.random() * matrixChars.length)]);
-          }
-        });
-      } else if (themeName === 'default') {
+      if (themeName === 'default') {
         // Draw fluid mesh gradient for PastelOS with mouse parallax arpeggiations
         blobs.forEach((b, idx) => {
           b.x += b.vx;
@@ -271,7 +235,7 @@ export function Wallpaper() {
         />
       )}
 
-      {/* Animated Wallpaper Canvas / WebGL Ferrofluid shader */}
+      {/* Animated Wallpaper Canvas / WebGL theme renderers */}
       {themeName === 'high-contrast' ? (
         <div className="absolute inset-0 w-full h-full pointer-events-auto">
           <Ferrofluid
@@ -289,6 +253,16 @@ export function Wallpaper() {
             mouseInteraction={true}
             mouseStrength={0.8}
             mouseRadius={0.2}
+          />
+        </div>
+      ) : themeName === 'matrix' ? (
+        <div className="absolute inset-0 w-full h-full">
+          <LetterGlitch
+            glitchColors={['#003310', '#39ff14', '#00ff66', '#1aff6e']}
+            glitchSpeed={60}
+            outerVignette={true}
+            centerVignette={false}
+            smooth={true}
           />
         </div>
       ) : (
