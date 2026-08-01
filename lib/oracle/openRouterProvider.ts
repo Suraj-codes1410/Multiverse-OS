@@ -1,4 +1,8 @@
-import { IAIProvider, AIProviderRequest, AIProviderResponse } from './aiProvider';
+import {
+  IAIProvider,
+  AIProviderRequest,
+  AIProviderResponse,
+} from './aiProvider';
 import { DEFAULT_MODEL_CONFIG } from './config';
 import { analyticsService } from './analyticsService';
 
@@ -14,20 +18,29 @@ export class OpenRouterProvider implements IAIProvider {
   async generate(request: AIProviderRequest): Promise<AIProviderResponse> {
     if (Date.now() < OpenRouterProvider.cooldownUntil) {
       console.log('OPENROUTER_FAIL');
-      throw new Error('Oracle AI provider temporarily unavailable. Smart routing and portfolio intelligence remain operational. Please retry in a few minutes.');
+      throw new Error(
+        'Oracle AI provider temporarily unavailable. Smart routing and portfolio intelligence remain operational. Please retry in a few minutes.'
+      );
     }
     if (!this.apiKey) {
       console.log('OPENROUTER_FAIL');
-      throw new Error('OPENROUTER_API_KEY environment variable is not defined.');
+      throw new Error(
+        'OPENROUTER_API_KEY environment variable is not defined.'
+      );
     }
 
     const config = request.config || DEFAULT_MODEL_CONFIG;
     const timeoutMs = config.timeoutMs || 30000;
 
-    const primaryModel = process.env.PRIMARY_MODEL || config.modelName || 'deepseek/deepseek-r1:free';
-    const fallback1 = process.env.FALLBACK_MODEL_1 || 'meta-llama/llama-3.3-70b-instruct:free';
+    const primaryModel =
+      process.env.PRIMARY_MODEL ||
+      config.modelName ||
+      'deepseek/deepseek-r1:free';
+    const fallback1 =
+      process.env.FALLBACK_MODEL_1 || 'meta-llama/llama-3.3-70b-instruct:free';
     const fallback2 = process.env.FALLBACK_MODEL_2 || 'qwen/qwen3-32b:free';
-    const fallback3 = process.env.FALLBACK_MODEL_3 || 'nvidia/nemotron-3-ultra-550b-a55b:free';
+    const fallback3 =
+      process.env.FALLBACK_MODEL_3 || 'nvidia/nemotron-3-ultra-550b-a55b:free';
 
     const modelsToTry = [primaryModel, fallback1, fallback2, fallback3];
     const uniqueModels = Array.from(new Set(modelsToTry.filter(Boolean)));
@@ -40,7 +53,11 @@ export class OpenRouterProvider implements IAIProvider {
       console.log(`MODEL_ATTEMPT: ${currentModel}`);
 
       try {
-        const response = await this.executeGenerate(request, currentModel, timeoutMs);
+        const response = await this.executeGenerate(
+          request,
+          currentModel,
+          timeoutMs
+        );
         console.log(`MODEL_SUCCESS: ${currentModel}`);
         console.log('OPENROUTER_SUCCESS');
         if (process.env.NODE_ENV !== 'production') {
@@ -49,20 +66,23 @@ export class OpenRouterProvider implements IAIProvider {
         analyticsService.recordProviderCall({
           model: currentModel,
           success: true,
-          isFailover
+          isFailover,
         });
         return response;
       } catch (error: any) {
-        console.log(`MODEL_FAIL: ${currentModel} | Error: ${error.message || error}`);
+        console.log(
+          `MODEL_FAIL: ${currentModel} | Error: ${error.message || error}`
+        );
         lastError = error;
 
-        const errorCode = error.status || (error.message?.includes('429') ? 429 : undefined);
+        const errorCode =
+          error.status || (error.message?.includes('429') ? 429 : undefined);
         analyticsService.recordProviderCall({
           model: currentModel,
           success: false,
           errorCode,
           errorMessage: error.message || String(error),
-          isFailover
+          isFailover,
         });
 
         // Check if we should retry/failover
@@ -72,7 +92,9 @@ export class OpenRouterProvider implements IAIProvider {
             console.log(`MODEL_FALLBACK: ${currentModel} -> ${nextModel}`);
             continue;
           } else {
-            console.log(`Non-retryable error encountered. Aborting failover chain.`);
+            console.log(
+              `Non-retryable error encountered. Aborting failover chain.`
+            );
             break;
           }
         }
@@ -80,14 +102,21 @@ export class OpenRouterProvider implements IAIProvider {
     }
 
     console.log('OPENROUTER_FAIL');
-    throw lastError || new Error('All configured models failed to generate a response.');
+    throw (
+      lastError ||
+      new Error('All configured models failed to generate a response.')
+    );
   }
 
   private isRetryableError(error: any): boolean {
     if (!error) return false;
 
     // 1. Timeout errors
-    if (error.name === 'AbortError' || error.message?.toLowerCase().includes('timeout') || error.message?.toLowerCase().includes('timed out')) {
+    if (
+      error.name === 'AbortError' ||
+      error.message?.toLowerCase().includes('timeout') ||
+      error.message?.toLowerCase().includes('timed out')
+    ) {
       return true;
     }
 
@@ -117,11 +146,12 @@ export class OpenRouterProvider implements IAIProvider {
       'upstream error',
       'provider error',
       'resource unavailable',
-      'capacity exceeded'
+      'capacity exceeded',
     ];
 
-    const isProviderUnavailable = providerUnavailablePhrases.some(phrase => 
-      lowercaseBody.includes(phrase) || lowercaseMessage.includes(phrase)
+    const isProviderUnavailable = providerUnavailablePhrases.some(
+      (phrase) =>
+        lowercaseBody.includes(phrase) || lowercaseMessage.includes(phrase)
     );
 
     if (isProviderUnavailable) {
@@ -136,8 +166,8 @@ export class OpenRouterProvider implements IAIProvider {
   }
 
   private async executeGenerate(
-    request: AIProviderRequest, 
-    modelName: string, 
+    request: AIProviderRequest,
+    modelName: string,
     timeoutMs: number
   ): Promise<AIProviderResponse> {
     const config = request.config || DEFAULT_MODEL_CONFIG;
@@ -146,34 +176,41 @@ export class OpenRouterProvider implements IAIProvider {
 
     try {
       console.log(`CALLING OPENROUTER with model: ${modelName}`);
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'HTTP-Referer': 'https://multiverse-os.local', // Referer header for OpenRouter analytics
-          'X-Title': 'Multiverse OS Oracle'
-        },
-        body: JSON.stringify({
-          model: modelName,
-          temperature: config.temperature,
-          max_tokens: config.maxTokens,
-          messages: [
-            { role: 'system', content: request.systemPrompt },
-            { role: 'user', content: request.userPrompt }
-          ]
-        }),
-        signal: controller.signal
-      });
+      const response = await fetch(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.apiKey}`,
+            'HTTP-Referer': 'https://multiverse-os.local', // Referer header for OpenRouter analytics
+            'X-Title': 'Multiverse OS Oracle',
+          },
+          body: JSON.stringify({
+            model: modelName,
+            temperature: config.temperature,
+            max_tokens: config.maxTokens,
+            messages: [
+              { role: 'system', content: request.systemPrompt },
+              { role: 'user', content: request.userPrompt },
+            ],
+          }),
+          signal: controller.signal,
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
         if (response.status === 429) {
           const retryAfterHeader = response.headers.get('Retry-After');
-          const retrySeconds = retryAfterHeader ? parseInt(retryAfterHeader, 10) : 30;
-          OpenRouterProvider.cooldownUntil = Date.now() + (retrySeconds * 1000);
+          const retrySeconds = retryAfterHeader
+            ? parseInt(retryAfterHeader, 10)
+            : 30;
+          OpenRouterProvider.cooldownUntil = Date.now() + retrySeconds * 1000;
         }
-        const error = new Error(`OpenRouter API returned error status ${response.status}: ${errorText}`);
+        const error = new Error(
+          `OpenRouter API returned error status ${response.status}: ${errorText}`
+        );
         (error as any).status = response.status;
         (error as any).body = errorText;
         throw error;
@@ -182,26 +219,30 @@ export class OpenRouterProvider implements IAIProvider {
       const data = await response.json();
 
       if (!data.choices || data.choices.length === 0) {
-        throw new Error('Invalid response structure received from OpenRouter API.');
+        throw new Error(
+          'Invalid response structure received from OpenRouter API.'
+        );
       }
 
       const text = data.choices[0].message?.content || '';
-      console.log("OPENROUTER SUCCESS");
+      console.log('OPENROUTER SUCCESS');
 
       const usage = {
         promptTokens: data.usage?.prompt_tokens || 0,
         completionTokens: data.usage?.completion_tokens || 0,
         totalTokens: data.usage?.total_tokens || 0,
-        modelUsed: modelName
+        modelUsed: modelName,
       };
 
       return {
         text,
-        usage
+        usage,
       };
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'AbortError') {
-        const timeoutError = new Error(`OpenRouter API request timed out after ${timeoutMs}ms.`);
+        const timeoutError = new Error(
+          `OpenRouter API request timed out after ${timeoutMs}ms.`
+        );
         (timeoutError as any).name = 'AbortError';
         throw timeoutError;
       }

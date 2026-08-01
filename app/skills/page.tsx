@@ -4,7 +4,8 @@ import { getSkills, getProjects } from '@/lib/data';
 
 export const metadata = {
   title: 'Skills | Suraj Samanta',
-  description: 'Explore Suraj Samanta\'s technical capabilities across Backend, Frontend, Databases, DevOps, AI, and developer tools.',
+  description:
+    "Explore Suraj Samanta's technical capabilities across Backend, Frontend, Databases, DevOps, AI, and developer tools.",
 };
 
 export default async function SkillsPage() {

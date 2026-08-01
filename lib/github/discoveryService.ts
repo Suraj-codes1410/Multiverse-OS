@@ -15,10 +15,12 @@ export interface DiscoveryResult {
 /**
  * Deterministic discovery service for programmatically searching and filtering
  * repositories and projects using classification, intelligence, and graph linkages.
- * 
+ *
  * Prepares integrations for CLI commands, ORACLE query gateways, and recruiter portals.
  */
-export async function discoverRepositories(queryText: string): Promise<DiscoveryResult> {
+export async function discoverRepositories(
+  queryText: string
+): Promise<DiscoveryResult> {
   const normalizedQuery = queryText.toLowerCase().trim();
   const graph = await buildKnowledgeGraph();
   const allProjects = await getProjects();
@@ -31,7 +33,11 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
 
   // 1. Identify category filters
   let targetCategory: string | undefined = undefined;
-  if (normalizedQuery.includes('ai') || normalizedQuery.includes('machine learning') || normalizedQuery.includes('ml')) {
+  if (
+    normalizedQuery.includes('ai') ||
+    normalizedQuery.includes('machine learning') ||
+    normalizedQuery.includes('ml')
+  ) {
     targetCategory = 'AI Engineering';
     matchedFilters.category = 'AI Engineering';
   } else if (normalizedQuery.includes('backend')) {
@@ -43,7 +49,10 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
   } else if (normalizedQuery.includes('frontend')) {
     targetCategory = 'Frontend Development';
     matchedFilters.category = 'Frontend Development';
-  } else if (normalizedQuery.includes('full stack') || normalizedQuery.includes('fullstack')) {
+  } else if (
+    normalizedQuery.includes('full stack') ||
+    normalizedQuery.includes('fullstack')
+  ) {
     targetCategory = 'Full Stack Development';
     matchedFilters.category = 'Full Stack Development';
   } else if (normalizedQuery.includes('data')) {
@@ -57,7 +66,28 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
   // 2. Identify technology filters
   let targetTech: string | undefined = undefined;
   const knownTechs = [
-    'FastAPI', 'Kafka', 'React', 'Spring Boot', 'gRPC', 'Docker', 'TimescaleDB', 'Pinecone', 'Redis', 'MySQL', 'PostgreSQL', 'Elasticsearch', 'RabbitMQ', 'WebSockets', 'PyTorch', 'Django', 'Go', 'Rust', 'Java', 'Python', 'TypeScript', 'JavaScript'
+    'FastAPI',
+    'Kafka',
+    'React',
+    'Spring Boot',
+    'gRPC',
+    'Docker',
+    'TimescaleDB',
+    'Pinecone',
+    'Redis',
+    'MySQL',
+    'PostgreSQL',
+    'Elasticsearch',
+    'RabbitMQ',
+    'WebSockets',
+    'PyTorch',
+    'Django',
+    'Go',
+    'Rust',
+    'Java',
+    'Python',
+    'TypeScript',
+    'JavaScript',
   ];
 
   for (const tech of knownTechs) {
@@ -72,14 +102,19 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
   let matchedProjects = [...allProjects];
 
   if (targetCategory) {
-    matchedProjects = matchedProjects.filter(project => {
+    matchedProjects = matchedProjects.filter((project) => {
       // Check repository classifications
       const repoClass = project.githubRepository?.classifications || [];
-      if (repoClass.some(c => c.toLowerCase() === targetCategory!.toLowerCase())) {
+      if (
+        repoClass.some((c) => c.toLowerCase() === targetCategory!.toLowerCase())
+      ) {
         return true;
       }
       // Check intelligence category
-      if (project.intelligence?.projectCategory?.toLowerCase() === targetCategory!.toLowerCase()) {
+      if (
+        project.intelligence?.projectCategory?.toLowerCase() ===
+        targetCategory!.toLowerCase()
+      ) {
         return true;
       }
       return false;
@@ -89,32 +124,47 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
   if (targetTech) {
     // Query Knowledge Graph for nodes connected to this technology
     // Match skillId format from builder: skill:name-hyphenated
-    const techSkillId = `skill:${targetTech.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
+    const techSkillId = `skill:${targetTech
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')}`;
     const skillNode = graph.getNode(techSkillId);
 
     if (skillNode) {
       const neighbors = graph.getNeighbors(techSkillId, 'both');
       const connectedProjectIds = neighbors
-        .filter(n => n.node.type === 'Project')
-        .map(n => n.node.id.replace('project:', ''));
+        .filter((n) => n.node.type === 'Project')
+        .map((n) => n.node.id.replace('project:', ''));
 
-      matchedProjects = matchedProjects.filter(project => {
+      matchedProjects = matchedProjects.filter((project) => {
         if (connectedProjectIds.includes(project.id.toLowerCase())) {
           return true;
         }
-        if (project.techStack?.some(t => t.toLowerCase() === targetTech!.toLowerCase())) {
+        if (
+          project.techStack?.some(
+            (t) => t.toLowerCase() === targetTech!.toLowerCase()
+          )
+        ) {
           return true;
         }
-        if (project.intelligence?.technologies?.some(t => t.toLowerCase() === targetTech!.toLowerCase())) {
+        if (
+          project.intelligence?.technologies?.some(
+            (t) => t.toLowerCase() === targetTech!.toLowerCase()
+          )
+        ) {
           return true;
         }
         return false;
       });
     } else {
-      matchedProjects = matchedProjects.filter(project => {
+      matchedProjects = matchedProjects.filter((project) => {
         return (
-          project.techStack?.some(t => t.toLowerCase() === targetTech!.toLowerCase()) ||
-          project.intelligence?.technologies?.some(t => t.toLowerCase() === targetTech!.toLowerCase())
+          project.techStack?.some(
+            (t) => t.toLowerCase() === targetTech!.toLowerCase()
+          ) ||
+          project.intelligence?.technologies?.some(
+            (t) => t.toLowerCase() === targetTech!.toLowerCase()
+          )
         );
       });
     }
@@ -123,7 +173,7 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
   // 4. Free-text matching fallback if no specific category or technology was identified
   if (!targetCategory && !targetTech) {
     matchedFilters.text = normalizedQuery;
-    matchedProjects = matchedProjects.filter(project => {
+    matchedProjects = matchedProjects.filter((project) => {
       const searchText = [
         project.title,
         project.subtitle,
@@ -136,8 +186,10 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
         project.intelligence?.projectCategory || '',
         project.intelligence?.keyConcepts.join(' ') || '',
         project.intelligence?.complexityIndicators.join(' ') || '',
-        project.intelligence?.architectureAnalysis?.architecturePattern || ''
-      ].join(' ').toLowerCase();
+        project.intelligence?.architectureAnalysis?.architecturePattern || '',
+      ]
+        .join(' ')
+        .toLowerCase();
 
       return searchText.includes(normalizedQuery);
     });
@@ -146,6 +198,6 @@ export async function discoverRepositories(queryText: string): Promise<Discovery
   return {
     query: queryText,
     matchedFilters,
-    projects: matchedProjects
+    projects: matchedProjects,
   };
 }

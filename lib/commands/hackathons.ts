@@ -4,11 +4,13 @@ import { buildKnowledgeGraph } from '@/lib/knowledge/builder';
 export const hackathonsCommand: Command = {
   name: 'hackathons',
   aliases: ['competitions', 'hacks'],
-  description: 'Displays hackathon awards and experience from the Knowledge Graph.',
+  description:
+    'Displays hackathon awards and experience from the Knowledge Graph.',
   execute: async () => {
     const graph = await buildKnowledgeGraph();
-    const events = graph.getNodesByType('Timeline Event')
-      .filter(e => e.properties.category === 'hackathon');
+    const events = graph
+      .getNodesByType('Timeline Event')
+      .filter((e) => e.properties.category === 'hackathon');
 
     if (events.length === 0) {
       return {
@@ -16,18 +18,22 @@ export const hackathonsCommand: Command = {
           'HACKATHONS & COMPETITIONS',
           '==================================================',
           'No hackathon milestones found in the Knowledge Graph.',
-          '=================================================='
+          '==================================================',
         ],
-        success: true
+        success: true,
       };
     }
 
-    events.sort((a, b) => parseInt(b.properties.year || '0', 10) - parseInt(a.properties.year || '0', 10));
+    events.sort(
+      (a, b) =>
+        parseInt(b.properties.year || '0', 10) -
+        parseInt(a.properties.year || '0', 10)
+    );
 
     const output: string[] = [
       'HACKATHONS & COMPETITIONS',
       '==================================================',
-      ''
+      '',
     ];
 
     events.forEach((e, idx) => {
@@ -39,8 +45,20 @@ export const hackathonsCommand: Command = {
 
       // Query Knowledge Graph neighbors for connected projects or achievements
       const neighbors = graph.getNeighbors(e.id, 'both');
-      const projects = Array.from(new Set(neighbors.filter(n => n.node.type === 'Project').map(n => n.node.label)));
-      const achievements = Array.from(new Set(neighbors.filter(n => n.node.type === 'Achievement').map(n => n.node.label)));
+      const projects = Array.from(
+        new Set(
+          neighbors
+            .filter((n) => n.node.type === 'Project')
+            .map((n) => n.node.label)
+        )
+      );
+      const achievements = Array.from(
+        new Set(
+          neighbors
+            .filter((n) => n.node.type === 'Achievement')
+            .map((n) => n.node.label)
+        )
+      );
 
       if (projects.length > 0) {
         output.push(`   Projects:      ${projects.join(', ')}`);
@@ -58,7 +76,7 @@ export const hackathonsCommand: Command = {
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

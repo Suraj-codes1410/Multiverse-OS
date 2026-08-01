@@ -1,4 +1,11 @@
-import { GitHubRepository, ComplexityAnalysis, TechnologyProfile, ArchitectureAnalysis, Project, ComplexityDimension } from '../types';
+import {
+  GitHubRepository,
+  ComplexityAnalysis,
+  TechnologyProfile,
+  ArchitectureAnalysis,
+  Project,
+  ComplexityDimension,
+} from '../types';
 
 export function analyzeComplexity(
   repo: GitHubRepository,
@@ -10,7 +17,7 @@ export function analyzeComplexity(
   // Normalize all texts
   const repoNameLower = repo.name.toLowerCase();
   const repoDesc = (repo.description || '').toLowerCase();
-  const topics = (repo.topics || []).map(t => t.toLowerCase());
+  const topics = (repo.topics || []).map((t) => t.toLowerCase());
   const language = (repo.language || '').toLowerCase();
   const readmeLower = readme.toLowerCase();
 
@@ -22,14 +29,14 @@ export function analyzeComplexity(
     readmeLower,
     project?.subtitle?.toLowerCase() || '',
     project?.description?.toLowerCase() || '',
-    project?.architecture?.toLowerCase() || ''
+    project?.architecture?.toLowerCase() || '',
   ].join(' ');
 
   // Gather all technologies
   const allTechs: string[] = [];
   if (technologyProfile) {
-    Object.values(technologyProfile.categories).forEach(techList => {
-      techList.forEach(t => {
+    Object.values(technologyProfile.categories).forEach((techList) => {
+      techList.forEach((t) => {
         if (!allTechs.includes(t)) {
           allTechs.push(t);
         }
@@ -56,7 +63,9 @@ export function analyzeComplexity(
     techRating = 'Medium';
   }
 
-  techDetails.push(`Detected ${techCount} distinct technologies: ${allTechs.join(', ')}.`);
+  techDetails.push(
+    `Detected ${techCount} distinct technologies: ${allTechs.join(', ')}.`
+  );
   if (techRating === 'High') {
     techDetails.push('Polyglot environment with high framework density.');
   } else if (techRating === 'Medium') {
@@ -69,7 +78,7 @@ export function analyzeComplexity(
     score: techScore,
     maxScore: 3,
     rating: techRating,
-    details: techDetails
+    details: techDetails,
   };
 
   // ==========================================
@@ -80,28 +89,42 @@ export function analyzeComplexity(
   const archDetails: string[] = [];
 
   const pattern = architectureAnalysis?.architecturePattern || 'Monolith';
-  if (pattern === 'Microservices' || pattern === 'Backend API + Analytics Dashboard') {
+  if (
+    pattern === 'Microservices' ||
+    pattern === 'Backend API + Analytics Dashboard'
+  ) {
     archScore = 3;
     archRating = 'High';
-  } else if (pattern === 'Event Driven' || pattern === 'Analytics Platform' || pattern === 'Full Stack' || pattern === 'API Driven') {
+  } else if (
+    pattern === 'Event Driven' ||
+    pattern === 'Analytics Platform' ||
+    pattern === 'Full Stack' ||
+    pattern === 'API Driven'
+  ) {
     archScore = 2;
     archRating = 'Medium';
   }
 
   archDetails.push(`Architecture pattern classified as: ${pattern}.`);
   if (archRating === 'High') {
-    archDetails.push('Distributed topology requiring service isolation and coordination.');
+    archDetails.push(
+      'Distributed topology requiring service isolation and coordination.'
+    );
   } else if (archRating === 'Medium') {
-    archDetails.push('Multi-tier integration pattern with distinct processing stages.');
+    archDetails.push(
+      'Multi-tier integration pattern with distinct processing stages.'
+    );
   } else {
-    archDetails.push('Colocated monolothic design with unified codebase execution.');
+    archDetails.push(
+      'Colocated monolothic design with unified codebase execution.'
+    );
   }
 
   const architectureComplexity: ComplexityDimension = {
     score: archScore,
     maxScore: 3,
     rating: archRating,
-    details: archDetails
+    details: archDetails,
   };
 
   // ==========================================
@@ -117,7 +140,7 @@ export function analyzeComplexity(
     { name: 'Kubernetes', keywords: ['kubernetes', 'k8s'] },
     { name: 'Kafka', keywords: ['kafka'] },
     { name: 'RabbitMQ', keywords: ['rabbitmq'] },
-    { name: 'Raft Consensus', keywords: ['raft', 'consensus'] }
+    { name: 'Raft Consensus', keywords: ['raft', 'consensus'] },
   ];
   const medInfraKeywords = [
     { name: 'TimescaleDB', keywords: ['timescaledb', 'timescale'] },
@@ -125,18 +148,22 @@ export function analyzeComplexity(
     { name: 'Redis', keywords: ['redis'] },
     { name: 'MySQL', keywords: ['mysql'] },
     { name: 'PostgreSQL', keywords: ['postgres', 'postgresql'] },
-    { name: 'Elasticsearch', keywords: ['elasticsearch', 'elastic search'] }
+    { name: 'Elasticsearch', keywords: ['elasticsearch', 'elastic search'] },
   ];
 
-  highInfraKeywords.forEach(k => {
+  highInfraKeywords.forEach((k) => {
     if (textContext.includes(k.keywords[0])) infraComponents.push(k.name);
   });
-  medInfraKeywords.forEach(k => {
+  medInfraKeywords.forEach((k) => {
     if (textContext.includes(k.keywords[0])) infraComponents.push(k.name);
   });
 
-  const highCount = highInfraKeywords.filter(k => k.keywords.some(kw => textContext.includes(kw))).length;
-  const medCount = medInfraKeywords.filter(k => k.keywords.some(kw => textContext.includes(kw))).length;
+  const highCount = highInfraKeywords.filter((k) =>
+    k.keywords.some((kw) => textContext.includes(kw))
+  ).length;
+  const medCount = medInfraKeywords.filter((k) =>
+    k.keywords.some((kw) => textContext.includes(kw))
+  ).length;
 
   if (highCount >= 1 || medCount >= 3) {
     infraScore = 3;
@@ -147,24 +174,34 @@ export function analyzeComplexity(
   }
 
   if (infraComponents.length > 0) {
-    infraDetails.push(`Identified infrastructure components: ${infraComponents.join(', ')}.`);
+    infraDetails.push(
+      `Identified infrastructure components: ${infraComponents.join(', ')}.`
+    );
   } else {
-    infraDetails.push('No advanced database, container, or message brokers detected.');
+    infraDetails.push(
+      'No advanced database, container, or message brokers detected.'
+    );
   }
 
   if (infraRating === 'High') {
-    infraDetails.push('Containerized runtimes, event queues, or distributed state systems require deep ops orchestration.');
+    infraDetails.push(
+      'Containerized runtimes, event queues, or distributed state systems require deep ops orchestration.'
+    );
   } else if (infraRating === 'Medium') {
-    infraDetails.push('Utilizes structured databases or indexing caches requiring storage configuration.');
+    infraDetails.push(
+      'Utilizes structured databases or indexing caches requiring storage configuration.'
+    );
   } else {
-    infraDetails.push('Standard file-based storage or SQLite fallback configuration.');
+    infraDetails.push(
+      'Standard file-based storage or SQLite fallback configuration.'
+    );
   }
 
   const infrastructureComplexity: ComplexityDimension = {
     score: infraScore,
     maxScore: 3,
     rating: infraRating,
-    details: infraDetails
+    details: infraDetails,
   };
 
   // ==========================================
@@ -175,25 +212,49 @@ export function analyzeComplexity(
   const serviceDetails: string[] = [];
 
   const servicesList: string[] = [];
-  
+
   // Detect frontend service
-  const hasFrontend = allTechs.some(t => ['React', 'Next.js', 'Vue', 'Angular', 'HTML/CSS'].includes(t));
+  const hasFrontend = allTechs.some((t) =>
+    ['React', 'Next.js', 'Vue', 'Angular', 'HTML/CSS'].includes(t)
+  );
   if (hasFrontend) servicesList.push('Frontend User Interface');
 
   // Detect backend service
-  const hasBackend = allTechs.some(t => ['FastAPI', 'Spring Boot', 'Django', 'Express', 'NestJS', 'Flask', 'Go', 'Rust', 'Java', 'Python', 'Node.js'].includes(t));
+  const hasBackend = allTechs.some((t) =>
+    [
+      'FastAPI',
+      'Spring Boot',
+      'Django',
+      'Express',
+      'NestJS',
+      'Flask',
+      'Go',
+      'Rust',
+      'Java',
+      'Python',
+      'Node.js',
+    ].includes(t)
+  );
   if (hasBackend) servicesList.push('Backend API Server');
 
   // Detect database service
-  const hasDb = medInfraKeywords.some(k => textContext.includes(k.keywords[0])) || textContext.includes('mongodb');
+  const hasDb =
+    medInfraKeywords.some((k) => textContext.includes(k.keywords[0])) ||
+    textContext.includes('mongodb');
   if (hasDb) servicesList.push('Storage Database');
 
   // Detect broker service
-  const hasBroker = textContext.includes('kafka') || textContext.includes('rabbitmq');
+  const hasBroker =
+    textContext.includes('kafka') || textContext.includes('rabbitmq');
   if (hasBroker) servicesList.push('Message Queue Broker');
 
   // Detect background worker / analytics
-  const hasWorker = textContext.includes('worker') || textContext.includes('anomaly') || textContext.includes('agent') || textContext.includes('pipeline') || textContext.includes('forecasting');
+  const hasWorker =
+    textContext.includes('worker') ||
+    textContext.includes('anomaly') ||
+    textContext.includes('agent') ||
+    textContext.includes('pipeline') ||
+    textContext.includes('forecasting');
   if (hasWorker) servicesList.push('Background Processing Worker');
 
   const servCount = servicesList.length;
@@ -205,9 +266,13 @@ export function analyzeComplexity(
     serviceRating = 'Medium';
   }
 
-  serviceDetails.push(`Identified ${servCount} system services: ${servicesList.join(', ')}.`);
+  serviceDetails.push(
+    `Identified ${servCount} system services: ${servicesList.join(', ')}.`
+  );
   if (serviceRating === 'High') {
-    serviceDetails.push('Multi-layered application stack with independent runtime processes.');
+    serviceDetails.push(
+      'Multi-layered application stack with independent runtime processes.'
+    );
   } else if (serviceRating === 'Medium') {
     serviceDetails.push('Standard two-tier client-server structure.');
   } else {
@@ -218,7 +283,7 @@ export function analyzeComplexity(
     score: serviceScore,
     maxScore: 3,
     rating: serviceRating,
-    details: serviceDetails
+    details: serviceDetails,
   };
 
   // ==========================================
@@ -231,14 +296,29 @@ export function analyzeComplexity(
   const integrations: string[] = [];
   // Detect protocol integrations
   if (textContext.includes('grpc')) integrations.push('gRPC RPC Interops');
-  if (textContext.includes('websocket') || textContext.includes('websockets')) integrations.push('WebSocket real-time streams');
-  if (textContext.includes('kafka')) integrations.push('Kafka messaging pipelines');
-  if (textContext.includes('rabbitmq')) integrations.push('RabbitMQ queue handlers');
-  
+  if (textContext.includes('websocket') || textContext.includes('websockets'))
+    integrations.push('WebSocket real-time streams');
+  if (textContext.includes('kafka'))
+    integrations.push('Kafka messaging pipelines');
+  if (textContext.includes('rabbitmq'))
+    integrations.push('RabbitMQ queue handlers');
+
   // Detect domain integrations
-  if (textContext.includes('pinecone') || textContext.includes('rag')) integrations.push('Pinecone Vector Search / RAG');
-  if (textContext.includes('pytorch') || textContext.includes('tensorflow') || textContext.includes('anomaly-detection')) integrations.push('AI / ML Auditing model integration');
-  if (textContext.includes('satellite') || textContext.includes('aqi') || textContext.includes('tempo') || textContext.includes('nasa')) integrations.push('External Satellite Sensor feed ingestion');
+  if (textContext.includes('pinecone') || textContext.includes('rag'))
+    integrations.push('Pinecone Vector Search / RAG');
+  if (
+    textContext.includes('pytorch') ||
+    textContext.includes('tensorflow') ||
+    textContext.includes('anomaly-detection')
+  )
+    integrations.push('AI / ML Auditing model integration');
+  if (
+    textContext.includes('satellite') ||
+    textContext.includes('aqi') ||
+    textContext.includes('tempo') ||
+    textContext.includes('nasa')
+  )
+    integrations.push('External Satellite Sensor feed ingestion');
 
   const integCount = integrations.length;
   if (integCount >= 3) {
@@ -250,30 +330,41 @@ export function analyzeComplexity(
   }
 
   if (integCount > 0) {
-    integrationDetails.push(`Identified ${integCount} integrations: ${integrations.join(', ')}.`);
+    integrationDetails.push(
+      `Identified ${integCount} integrations: ${integrations.join(', ')}.`
+    );
   } else {
-    integrationDetails.push('No advanced network, protocol, or data feed integrations detected.');
+    integrationDetails.push(
+      'No advanced network, protocol, or data feed integrations detected.'
+    );
   }
 
   if (integrationRating === 'High') {
-    integrationDetails.push('Exposes multiple complex API protocols or orchestrates raw external sensory data.');
+    integrationDetails.push(
+      'Exposes multiple complex API protocols or orchestrates raw external sensory data.'
+    );
   } else if (integrationRating === 'Medium') {
-    integrationDetails.push('Standard backend API interface or basic database connection.');
+    integrationDetails.push(
+      'Standard backend API interface or basic database connection.'
+    );
   } else {
-    integrationDetails.push('Simple local CLI script or non-networked application.');
+    integrationDetails.push(
+      'Simple local CLI script or non-networked application.'
+    );
   }
 
   const integrationCount: ComplexityDimension = {
     score: integrationScore,
     maxScore: 3,
     rating: integrationRating,
-    details: integrationDetails
+    details: integrationDetails,
   };
 
   // ==========================================
   // Overall Scoring Evaluation
   // ==========================================
-  const totalScore = techScore + archScore + infraScore + serviceScore + integrationScore;
+  const totalScore =
+    techScore + archScore + infraScore + serviceScore + integrationScore;
   let overallRating: 'Beginner' | 'Intermediate' | 'Advanced' = 'Beginner';
 
   if (totalScore >= 11) {
@@ -291,7 +382,7 @@ export function analyzeComplexity(
       architectureComplexity,
       infrastructureComplexity,
       serviceCount,
-      integrationCount
-    }
+      integrationCount,
+    },
   };
 }

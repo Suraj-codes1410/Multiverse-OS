@@ -37,24 +37,31 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-primary/70 backdrop-blur-md transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-primary/70 backdrop-blur-md transition-all duration-300 hidden">
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo / Brand */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center gap-2 font-semibold text-text-primary hover:text-accent-cyan transition-colors focus:outline-none"
             aria-label="Suraj Samanta Home"
           >
-            <span className="font-mono text-xs text-accent-cyan tracking-tighter">SUR_</span>
-            <span className="tracking-wide text-sm font-bold uppercase">Samanta</span>
+            <span className="font-mono text-xs text-accent-cyan tracking-tighter">
+              SUR_
+            </span>
+            <span className="tracking-wide text-sm font-bold uppercase">
+              Samanta
+            </span>
             <span className="hidden sm:inline font-mono text-[9px] bg-border-subtle px-1.5 py-0.5 rounded text-text-secondary border border-border-subtle/50 ml-1">
               OS.v1
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-6" aria-label="Desktop Navigation">
+          <nav
+            className="hidden md:flex items-center gap-6"
+            aria-label="Desktop Navigation"
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -96,7 +103,10 @@ export default function Navbar() {
       {/* Mobile Drawer */}
       {isOpen && (
         <div className="md:hidden border-b border-border-subtle bg-bg-primary/95 backdrop-blur-lg animate-in fade-in slide-in-from-top-4 duration-200">
-          <nav className="flex flex-col gap-4 p-6" aria-label="Mobile Navigation">
+          <nav
+            className="flex flex-col gap-4 p-6"
+            aria-label="Mobile Navigation"
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.name}

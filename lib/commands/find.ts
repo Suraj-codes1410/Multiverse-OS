@@ -4,7 +4,8 @@ import { buildKnowledgeGraph } from '@/lib/knowledge/builder';
 export const findCommand: Command = {
   name: 'find',
   aliases: ['search', 'lookup'],
-  description: 'Exposes Knowledge Graph details and semantic relationships for a technology or entity.',
+  description:
+    'Exposes Knowledge Graph details and semantic relationships for a technology or entity.',
   execute: async (args) => {
     if (args.length === 0) {
       return {
@@ -14,9 +15,9 @@ export const findCommand: Command = {
           '  find fastapi',
           '  find kafka',
           '  find react',
-          '  find orbitair'
+          '  find orbitair',
         ],
-        success: false
+        success: false,
       };
     }
 
@@ -30,9 +31,9 @@ export const findCommand: Command = {
       return {
         output: [
           `No records found matching "${args.join(' ')}" in the Knowledge Graph.`,
-          'Please verify the search keyword.'
+          'Please verify the search keyword.',
         ],
-        success: true
+        success: true,
       };
     }
 
@@ -48,7 +49,7 @@ export const findCommand: Command = {
       output.push(`MATCHED ENTITY: [${node.type.toUpperCase()}] ${node.label}`);
       output.push('==================================================');
       output.push(`ID:          ${node.id}`);
-      
+
       if (node.properties.description) {
         output.push(`Description: ${node.properties.description}`);
       }
@@ -70,25 +71,26 @@ export const findCommand: Command = {
 
       // Fetch neighbors / connected relationships
       const neighbors = graph.getNeighbors(node.id, 'both');
-      
+
       if (neighbors.length > 0) {
         output.push('');
         output.push('CONNECTED ENTITIES IN KNOWLEDGE GRAPH:');
 
         // Group neighbors by their node type
         const grouped: { [type: string]: string[] } = {};
-        neighbors.forEach(n => {
+        neighbors.forEach((n) => {
           const type = n.node.type;
           if (!grouped[type]) {
             grouped[type] = [];
           }
-          const relDesc = n.relationship.properties?.description || n.relationship.type;
+          const relDesc =
+            n.relationship.properties?.description || n.relationship.type;
           grouped[type].push(`${n.node.label} (${relDesc})`);
         });
 
         for (const [type, list] of Object.entries(grouped)) {
           output.push(`  * ${type}s:`);
-          list.forEach(item => {
+          list.forEach((item) => {
             output.push(`    - ${item}`);
           });
         }
@@ -99,7 +101,7 @@ export const findCommand: Command = {
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

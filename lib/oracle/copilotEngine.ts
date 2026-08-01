@@ -19,20 +19,42 @@ export class CareerIntentClassifier {
   public static classify(query: string): CareerCategory {
     const queryLower = query.toLowerCase().trim();
 
-    const isShowOrDownloadResume = (
-      queryLower === 'resume' || 
+    const isShowOrDownloadResume =
+      queryLower === 'resume' ||
       queryLower === 'cv' ||
-      (/\b(resume|cv)\b/i.test(queryLower) && 
-       /\b(download|show|where|find|get|view|link|path|url|access)\b/i.test(queryLower) &&
-       !/\b(project|projects|first|optimize|ranking|structure|hired|skills|backend)\b/i.test(queryLower))
-    );
+      (/\b(resume|cv)\b/i.test(queryLower) &&
+        /\b(download|show|where|find|get|view|link|path|url|access)\b/i.test(
+          queryLower
+        ) &&
+        !/\b(project|projects|first|optimize|ranking|structure|hired|skills|backend)\b/i.test(
+          queryLower
+        ));
 
-    const hasResume = !isShowOrDownloadResume && /\b(resume|cv|portfolio first|resume first|first on my resume|put first)\b/i.test(queryLower);
-    const hasInterview = /\b(interview|interviews|showcase|show case|show during|present to)\b/i.test(queryLower);
-    const hasInternship = /\b(internship|intern|ready for a|ready for an|competitive for)\b/i.test(queryLower);
-    const hasSkillGap = /\b(missing|gap|gaps|lack|lacking|skills i need|still need to learn|skills am i missing)\b/i.test(queryLower);
-    const hasProjectRec = /\b(build next|should i build|project suggestion|project ideas|strengthen my.*portfolio|project to build|project would help me|what project|project recommendation|project recommendations)\b/i.test(queryLower);
-    const hasRoadmap = /\b(learn next|roadmap|learning roadmap|what technology should i learn|what technologies should i learn|should i learn next|what to learn)\b/i.test(queryLower);
+    const hasResume =
+      !isShowOrDownloadResume &&
+      /\b(resume|cv|portfolio first|resume first|first on my resume|put first)\b/i.test(
+        queryLower
+      );
+    const hasInterview =
+      /\b(interview|interviews|showcase|show case|show during|present to)\b/i.test(
+        queryLower
+      );
+    const hasInternship =
+      /\b(internship|intern|ready for a|ready for an|competitive for)\b/i.test(
+        queryLower
+      );
+    const hasSkillGap =
+      /\b(missing|gap|gaps|lack|lacking|skills i need|still need to learn|skills am i missing)\b/i.test(
+        queryLower
+      );
+    const hasProjectRec =
+      /\b(build next|should i build|project suggestion|project ideas|strengthen my.*portfolio|project to build|project would help me|what project|project recommendation|project recommendations)\b/i.test(
+        queryLower
+      );
+    const hasRoadmap =
+      /\b(learn next|roadmap|learning roadmap|what technology should i learn|what technologies should i learn|should i learn next|what to learn)\b/i.test(
+        queryLower
+      );
 
     if (hasResume) return 'Resume Optimization';
     if (hasInterview) return 'Interview Preparation';
@@ -42,10 +64,16 @@ export class CareerIntentClassifier {
     if (hasRoadmap) return 'Learning Roadmap';
 
     // General keyword fallbacks
-    if (queryLower.includes('career') || queryLower.includes('job') || queryLower.includes('intern')) {
-      if (queryLower.includes('match') || queryLower.includes('fit')) return 'Job Matching';
+    if (
+      queryLower.includes('career') ||
+      queryLower.includes('job') ||
+      queryLower.includes('intern')
+    ) {
+      if (queryLower.includes('match') || queryLower.includes('fit'))
+        return 'Job Matching';
       if (queryLower.includes('backend')) return 'Backend Career Path';
-      if (queryLower.includes('ai') || queryLower.includes('ml')) return 'AI Career Path';
+      if (queryLower.includes('ai') || queryLower.includes('ml'))
+        return 'AI Career Path';
       return 'Job Matching';
     }
 
@@ -91,7 +119,11 @@ For backend engineering discussions, showcase **patient-management-service**:
 - **Key Evidence**: Decoupled patient billing domains, binary gRPC low-latency communication, and asynchronous event sync.`;
     }
 
-    if (queryLower.includes('ai') || queryLower.includes('ml') || queryLower.includes('agent')) {
+    if (
+      queryLower.includes('ai') ||
+      queryLower.includes('ml') ||
+      queryLower.includes('agent')
+    ) {
       return `### Interview Recommendation: AI Engineering & Wellness Focus
 
 For AI/ML discussions, showcase **sahai** or **orbitair**:
@@ -121,35 +153,58 @@ export class SkillGapAnalyzer {
     roadmap: string[];
   } {
     const queryLower = query.toLowerCase();
-    
-    const current = ['Java', 'Spring Boot', 'gRPC', 'Kafka', 'Docker', 'Kubernetes', 'FastAPI', 'Pinecone', 'TimescaleDB', 'Redis', 'Python', 'Django', 'React', 'WebSockets'];
-    
+
+    const current = [
+      'Java',
+      'Spring Boot',
+      'gRPC',
+      'Kafka',
+      'Docker',
+      'Kubernetes',
+      'FastAPI',
+      'Pinecone',
+      'TimescaleDB',
+      'Redis',
+      'Python',
+      'Django',
+      'React',
+      'WebSockets',
+    ];
+
     let missing: string[] = [];
     let priority: string[] = [];
     let roadmap: string[] = [];
 
     if (queryLower.includes('java') || queryLower.includes('spring')) {
-      missing = ['JUnit 5 & Mockito (Unit/Integration Testing)', 'AWS Cloud Deployments (ECS/EKS)', 'Hibernate/JPA Profiling & Performance Tuning'];
+      missing = [
+        'JUnit 5 & Mockito (Unit/Integration Testing)',
+        'AWS Cloud Deployments (ECS/EKS)',
+        'Hibernate/JPA Profiling & Performance Tuning',
+      ];
       priority = [
         '1. JUnit & Mockito (Essential for internship coding challenges)',
         '2. JPA Performance Tuning (Crucial for database scalability)',
-        '3. AWS Deployments (Nice to have)'
+        '3. AWS Deployments (Nice to have)',
       ];
       roadmap = [
         '- **Week 1**: Implement comprehensive test coverage in patient-management-service using Mockito.',
-        '- **Week 2**: Deploy the Java microservices container to AWS ECS using local Terraform scripts.'
+        '- **Week 2**: Deploy the Java microservices container to AWS ECS using local Terraform scripts.',
       ];
     } else {
       // General Backend / Systems
-      missing = ['CI/CD Orchestration (Jenkins, Ansible)', 'Application Performance Monitoring (Prometheus, Grafana)', 'Unit/Integration Testing frameworks (JUnit for Java)'];
+      missing = [
+        'CI/CD Orchestration (Jenkins, Ansible)',
+        'Application Performance Monitoring (Prometheus, Grafana)',
+        'Unit/Integration Testing frameworks (JUnit for Java)',
+      ];
       priority = [
         '1. Unit Testing & Mocking (High priority)',
         '2. Monitoring & Logging (Medium priority)',
-        '3. CI/CD Orchestration (Medium priority)'
+        '3. CI/CD Orchestration (Medium priority)',
       ];
       roadmap = [
         '- **Phase 1**: Add JUnit/Mockito tests to patient-management-service.',
-        '- **Phase 2**: Configure Prometheus and Grafana dashboards for monitoring the microservices.'
+        '- **Phase 2**: Configure Prometheus and Grafana dashboards for monitoring the microservices.',
       ];
     }
 
@@ -157,7 +212,7 @@ export class SkillGapAnalyzer {
       currentSkills: current,
       missingSkills: missing,
       priorityRanking: priority,
-      roadmap
+      roadmap,
     };
   }
 }
@@ -168,20 +223,42 @@ export class JobFitAnalyzer {
 
     if (queryLower.includes('match') || queryLower.includes('description')) {
       let matchedProject = 'patient-management-service';
-      let matchReason = 'Demonstrates Spring Boot microservices, Kafka event streaming, gRPC, and Spring Security.';
+      let matchReason =
+        'Demonstrates Spring Boot microservices, Kafka event streaming, gRPC, and Spring Security.';
       let matchScore = 94;
-      
-      if (queryLower.includes('java') || queryLower.includes('spring') || queryLower.includes('hospital') || queryLower.includes('billing')) {
+
+      if (
+        queryLower.includes('java') ||
+        queryLower.includes('spring') ||
+        queryLower.includes('hospital') ||
+        queryLower.includes('billing')
+      ) {
         matchedProject = 'patient-management-service';
-        matchReason = 'Demonstrates Spring Boot microservices, Kafka event streaming, and gRPC low-latency APIs.';
+        matchReason =
+          'Demonstrates Spring Boot microservices, Kafka event streaming, and gRPC low-latency APIs.';
         matchScore = 94;
-      } else if (queryLower.includes('ai') || queryLower.includes('ml') || queryLower.includes('agent') || queryLower.includes('vector') || queryLower.includes('pinecone') || queryLower.includes('search')) {
+      } else if (
+        queryLower.includes('ai') ||
+        queryLower.includes('ml') ||
+        queryLower.includes('agent') ||
+        queryLower.includes('vector') ||
+        queryLower.includes('pinecone') ||
+        queryLower.includes('search')
+      ) {
         matchedProject = 'sahai';
-        matchReason = 'Demonstrates Django and FastAPI, Pinecone-backed RAG wellness assistant, and WebSockets chat rooms.';
+        matchReason =
+          'Demonstrates Django and FastAPI, Pinecone-backed RAG wellness assistant, and WebSockets chat rooms.';
         matchScore = 92;
-      } else if (queryLower.includes('aqi') || queryLower.includes('forecast') || queryLower.includes('timescale') || queryLower.includes('python') || queryLower.includes('fastapi')) {
+      } else if (
+        queryLower.includes('aqi') ||
+        queryLower.includes('forecast') ||
+        queryLower.includes('timescale') ||
+        queryLower.includes('python') ||
+        queryLower.includes('fastapi')
+      ) {
         matchedProject = 'orbitair';
-        matchReason = 'Demonstrates FastAPI backend, TimescaleDB geospatial indexing, and Leaflet AQI visualization.';
+        matchReason =
+          'Demonstrates FastAPI backend, TimescaleDB geospatial indexing, and Leaflet AQI visualization.';
         matchScore = 90;
       }
 
@@ -269,9 +346,11 @@ Based on your current portfolio, building the following projects will strengthen
 }
 
 export class PortfolioCopilotEngine {
-  public static async evaluate(
-    query: string
-  ): Promise<{ directResponse: string | null; category: CareerCategory; directAnswerAvailable: boolean }> {
+  public static async evaluate(query: string): Promise<{
+    directResponse: string | null;
+    category: CareerCategory;
+    directAnswerAvailable: boolean;
+  }> {
     const category = CareerIntentClassifier.classify(query);
 
     if (category === 'None') {
@@ -279,14 +358,22 @@ export class PortfolioCopilotEngine {
     }
 
     const queryLower = query.toLowerCase().trim();
-    const mentoringKeywords = ['coaching', 'mentoring', 'career advice', 'long-form coaching', 'career path mentoring'];
-    const needsCoachingSynthesis = mentoringKeywords.some(kw => queryLower.includes(kw));
+    const mentoringKeywords = [
+      'coaching',
+      'mentoring',
+      'career advice',
+      'long-form coaching',
+      'career path mentoring',
+    ];
+    const needsCoachingSynthesis = mentoringKeywords.some((kw) =>
+      queryLower.includes(kw)
+    );
 
     if (needsCoachingSynthesis) {
-      console.log("CAREER_MODE");
+      console.log('CAREER_MODE');
       console.log(`Mode: ${category}`);
-      console.log("\nCAREER_MODEL_ROUTE");
-      console.log("OpenRouter");
+      console.log('\nCAREER_MODEL_ROUTE');
+      console.log('OpenRouter');
       return { directResponse: null, category, directAnswerAvailable: false };
     }
 
@@ -295,23 +382,27 @@ export class PortfolioCopilotEngine {
     const jobFit = JobFitAnalyzer.evaluate(query);
 
     // Logging
-    console.log("CAREER_MODE");
+    console.log('CAREER_MODE');
     console.log(`Mode: ${category}`);
 
-    console.log("\nJOB_FIT_ANALYSIS");
-    console.log("Assessing portfolio readiness score and match dimensions.");
+    console.log('\nJOB_FIT_ANALYSIS');
+    console.log('Assessing portfolio readiness score and match dimensions.');
 
-    console.log("\nSKILL_GAP_ANALYSIS");
-    console.log(`Detected ${gapAnalysis.missingSkills.length} missing technologies compared to industry backend roles.`);
+    console.log('\nSKILL_GAP_ANALYSIS');
+    console.log(
+      `Detected ${gapAnalysis.missingSkills.length} missing technologies compared to industry backend roles.`
+    );
 
-    console.log("\nPROJECT_RECOMMENDATION");
-    console.log("Formulating next-project suggestions based on architectural gaps.");
+    console.log('\nPROJECT_RECOMMENDATION');
+    console.log(
+      'Formulating next-project suggestions based on architectural gaps.'
+    );
 
-    console.log("\nPORTFOLIO_COPILOT");
-    console.log("Running copilot diagnostic engines.");
+    console.log('\nPORTFOLIO_COPILOT');
+    console.log('Running copilot diagnostic engines.');
 
-    console.log("\nCAREER_DIRECT_RESPONSE");
-    console.log("No OpenRouter call required.");
+    console.log('\nCAREER_DIRECT_RESPONSE');
+    console.log('No OpenRouter call required.');
 
     let response = '';
 
@@ -319,18 +410,27 @@ export class PortfolioCopilotEngine {
       response = ResumeAdvisor.advise();
     } else if (category === 'Interview Preparation') {
       response = InterviewAdvisor.advise(query);
-    } else if (category === 'Internship Readiness' || category === 'Job Matching' || category === 'Backend Career Path' || category === 'AI Career Path' || category === 'Full Stack Career Path') {
+    } else if (
+      category === 'Internship Readiness' ||
+      category === 'Job Matching' ||
+      category === 'Backend Career Path' ||
+      category === 'AI Career Path' ||
+      category === 'Full Stack Career Path'
+    ) {
       response = jobFit;
-    } else if (category === 'Skill Gap Analysis' || category === 'Learning Roadmap') {
+    } else if (
+      category === 'Skill Gap Analysis' ||
+      category === 'Learning Roadmap'
+    ) {
       response = `### Skill Gap Analysis & Learning Roadmap
 
 Here is an analysis of your current technical skillset, identified gaps for backend roles, and a roadmap to address them:
 
 #### Current Skills
-${gapAnalysis.currentSkills.map(s => `- ${s}`).join('\n')}
+${gapAnalysis.currentSkills.map((s) => `- ${s}`).join('\n')}
 
 #### Missing Skills for Target Roles
-${gapAnalysis.missingSkills.map(s => `- ${s}`).join('\n')}
+${gapAnalysis.missingSkills.map((s) => `- ${s}`).join('\n')}
 
 #### Priority Gaps to Address
 ${gapAnalysis.priorityRanking.join('\n')}
@@ -344,8 +444,7 @@ ${gapAnalysis.roadmap.join('\n')}`;
     return {
       directResponse: response,
       category,
-      directAnswerAvailable: true
+      directAnswerAvailable: true,
     };
   }
 }
-

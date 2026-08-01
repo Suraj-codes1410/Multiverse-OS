@@ -21,7 +21,8 @@ export class CommandHandler {
     try {
       return await command.execute(args, context);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       return {
         output: `Error executing command "${commandName}": ${errorMessage}`,
         success: false,

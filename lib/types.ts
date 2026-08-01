@@ -157,4 +157,3 @@ export interface TimelineMilestone {
   relatedLink?: string;
   icon?: string;
 }
-

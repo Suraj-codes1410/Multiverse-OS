@@ -7,7 +7,15 @@ import achievementsData from '@/data/achievements.json';
 import githubConfig from '@/data/github-config.json';
 import timelineData from '@/data/timeline.json';
 
-import { Portfolio, Project, Skill, Universe, Experience, Achievement, TimelineMilestone } from '../types';
+import {
+  Portfolio,
+  Project,
+  Skill,
+  Universe,
+  Experience,
+  Achievement,
+  TimelineMilestone,
+} from '../types';
 import { getRepositories } from '../github/github';
 import { getReadmeContent } from '../github/readme';
 import { generateRepositoryIntelligence } from '../github/intelligence';
@@ -35,63 +43,95 @@ export function getAchievements(): Achievement[] {
 
 // Aggregates manual projects and synchronizes dynamic GitHub repositories
 export async function getProjects(): Promise<Project[]> {
+  if (typeof window !== 'undefined') {
+    const res = await fetch('/api/projects');
+    if (!res.ok) throw new Error('Failed to fetch projects API');
+    return res.json();
+  }
+
   const manuals = projectsData as Project[];
   const repos = await getRepositories();
 
-  // Enrich manually curated projects with GitHub repository statistics if they match
-  const enrichedManuals = await Promise.all(manuals.map(async (project) => {
-    const matchingRepo = repos.find(repo => 
-      repo.name.toLowerCase() === project.id.toLowerCase() ||
-      repo.name.toLowerCase() === project.id.toLowerCase() + 's' ||
-      project.id.toLowerCase() === repo.name.toLowerCase() + 's' ||
-      (project.githubUrl && project.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
-    );
-    if (matchingRepo) {
-      const readme = await getReadmeContent(matchingRepo.name);
-      const intelligence = generateRepositoryIntelligence(matchingRepo, readme, project);
-      const classifications = classifyRepository(matchingRepo, intelligence);
-      return {
-        ...project,
-        githubUrl: project.githubUrl || matchingRepo.htmlUrl,
-        liveUrl: project.liveUrl || matchingRepo.homepage || '',
-        techStack: Array.from(new Set([
-          ...project.techStack, 
-          ...(matchingRepo.language ? [matchingRepo.language] : [])
-        ])),
-        githubRepository: {
-          ...matchingRepo,
-          classifications
-        },
-        readme,
-        intelligence
-      };
-    }
-    return project;
-  }));
+  const matchedRepoNames = new Set<string>();
 
-  const manualIds = manuals.map(m => m.id.toLowerCase());
+  // Enrich manually curated projects with GitHub repository statistics if they match
+  const enrichedManuals = await Promise.all(
+    manuals.map(async (project) => {
+      const matchingRepo = repos.find(
+        (repo) =>
+          repo.name.toLowerCase() === project.id.toLowerCase() ||
+          repo.name.toLowerCase() === project.id.toLowerCase() + 's' ||
+          project.id.toLowerCase() === repo.name.toLowerCase() + 's' ||
+          (project.githubUrl &&
+            project.githubUrl
+              .toLowerCase()
+              .endsWith('/' + repo.name.toLowerCase()))
+      );
+      if (matchingRepo) {
+        matchedRepoNames.add(matchingRepo.name.toLowerCase());
+        const readme = await getReadmeContent(matchingRepo.name);
+        const intelligence = generateRepositoryIntelligence(
+          matchingRepo,
+          readme,
+          project
+        );
+        const classifications = classifyRepository(matchingRepo, intelligence);
+        return {
+          ...project,
+          githubUrl: project.githubUrl || matchingRepo.htmlUrl,
+          liveUrl: project.liveUrl || matchingRepo.homepage || '',
+          techStack: Array.from(
+            new Set([
+              ...project.techStack,
+              ...(matchingRepo.language ? [matchingRepo.language] : []),
+            ])
+          ),
+          githubRepository: {
+            ...matchingRepo,
+            classifications,
+          },
+          readme,
+          intelligence,
+        };
+      }
+      return project;
+    })
+  );
+
+  const manualIds = manuals.map((m) => m.id.toLowerCase());
   const pureGithubProjects: Project[] = [];
 
   // Synchronize any pure GitHub projects that aren't defined manually
   for (const repo of repos) {
-    const isManual = manualIds.includes(repo.name.toLowerCase());
+    const isManualOrMatched =
+      manualIds.includes(repo.name.toLowerCase()) ||
+      matchedRepoNames.has(repo.name.toLowerCase());
     const config = githubConfig.syncRepositories.find(
-      (r: { name: string; featured?: boolean; portfolioVisible?: boolean; highlighted?: boolean }) => r.name.toLowerCase() === repo.name.toLowerCase()
+      (r: {
+        name: string;
+        featured?: boolean;
+        portfolioVisible?: boolean;
+        highlighted?: boolean;
+      }) => r.name.toLowerCase() === repo.name.toLowerCase()
     );
 
-    if (!isManual && config && config.portfolioVisible) {
+    // Show by default unless explicitly blacklisted (portfolioVisible: false) in github-config.json
+    const isVisible = !config || config.portfolioVisible !== false;
+
+    if (!isManualOrMatched && isVisible) {
       const readme = await getReadmeContent(repo.name);
       const intelligence = generateRepositoryIntelligence(repo, readme);
       const classifications = classifyRepository(repo, intelligence);
-      
+
       pureGithubProjects.push({
         id: repo.name.toLowerCase(),
         title: repo.name,
         subtitle: repo.language || 'GitHub Repository',
         description: repo.description || 'Synchronized repository from GitHub.',
-        featured: config.featured || false,
+        featured: config?.featured || false,
         source: 'github',
-        problem: 'No manual problem statement defined. Synced dynamically from GitHub repository.',
+        problem:
+          'No manual problem statement defined. Synced dynamically from GitHub repository.',
         solution: repo.description || 'Dynamic code repository.',
         architecture: 'Refer to source files in repository root.',
         techStack: repo.language ? [repo.language] : [],
@@ -104,10 +144,10 @@ export async function getProjects(): Promise<Project[]> {
         year: new Date(repo.createdAt).getFullYear().toString(),
         githubRepository: {
           ...repo,
-          classifications
+          classifications,
         },
         readme,
-        intelligence
+        intelligence,
       });
     }
   }
@@ -117,12 +157,12 @@ export async function getProjects(): Promise<Project[]> {
 
 export async function getProjectById(id: string): Promise<Project | undefined> {
   const all = await getProjects();
-  return all.find(p => p.id.toLowerCase() === id.toLowerCase());
+  return all.find((p) => p.id.toLowerCase() === id.toLowerCase());
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
   const all = await getProjects();
-  return all.filter(p => p.featured);
+  return all.filter((p) => p.featured);
 }
 
 export function getTimeline(): TimelineMilestone[] {

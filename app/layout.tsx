@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import BootSequence from '@/components/BootSequence';
 import ShellProvider from '@/components/ShellProvider';
+import { SharedLayout } from '@/layout';
 import './globals.css';
 
 const inter = Inter({
@@ -20,7 +21,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'Suraj Samanta | Backend Developer & AI Engineer',
-  description: 'Portfolio of Suraj Samanta, specializing in high-performance distributed backend architectures, scalable data systems, and multi-agent AI orchestration.',
+  description:
+    'Portfolio of Suraj Samanta, specializing in high-performance distributed backend architectures, scalable data systems, and multi-agent AI orchestration.',
   authors: [{ name: 'Suraj Samanta' }],
 };
 
@@ -36,12 +38,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary">
         <ShellProvider>
-          <BootSequence />
-          <Navbar />
-          <main className="flex-grow flex flex-col">
-            {children}
-          </main>
-          <Footer />
+          <SharedLayout>
+            <BootSequence />
+            <Navbar />
+            <main className="flex-grow flex flex-col">{children}</main>
+            <Footer />
+          </SharedLayout>
         </ShellProvider>
       </body>
     </html>

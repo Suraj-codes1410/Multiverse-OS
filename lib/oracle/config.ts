@@ -12,5 +12,5 @@ export const DEFAULT_MODEL_CONFIG: ModelConfig = {
   modelName: process.env.ORACLE_MODEL || 'google/gemini-2.5-flash',
   temperature: 0.1, // Low temperature to minimize hallucinations
   maxTokens: 2048, // Standard response budget
-  timeoutMs: 60000 // 60 seconds timeout to handle congested OpenRouter queues
+  timeoutMs: 60000, // 60 seconds timeout to handle congested OpenRouter queues
 };

@@ -5,7 +5,7 @@ import path from 'path';
 const envPath = path.join(__dirname, '../.env.local');
 if (fs.existsSync(envPath)) {
   const envContent = fs.readFileSync(envPath, 'utf8');
-  envContent.split('\n').forEach(line => {
+  envContent.split('\n').forEach((line) => {
     const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
     if (match) {
       const key = match[1];
@@ -25,34 +25,37 @@ if (!process.env.ORACLE_MODEL) {
 }
 
 const queries = [
-  "What is Java?",
-  "Compare SAHAI and ORBITAIR.",
-  "Which project demonstrates backend engineering?",
+  'What is Java?',
+  'Compare SAHAI and ORBITAIR.',
+  'Which project demonstrates backend engineering?',
   "Which is Suraj's newest project?",
-  "Why did Suraj use Kafka?"
+  'Why did Suraj use Kafka?',
 ];
 
 async function runValidation() {
-  console.log("====================================================");
-  console.log("STARTING LIVE GITHUB SYNC & ORACLE VALIDATION RUN");
-  console.log("====================================================");
-  console.log("OPENROUTER KEY EXISTS:", !!process.env.OPENROUTER_API_KEY);
-  console.log("CONFIGURED MODEL:", process.env.ORACLE_MODEL);
+  console.log('====================================================');
+  console.log('STARTING LIVE GITHUB SYNC & ORACLE VALIDATION RUN');
+  console.log('====================================================');
+  console.log('OPENROUTER KEY EXISTS:', !!process.env.OPENROUTER_API_KEY);
+  console.log('CONFIGURED MODEL:', process.env.ORACLE_MODEL);
 
   // Dynamic imports to prevent static initialization issues during hoisting
-  const { GitHubSyncService, getSyncDiagnostics } = await import('../lib/github/syncService');
-  const { OpenRouterProvider } = await import('../lib/oracle/openRouterProvider');
+  const { GitHubSyncService, getSyncDiagnostics } =
+    await import('../lib/github/syncService');
+  const { OpenRouterProvider } =
+    await import('../lib/oracle/openRouterProvider');
   const { contextService } = await import('../lib/oracle/service');
-  const { OracleContextSelector } = await import('../lib/oracle/contextSelector');
+  const { OracleContextSelector } =
+    await import('../lib/oracle/contextSelector');
 
   // 1. Execute Sync
-  console.log("\n--- Executing Sync Service ---");
+  console.log('\n--- Executing Sync Service ---');
   const syncService = new GitHubSyncService();
   await syncService.sync();
 
   // 2. Fetch Diagnostics
   const diagnostics = getSyncDiagnostics();
-  console.log("\n--- Sync Diagnostics ---");
+  console.log('\n--- Sync Diagnostics ---');
   console.log(`Sync Status:             ${diagnostics.status}`);
   console.log(`Last Refresh Time:       ${diagnostics.lastRefreshTime}`);
   console.log(`Repositories Synced:     ${diagnostics.repositoriesSynced}`);
@@ -69,7 +72,7 @@ async function runValidation() {
     const query = queries[i];
     if (i > 0) {
       console.log(`\nWaiting 8 seconds to avoid rate limits...`);
-      await new Promise(resolve => setTimeout(resolve, 8000));
+      await new Promise((resolve) => setTimeout(resolve, 8000));
     }
     console.log(`\n----------------------------------------------------`);
     console.log(`QUERY: "${query}"`);
@@ -78,14 +81,15 @@ async function runValidation() {
     try {
       // a. Selection Layer
       const selected = await OracleContextSelector.select(query, fullContext);
-      
+
       // b. Format / Compression
-      let compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
+      let compressedPromptContext =
+        OracleContextSelector.compressAndFormat(selected);
 
       // Add repository timestamps additively for recency queries
       if (selected.repositories && selected.repositories.length > 0) {
         compressedPromptContext += `\n\n### REPOSITORY TIMESTAMPS\n`;
-        selected.repositories.forEach(r => {
+        selected.repositories.forEach((r) => {
           compressedPromptContext += `- Repository: ${r.name} | Created: ${r.createdAt} | Last Updated: ${r.updatedAt}\n`;
         });
       }
@@ -111,24 +115,24 @@ PORTFOLIO CONTEXT:
 ${compressedPromptContext}
 ---`;
 
-      console.log("ROUTE_OPENROUTER");
+      console.log('ROUTE_OPENROUTER');
       const response = await provider.generate({
         systemPrompt,
-        userPrompt: query.trim()
+        userPrompt: query.trim(),
       });
 
-      console.log("STATUS: SUCCESS");
-      console.log("AI RESPONSE:");
+      console.log('STATUS: SUCCESS');
+      console.log('AI RESPONSE:');
       console.log(response.text.trim());
     } catch (err: any) {
-      console.log("ROUTE_FALLBACK");
-      console.error("STATUS: ERROR / FALLBACK TRIGGERED");
+      console.log('ROUTE_FALLBACK');
+      console.error('STATUS: ERROR / FALLBACK TRIGGERED');
       console.error(err.message || err);
     }
   }
-  console.log("\n====================================================");
-  console.log("VALIDATION RUN COMPLETED");
-  console.log("====================================================");
+  console.log('\n====================================================');
+  console.log('VALIDATION RUN COMPLETED');
+  console.log('====================================================');
 }
 
 runValidation();

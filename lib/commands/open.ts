@@ -9,7 +9,7 @@ export const openCommand: Command = {
     if (!context.navigate) {
       return {
         output: 'Navigation is not available in this environment.',
-        success: false
+        success: false,
       };
     }
 
@@ -27,9 +27,9 @@ export const openCommand: Command = {
           '  repo <name>        - Navigates to a specific GitHub repository details page.',
           '  orbitair           - Navigates to Orbitair project briefing.',
           '  sahai              - Navigates to Sahai project briefing.',
-          '  patient-management - Navigates to Patient Management Service project briefing.'
+          '  patient-management - Navigates to Patient Management Service project briefing.',
         ],
-        success: false
+        success: false,
       };
     }
 
@@ -38,14 +38,20 @@ export const openCommand: Command = {
     // 1. Check for Github Explorer portal
     if (target === 'github' || target === 'explorer') {
       context.navigate('/github');
-      return { output: 'Navigating to GitHub Explorer portal...', success: true };
+      return {
+        output: 'Navigating to GitHub Explorer portal...',
+        success: true,
+      };
     }
 
     // 2. Check for explicit "open repo <name>"
     if (target.startsWith('repo ')) {
       const repoName = target.slice(5).trim();
       context.navigate(`/github/${repoName}`);
-      return { output: `Navigating to repository details: ${repoName}...`, success: true };
+      return {
+        output: `Navigating to repository details: ${repoName}...`,
+        success: true,
+      };
     }
 
     // 3. Fallback direct match with routes
@@ -54,7 +60,10 @@ export const openCommand: Command = {
       case 'portfolio':
       case 'work':
         context.navigate('/projects');
-        return { output: 'Navigating to projects repository...', success: true };
+        return {
+          output: 'Navigating to projects repository...',
+          success: true,
+        };
       case 'skills':
       case 'stack':
       case 'tech':
@@ -67,15 +76,24 @@ export const openCommand: Command = {
       case 'recruiter':
       case 'dashboard':
         context.navigate('/recruiter');
-        return { output: 'Navigating to recruiter intelligence system...', success: true };
+        return {
+          output: 'Navigating to recruiter intelligence system...',
+          success: true,
+        };
       case 'timeline':
       case 'chrono':
       case 'history':
         context.navigate('/timeline');
-        return { output: 'Navigating to chronological career datastream...', success: true };
+        return {
+          output: 'Navigating to chronological career datastream...',
+          success: true,
+        };
       case 'orbitair':
         context.navigate('/project/orbitair');
-        return { output: 'Navigating to ORBITAIR project file...', success: true };
+        return {
+          output: 'Navigating to ORBITAIR project file...',
+          success: true,
+        };
       case 'sahai':
         context.navigate('/project/sahai');
         return { output: 'Navigating to SAHAI project file...', success: true };
@@ -83,16 +101,22 @@ export const openCommand: Command = {
       case 'patient-management-service':
       case 'patientmanagement':
         context.navigate('/project/patient-management-service');
-        return { output: 'Navigating to Patient Management Service project file...', success: true };
+        return {
+          output: 'Navigating to Patient Management Service project file...',
+          success: true,
+        };
     }
 
     // 4. Check if target matches a repository name dynamically
     try {
       const repos = await getRepositories();
-      const matchedRepo = repos.find(r => r.name.toLowerCase() === target);
+      const matchedRepo = repos.find((r) => r.name.toLowerCase() === target);
       if (matchedRepo) {
         context.navigate(`/github/${matchedRepo.name}`);
-        return { output: `Navigating to repository details: ${matchedRepo.name}...`, success: true };
+        return {
+          output: `Navigating to repository details: ${matchedRepo.name}...`,
+          success: true,
+        };
       }
     } catch (err) {
       console.error('Error fetching repos for navigation match:', err);
@@ -100,7 +124,7 @@ export const openCommand: Command = {
 
     return {
       output: `Unknown navigation target: "${args.join(' ')}". Type "help open" for valid targets.`,
-      success: false
+      success: false,
     };
-  }
+  },
 };

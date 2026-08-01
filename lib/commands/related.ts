@@ -4,7 +4,8 @@ import { buildKnowledgeGraph } from '@/lib/knowledge/builder';
 export const relatedCommand: Command = {
   name: 'related',
   aliases: ['connections', 'neighbors', 'links'],
-  description: 'Explores and lists all related projects, repositories, skills, and achievements for a given entity in the Knowledge Graph.',
+  description:
+    'Explores and lists all related projects, repositories, skills, and achievements for a given entity in the Knowledge Graph.',
   execute: async (args) => {
     if (args.length === 0) {
       return {
@@ -13,9 +14,9 @@ export const relatedCommand: Command = {
           'Examples:',
           '  related orbitair',
           '  related kafka',
-          '  related fastapi'
+          '  related fastapi',
         ],
-        success: false
+        success: false,
       };
     }
 
@@ -29,9 +30,9 @@ export const relatedCommand: Command = {
       return {
         output: [
           `No records found matching "${args.join(' ')}" in the Knowledge Graph.`,
-          'Verify keywords (e.g. "orbitair", "kafka", "fastapi").'
+          'Verify keywords (e.g. "orbitair", "kafka", "fastapi").',
         ],
-        success: true
+        success: true,
       };
     }
 
@@ -44,7 +45,9 @@ export const relatedCommand: Command = {
         output.push('');
       }
 
-      output.push(`EXPLORING RELATIONSHIPS FOR: [${node.type.toUpperCase()}] ${node.label}`);
+      output.push(
+        `EXPLORING RELATIONSHIPS FOR: [${node.type.toUpperCase()}] ${node.label}`
+      );
       output.push('==================================================');
 
       // Traversal: Get neighbors of the matching node
@@ -63,13 +66,14 @@ export const relatedCommand: Command = {
       const others: string[] = [];
 
       const seenNodeIds = new Set<string>();
-      neighbors.forEach(n => {
+      neighbors.forEach((n) => {
         if (seenNodeIds.has(n.node.id)) {
           return;
         }
         seenNodeIds.add(n.node.id);
 
-        const desc = n.relationship.properties?.description || n.relationship.type;
+        const desc =
+          n.relationship.properties?.description || n.relationship.type;
         const entry = `- ${n.node.label} (${desc})`;
 
         switch (n.node.type) {
@@ -86,7 +90,9 @@ export const relatedCommand: Command = {
             achievements.push(entry);
             break;
           default:
-            others.push(`- [${n.node.type.toUpperCase()}] ${n.node.label} (${desc})`);
+            others.push(
+              `- [${n.node.type.toUpperCase()}] ${n.node.label} (${desc})`
+            );
             break;
         }
       });
@@ -94,31 +100,31 @@ export const relatedCommand: Command = {
       // Display results under requested groups
       if (projects.length > 0) {
         output.push('Related Projects');
-        projects.forEach(p => output.push(`  ${p}`));
+        projects.forEach((p) => output.push(`  ${p}`));
         output.push('');
       }
 
       if (repositories.length > 0) {
         output.push('Related Repositories');
-        repositories.forEach(r => output.push(`  ${r}`));
+        repositories.forEach((r) => output.push(`  ${r}`));
         output.push('');
       }
 
       if (skills.length > 0) {
         output.push('Related Skills');
-        skills.forEach(s => output.push(`  ${s}`));
+        skills.forEach((s) => output.push(`  ${s}`));
         output.push('');
       }
 
       if (achievements.length > 0) {
         output.push('Related Achievements');
-        achievements.forEach(a => output.push(`  ${a}`));
+        achievements.forEach((a) => output.push(`  ${a}`));
         output.push('');
       }
 
       if (others.length > 0) {
         output.push('Other Relationships:');
-        others.forEach(o => output.push(`  ${o}`));
+        others.forEach((o) => output.push(`  ${o}`));
         output.push('');
       }
 
@@ -132,7 +138,7 @@ export const relatedCommand: Command = {
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

@@ -11,7 +11,7 @@ async function debugQuery(q: string) {
 
   const mockReq = new Request('http://localhost/api/oracle', {
     method: 'POST',
-    body: JSON.stringify({ query: q, sessionId: 'debug-session' })
+    body: JSON.stringify({ query: q, sessionId: 'debug-session' }),
   });
 
   const logs: string[] = [];
@@ -31,7 +31,7 @@ async function debugQuery(q: string) {
     console.log(data.text);
     console.log(`\nDebug Headers:`, data.debug);
     console.log(`Captured Console Logs:`);
-    logs.forEach(l => console.log(`  > ${l}`));
+    logs.forEach((l) => console.log(`  > ${l}`));
   } catch (err: any) {
     console.log = originalLog;
     console.error(`Error:`, err);
@@ -39,12 +39,12 @@ async function debugQuery(q: string) {
 }
 
 async function run() {
-  await debugQuery("Tell me about SAHAI.");
+  await debugQuery('Tell me about SAHAI.');
   await debugQuery("List Suraj's repositories.");
   await debugQuery("Which is Suraj's newest repository?");
-  await debugQuery("Which project demonstrates backend engineering?");
-  await debugQuery("Why should Suraj be hired?");
-  await debugQuery("What technologies are used in oracle-sync-test?");
+  await debugQuery('Which project demonstrates backend engineering?');
+  await debugQuery('Why should Suraj be hired?');
+  await debugQuery('What technologies are used in oracle-sync-test?');
 }
 
 run();

@@ -7,22 +7,22 @@ export const experienceCommand: Command = {
   description: 'Displays professional work experience.',
   execute: () => {
     const experiences = getExperience();
-    
+
     if (experiences.length === 0) {
       return {
         output: [
           'WORK EXPERIENCE',
           '==================================================',
           'No professional experience entries found.',
-          '=================================================='
+          '==================================================',
         ],
-        success: true
+        success: true,
       };
     }
 
     const output: string[] = [
       'WORK EXPERIENCE',
-      '=================================================='
+      '==================================================',
     ];
 
     experiences.forEach((exp) => {
@@ -36,7 +36,10 @@ export const experienceCommand: Command = {
     });
 
     // Remove the last separator line
-    if (output[output.length - 1] === '--------------------------------------------------') {
+    if (
+      output[output.length - 1] ===
+      '--------------------------------------------------'
+    ) {
       output.pop();
     }
 

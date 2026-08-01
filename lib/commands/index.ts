@@ -29,6 +29,7 @@ import { backendExperienceCommand } from './backendExperience';
 import { aiExperienceCommand } from './aiExperience';
 import { distributedSystemsCommand } from './distributedSystems';
 import { bestProjectsCommand } from './bestProjects';
+import { exitCommand } from './exit';
 
 // Register core commands on module load
 registry.register(helpCommand);
@@ -43,6 +44,7 @@ registry.register(achievementsCommand);
 registry.register(contactCommand);
 registry.register(resumeCommand);
 registry.register(homeCommand);
+registry.register(exitCommand);
 registry.register(oracleCommand);
 registry.register(recruiterCommand);
 registry.register(openCommand);
@@ -66,17 +68,17 @@ export * from './types';
 export * from './registry';
 export * from './parser';
 export * from './handler';
-export { 
-  helpCommand, 
-  clearCommand, 
-  versionCommand, 
-  aboutCommand, 
-  skillsCommand, 
-  projectsCommand, 
-  experienceCommand, 
-  educationCommand, 
-  achievementsCommand, 
-  contactCommand, 
+export {
+  helpCommand,
+  clearCommand,
+  versionCommand,
+  aboutCommand,
+  skillsCommand,
+  projectsCommand,
+  experienceCommand,
+  educationCommand,
+  achievementsCommand,
+  contactCommand,
   resumeCommand,
   homeCommand,
   oracleCommand,
@@ -96,5 +98,6 @@ export {
   backendExperienceCommand,
   aiExperienceCommand,
   distributedSystemsCommand,
-  bestProjectsCommand
+  bestProjectsCommand,
+  exitCommand,
 };

@@ -4,11 +4,12 @@ import { getPortfolio } from '@/lib/data';
 export const aboutCommand: Command = {
   name: 'about',
   aliases: ['bio', 'info'],
-  description: 'Displays name, professional title, education summary, and biography.',
+  description:
+    'Displays name, professional title, education summary, and biography.',
   execute: () => {
     const portfolio = getPortfolio();
     const edu = portfolio.education;
-    
+
     const output = [
       'ABOUT ME',
       '==================================================',
@@ -23,7 +24,7 @@ export const aboutCommand: Command = {
       '--------------------------------------------------',
       'Summary:',
       `  ${portfolio.bio || portfolio.tagline}`,
-      '=================================================='
+      '==================================================',
     ];
 
     return {

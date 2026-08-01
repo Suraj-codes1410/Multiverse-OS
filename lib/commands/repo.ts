@@ -6,7 +6,8 @@ import { generateRepositoryIntelligence } from '@/lib/github/intelligence';
 export const repoCommand: Command = {
   name: 'repo',
   aliases: ['repository'],
-  description: 'Displays structural metrics and deterministic intelligence for a specific GitHub repository.',
+  description:
+    'Displays structural metrics and deterministic intelligence for a specific GitHub repository.',
   execute: async (args) => {
     if (args.length === 0) {
       return {
@@ -15,9 +16,9 @@ export const repoCommand: Command = {
           'Examples:',
           '  repo orbitair',
           '  repo sahai',
-          '  repo patient-management-service'
+          '  repo patient-management-service',
         ],
-        success: false
+        success: false,
       };
     }
 
@@ -25,15 +26,16 @@ export const repoCommand: Command = {
     const repos = await getRepositories();
 
     // Match exact or contains name
-    const repo = repos.find(r => 
-      r.name.toLowerCase() === inputName || 
-      r.name.toLowerCase().includes(inputName)
+    const repo = repos.find(
+      (r) =>
+        r.name.toLowerCase() === inputName ||
+        r.name.toLowerCase().includes(inputName)
     );
 
     if (!repo) {
       return {
         output: `Repository "${args.join(' ')}" not found in active data feed. Type "repos" to see all options.`,
-        success: false
+        success: false,
       };
     }
 
@@ -52,10 +54,10 @@ export const repoCommand: Command = {
       `Topics:       ${repo.topics.join(', ') || 'None declared'}`,
       '--------------------------------------------------',
       'Key Concepts:',
-      ...intelligence.keyConcepts.map(c => `  * ${c}`),
+      ...intelligence.keyConcepts.map((c) => `  * ${c}`),
       '',
       'Complexity Indicators:',
-      ...intelligence.complexityIndicators.map(ci => `  * ${ci}`),
+      ...intelligence.complexityIndicators.map((ci) => `  * ${ci}`),
       '',
       'Activity Level:',
       `  ${intelligence.activityLevel} (Last updated: ${new Date(repo.updatedAt).toLocaleDateString()})`,
@@ -63,12 +65,12 @@ export const repoCommand: Command = {
       'Available Actions:',
       `  * Type: open repo ${repo.name} (Opens detail page in browser)`,
       `  * Type: open github (Opens Explorer in browser)`,
-      '=================================================='
+      '==================================================',
     ];
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

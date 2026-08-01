@@ -32,7 +32,9 @@ export class GraphTraversalService {
 
   public getGraph(): KnowledgeGraph {
     if (!this.graph) {
-      throw new Error('GraphTraversalService is not initialized. Call init() first.');
+      throw new Error(
+        'GraphTraversalService is not initialized. Call init() first.'
+      );
     }
     return this.graph;
   }
@@ -42,7 +44,7 @@ export class GraphTraversalService {
    */
   private deduplicateNodes(nodes: KnowledgeNode[]): KnowledgeNode[] {
     const seen = new Set<string>();
-    return nodes.filter(node => {
+    return nodes.filter((node) => {
       if (seen.has(node.id)) {
         return false;
       }
@@ -58,8 +60,13 @@ export class GraphTraversalService {
     const graph = this.getGraph();
     const neighbors = graph.getNeighbors(projectId);
     const nodes = neighbors
-      .filter(n => n.node.type === 'Skill' && (n.relationship.type === 'BUILT_WITH' || n.relationship.type === 'USES'))
-      .map(n => n.node);
+      .filter(
+        (n) =>
+          n.node.type === 'Skill' &&
+          (n.relationship.type === 'BUILT_WITH' ||
+            n.relationship.type === 'USES')
+      )
+      .map((n) => n.node);
     return this.deduplicateNodes(nodes);
   }
 
@@ -70,8 +77,13 @@ export class GraphTraversalService {
     const graph = this.getGraph();
     const neighbors = graph.getNeighbors(skillId);
     const nodes = neighbors
-      .filter(n => n.node.type === 'Project' && (n.relationship.type === 'USES' || n.relationship.type === 'BUILT_WITH'))
-      .map(n => n.node);
+      .filter(
+        (n) =>
+          n.node.type === 'Project' &&
+          (n.relationship.type === 'USES' ||
+            n.relationship.type === 'BUILT_WITH')
+      )
+      .map((n) => n.node);
     return this.deduplicateNodes(nodes);
   }
 
@@ -82,8 +94,8 @@ export class GraphTraversalService {
     const graph = this.getGraph();
     const neighbors = graph.getNeighbors(projectId);
     const nodes = neighbors
-      .filter(n => n.node.type === 'Achievement')
-      .map(n => n.node);
+      .filter((n) => n.node.type === 'Achievement')
+      .map((n) => n.node);
     return this.deduplicateNodes(nodes);
   }
 
@@ -94,8 +106,8 @@ export class GraphTraversalService {
     const graph = this.getGraph();
     const neighbors = graph.getNeighbors(projectId);
     const nodes = neighbors
-      .filter(n => n.node.type === 'Repository')
-      .map(n => n.node);
+      .filter((n) => n.node.type === 'Repository')
+      .map((n) => n.node);
     return this.deduplicateNodes(nodes);
   }
 
@@ -106,8 +118,13 @@ export class GraphTraversalService {
     const graph = this.getGraph();
     const neighbors = graph.getNeighbors(repositoryId);
     const nodes = neighbors
-      .filter(n => n.node.type === 'Skill' && (n.relationship.type === 'USES' || n.relationship.type === 'RELATED_TO'))
-      .map(n => n.node);
+      .filter(
+        (n) =>
+          n.node.type === 'Skill' &&
+          (n.relationship.type === 'USES' ||
+            n.relationship.type === 'RELATED_TO')
+      )
+      .map((n) => n.node);
     return this.deduplicateNodes(nodes);
   }
 }
@@ -116,7 +133,10 @@ export class RelationshipEngine {
   private traversalService: GraphTraversalService;
   private entityResolver: EntityResolver;
 
-  constructor(traversalService: GraphTraversalService, entityResolver?: EntityResolver) {
+  constructor(
+    traversalService: GraphTraversalService,
+    entityResolver?: EntityResolver
+  ) {
     this.traversalService = traversalService;
     this.entityResolver = entityResolver || new EntityResolver();
   }
@@ -130,13 +150,46 @@ export class RelationshipEngine {
     const queryLower = queryString.toLowerCase().trim();
 
     // 1. Classify relationship intent based on keywords
-    const isTechQuery = this.containsAny(queryLower, ['technology', 'technologies', 'skill', 'skills', 'tech', 'languages', 'language', 'stack']);
-    const isProjectQuery = this.containsAny(queryLower, ['project', 'projects', 'built', 'uses', 'use', 'using']);
-    const isAchievementQuery = this.containsAny(queryLower, ['achievement', 'achievements', 'award', 'awards', 'prize', 'prizes', 'won', 'linked', 'associated']);
-    const isRepoQuery = this.containsAny(queryLower, ['repository', 'repositories', 'repo', 'repos', 'github', 'codebase']);
+    const isTechQuery = this.containsAny(queryLower, [
+      'technology',
+      'technologies',
+      'skill',
+      'skills',
+      'tech',
+      'languages',
+      'language',
+      'stack',
+    ]);
+    const isProjectQuery = this.containsAny(queryLower, [
+      'project',
+      'projects',
+      'built',
+      'uses',
+      'use',
+      'using',
+    ]);
+    const isAchievementQuery = this.containsAny(queryLower, [
+      'achievement',
+      'achievements',
+      'award',
+      'awards',
+      'prize',
+      'prizes',
+      'won',
+      'linked',
+      'associated',
+    ]);
+    const isRepoQuery = this.containsAny(queryLower, [
+      'repository',
+      'repositories',
+      'repo',
+      'repos',
+      'github',
+      'codebase',
+    ]);
 
     // 2. Resolve entities in the query
-    
+
     // A. Check if the query asks about a Project using EntityResolver (or direct text scan)
     const resolvedProject = this.entityResolver.resolve(queryString);
     let projectId: string | null = null;
@@ -147,7 +200,10 @@ export class RelationshipEngine {
       projectLabel = resolvedProject.entity.name;
     } else {
       // Fallback direct scan for project nodes in graph
-      const projectNode = this.scanNodesForMatch(queryLower, graph.getNodesByType('Project'));
+      const projectNode = this.scanNodesForMatch(
+        queryLower,
+        graph.getNodesByType('Project')
+      );
       if (projectNode) {
         projectId = projectNode.id;
         projectLabel = projectNode.label;
@@ -155,42 +211,55 @@ export class RelationshipEngine {
     }
 
     // B. Check if the query asks about a Skill
-    const skillNode = this.scanNodesForMatch(queryLower, graph.getNodesByType('Skill'));
+    const skillNode = this.scanNodesForMatch(
+      queryLower,
+      graph.getNodesByType('Skill')
+    );
 
     // C. Check if the query asks about a Repository
-    const repoNode = this.scanNodesForMatch(queryLower, graph.getNodesByType('Repository'));
+    const repoNode = this.scanNodesForMatch(
+      queryLower,
+      graph.getNodesByType('Repository')
+    );
 
     // 3. Match Intent & Traverse Relationships
 
     // Intent: Project -> Achievements
     // "What achievements are linked to SAHAI?"
     if (projectId && isAchievementQuery && !skillNode) {
-      const achievements = this.traversalService.getProjectAchievements(projectId);
+      const achievements =
+        this.traversalService.getProjectAchievements(projectId);
       return {
         sourceEntity: { id: projectId, name: projectLabel, type: 'Project' },
         relationType: 'HAS_ACHIEVEMENT',
-        targetEntities: achievements.map(node => ({
+        targetEntities: achievements.map((node) => ({
           id: node.id,
           name: node.label,
           type: node.type,
-          description: node.properties.description
-        }))
+          description: node.properties.description,
+        })),
       };
     }
 
     // Intent: Repository -> Technologies
     // "What technologies are used in the ORBITAIR repository?"
     if (repoNode && isTechQuery && isRepoQuery) {
-      const skills = this.traversalService.getRepositoryTechnologies(repoNode.id);
+      const skills = this.traversalService.getRepositoryTechnologies(
+        repoNode.id
+      );
       return {
-        sourceEntity: { id: repoNode.id, name: repoNode.label, type: 'Repository' },
+        sourceEntity: {
+          id: repoNode.id,
+          name: repoNode.label,
+          type: 'Repository',
+        },
         relationType: 'UTILIZES_TECHNOLOGY',
-        targetEntities: skills.map(node => ({
+        targetEntities: skills.map((node) => ({
           id: node.id,
           name: node.label,
           type: node.type,
-          description: node.properties.description
-        }))
+          description: node.properties.description,
+        })),
       };
     }
 
@@ -201,12 +270,12 @@ export class RelationshipEngine {
       return {
         sourceEntity: { id: projectId, name: projectLabel, type: 'Project' },
         relationType: 'BUILT_WITH',
-        targetEntities: skills.map(node => ({
+        targetEntities: skills.map((node) => ({
           id: node.id,
           name: node.label,
           type: node.type,
-          description: node.properties.description
-        }))
+          description: node.properties.description,
+        })),
       };
     }
 
@@ -217,12 +286,12 @@ export class RelationshipEngine {
       return {
         sourceEntity: { id: projectId, name: projectLabel, type: 'Project' },
         relationType: 'HAS_REPOSITORY',
-        targetEntities: repos.map(node => ({
+        targetEntities: repos.map((node) => ({
           id: node.id,
           name: node.label,
           type: node.type,
-          description: node.properties.description
-        }))
+          description: node.properties.description,
+        })),
       };
     }
 
@@ -231,14 +300,18 @@ export class RelationshipEngine {
     if (skillNode && isProjectQuery) {
       const projects = this.traversalService.getSkillProjects(skillNode.id);
       return {
-        sourceEntity: { id: skillNode.id, name: skillNode.label, type: 'Skill' },
+        sourceEntity: {
+          id: skillNode.id,
+          name: skillNode.label,
+          type: 'Skill',
+        },
         relationType: 'USED_IN_PROJECTS',
-        targetEntities: projects.map(node => ({
+        targetEntities: projects.map((node) => ({
           id: node.id,
           name: node.label,
           type: node.type,
-          description: node.properties.description
-        }))
+          description: node.properties.description,
+        })),
       };
     }
 
@@ -249,12 +322,12 @@ export class RelationshipEngine {
       return {
         sourceEntity: { id: projectId, name: projectLabel, type: 'Project' },
         relationType: 'BUILT_WITH',
-        targetEntities: skills.map(node => ({
+        targetEntities: skills.map((node) => ({
           id: node.id,
           name: node.label,
           type: node.type,
-          description: node.properties.description
-        }))
+          description: node.properties.description,
+        })),
       };
     }
 
@@ -262,20 +335,23 @@ export class RelationshipEngine {
   }
 
   private containsAny(text: string, keywords: string[]): boolean {
-    return keywords.some(kw => text.includes(kw));
+    return keywords.some((kw) => text.includes(kw));
   }
 
   /**
    * Scans a list of graph nodes to find the best match present in the query text.
    * Longer labels are prioritized to prevent matching partial substrings (e.g., matching "Java" when query is "JavaScript").
    */
-  private scanNodesForMatch(query: string, nodes: KnowledgeNode[]): KnowledgeNode | null {
+  private scanNodesForMatch(
+    query: string,
+    nodes: KnowledgeNode[]
+  ): KnowledgeNode | null {
     const candidates: { node: KnowledgeNode; index: number }[] = [];
 
     for (const node of nodes) {
       const labelLower = node.label.toLowerCase();
       const idLower = node.id.split(':').slice(1).join(':').toLowerCase();
-      
+
       let index = query.indexOf(labelLower);
       if (index === -1) {
         index = query.indexOf(idLower);

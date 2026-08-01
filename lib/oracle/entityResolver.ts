@@ -15,7 +15,10 @@ export interface IAliasMapping {
 }
 
 export class AliasMapping implements IAliasMapping {
-  constructor(public alias: string, public entityId: string) {}
+  constructor(
+    public alias: string,
+    public entityId: string
+  ) {}
 }
 
 export class EntityRegistry {
@@ -28,21 +31,35 @@ export class EntityRegistry {
       id: 'orbitair',
       name: 'ORBITAIR',
       type: 'project',
-      aliases: ['orbitair', 'air quality project', 'nasa project', 'nasa space apps']
+      aliases: [
+        'orbitair',
+        'air quality project',
+        'nasa project',
+        'nasa space apps',
+      ],
     });
 
     this.register({
       id: 'sahai',
       name: 'SAHAI',
       type: 'project',
-      aliases: ['sahai', 'mental health platform', 'sih project', 'smart india hackathon']
+      aliases: [
+        'sahai',
+        'mental health platform',
+        'sih project',
+        'smart india hackathon',
+      ],
     });
 
     this.register({
       id: 'patient-management-service',
       name: 'Patient Management Service',
       type: 'project',
-      aliases: ['patient management service', 'hospital system', 'billing system']
+      aliases: [
+        'patient management service',
+        'hospital system',
+        'billing system',
+      ],
     });
   }
 
@@ -52,12 +69,12 @@ export class EntityRegistry {
   public register(entity: Entity): void {
     const normalizedEntity = {
       ...entity,
-      aliases: entity.aliases.map(a => a.toLowerCase().trim())
+      aliases: entity.aliases.map((a) => a.toLowerCase().trim()),
     };
     this.entities.set(entity.id, normalizedEntity);
 
     // Populate Alias Mappings
-    normalizedEntity.aliases.forEach(alias => {
+    normalizedEntity.aliases.forEach((alias) => {
       this.aliasMappings.push(new AliasMapping(alias, entity.id));
     });
     // Also map the entity name as an alias
@@ -116,7 +133,7 @@ export class EntityResolver {
             entity,
             confidence: 1.0,
             matchType: 'exact',
-            matchedQuerySegment: mapping.alias
+            matchedQuerySegment: mapping.alias,
           });
         }
       }
@@ -128,17 +145,21 @@ export class EntityResolver {
       for (const mapping of this.registry.getAliasMappings()) {
         const aliasTokens = this.tokenize(mapping.alias);
         if (aliasTokens.length > 0) {
-          const matchedSegment = this.findContiguousSubsegment(queryTokens, aliasTokens);
+          const matchedSegment = this.findContiguousSubsegment(
+            queryTokens,
+            aliasTokens
+          );
           if (matchedSegment) {
             const entity = this.registry.getEntity(mapping.entityId);
             if (entity) {
               // Confidence scales with the length of the matched alias relative to the query
-              const confidence = 0.85 + 0.15 * (aliasTokens.length / queryTokens.length);
+              const confidence =
+                0.85 + 0.15 * (aliasTokens.length / queryTokens.length);
               candidates.push({
                 entity,
                 confidence,
                 matchType: 'alias',
-                matchedQuerySegment: matchedSegment
+                matchedQuerySegment: matchedSegment,
               });
             }
           }
@@ -151,16 +172,16 @@ export class EntityResolver {
     if (candidates.length === 0) {
       for (const entity of this.registry.getAllEntities()) {
         const entityNameTokens = this.tokenize(entity.name.toLowerCase());
-        
+
         // Check for direct token overlap with name
-        const overlap = entityNameTokens.filter(t => queryTokens.includes(t));
+        const overlap = entityNameTokens.filter((t) => queryTokens.includes(t));
         if (overlap.length > 0) {
           const confidence = 0.5 * (overlap.length / entityNameTokens.length);
           candidates.push({
             entity,
             confidence,
             matchType: 'partial',
-            matchedQuerySegment: overlap.join(' ')
+            matchedQuerySegment: overlap.join(' '),
           });
         }
       }
@@ -172,7 +193,7 @@ export class EntityResolver {
       const threshold = 0.7; // 70% similarity minimum
       for (const mapping of this.registry.getAliasMappings()) {
         const aliasTokens = this.tokenize(mapping.alias);
-        
+
         if (aliasTokens.length === 1) {
           // Compare single word aliases to each word in the query
           const target = aliasTokens[0];
@@ -185,17 +206,23 @@ export class EntityResolver {
                   entity,
                   confidence: 0.75 * similarity,
                   matchType: 'fuzzy',
-                  matchedQuerySegment: word
+                  matchedQuerySegment: word,
                 });
               }
             }
           }
-        } else if (aliasTokens.length > 1 && queryTokens.length >= aliasTokens.length) {
+        } else if (
+          aliasTokens.length > 1 &&
+          queryTokens.length >= aliasTokens.length
+        ) {
           // Compare multi-word aliases to sliding windows in the query
           for (let i = 0; i <= queryTokens.length - aliasTokens.length; i++) {
             const windowTokens = queryTokens.slice(i, i + aliasTokens.length);
             const windowStr = windowTokens.join(' ');
-            const similarity = this.calculateSimilarity(windowStr, mapping.alias);
+            const similarity = this.calculateSimilarity(
+              windowStr,
+              mapping.alias
+            );
             if (similarity >= threshold) {
               const entity = this.registry.getEntity(mapping.entityId);
               if (entity) {
@@ -203,7 +230,7 @@ export class EntityResolver {
                   entity,
                   confidence: 0.8 * similarity,
                   matchType: 'fuzzy',
-                  matchedQuerySegment: windowStr
+                  matchedQuerySegment: windowStr,
                 });
               }
             }
@@ -217,7 +244,10 @@ export class EntityResolver {
     // Sort by confidence score descending, then by name length descending to pick the most specific match
     candidates.sort((a, b) => {
       if (Math.abs(a.confidence - b.confidence) < 0.001) {
-        return (b.matchedQuerySegment?.length || 0) - (a.matchedQuerySegment?.length || 0);
+        return (
+          (b.matchedQuerySegment?.length || 0) -
+          (a.matchedQuerySegment?.length || 0)
+        );
       }
       return b.confidence - a.confidence;
     });
@@ -233,15 +263,19 @@ export class EntityResolver {
       .toLowerCase()
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, '')
       .split(/\s+/)
-      .filter(t => t.length > 0);
+      .filter((t) => t.length > 0);
   }
 
   /**
    * Checks if subTokens exists contiguously in targetTokens. Returns the matched string segment if found.
    */
-  private findContiguousSubsegment(targetTokens: string[], subTokens: string[]): string | null {
-    if (subTokens.length === 0 || targetTokens.length < subTokens.length) return null;
-    
+  private findContiguousSubsegment(
+    targetTokens: string[],
+    subTokens: string[]
+  ): string | null {
+    if (subTokens.length === 0 || targetTokens.length < subTokens.length)
+      return null;
+
     for (let i = 0; i <= targetTokens.length - subTokens.length; i++) {
       let match = true;
       for (let j = 0; j < subTokens.length; j++) {
@@ -263,9 +297,9 @@ export class EntityResolver {
   private calculateSimilarity(s1: string, s2: string): number {
     const longer = s1.length > s2.length ? s1 : s2;
     const shorter = s1.length > s2.length ? s2 : s1;
-    
+
     if (longer.length === 0) return 1.0;
-    
+
     const distance = this.damerauLevenshteinDistance(longer, shorter);
     return (longer.length - distance) / longer.length;
   }
@@ -287,8 +321,8 @@ export class EntityResolver {
       for (let j = 1; j <= len2; j++) {
         const cost = s1.charAt(i - 1) === s2.charAt(j - 1) ? 0 : 1;
         d[i][j] = Math.min(
-          d[i - 1][j] + 1,       // Deletion
-          d[i][j - 1] + 1,       // Insertion
+          d[i - 1][j] + 1, // Deletion
+          d[i][j - 1] + 1, // Insertion
           d[i - 1][j - 1] + cost // Substitution
         );
 

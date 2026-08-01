@@ -9,12 +9,12 @@ export const recruiterCommand: Command = {
       context.navigate('/recruiter');
       return {
         output: 'Navigating to recruiter dashboard...',
-        success: true
+        success: true,
       };
     }
     return {
       output: 'Navigation is not available in this environment.',
-      success: false
+      success: false,
     };
-  }
+  },
 };

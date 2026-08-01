@@ -6,7 +6,8 @@ import { classifyRepository } from '@/lib/github/classification';
 export const showCommand: Command = {
   name: 'show',
   aliases: ['display', 'list-category'],
-  description: 'Discovers and displays projects dynamically filtered by category classifications from the Knowledge Graph.',
+  description:
+    'Discovers and displays projects dynamically filtered by category classifications from the Knowledge Graph.',
   execute: async (args) => {
     if (args.length === 0) {
       // Fetch dynamic categories to present in usage help
@@ -14,10 +15,14 @@ export const showCommand: Command = {
       const graph = await buildKnowledgeGraph();
       const availableCategories = new Set<string>();
 
-      allProjects.forEach(p => {
+      allProjects.forEach((p) => {
         if (p.githubRepository) {
-          const classifications = classifyRepository(p.githubRepository, p.intelligence, graph);
-          classifications.forEach(c => {
+          const classifications = classifyRepository(
+            p.githubRepository,
+            p.intelligence,
+            graph
+          );
+          classifications.forEach((c) => {
             // Expose meaningful categories to user (exclude 'Open Source' generic category)
             if (c !== 'Open Source') {
               availableCategories.add(c);
@@ -37,14 +42,14 @@ export const showCommand: Command = {
           '  show fullstack projects',
           '',
           'Available Dynamic Categories:',
-          ...Array.from(availableCategories).map(cat => `  * ${cat}`)
+          ...Array.from(availableCategories).map((cat) => `  * ${cat}`),
         ],
-        success: false
+        success: false,
       };
     }
 
     // Clean arguments to filter out noise like 'projects' or 'project'
-    const cleanArgs = args.filter(arg => {
+    const cleanArgs = args.filter((arg) => {
       const l = arg.toLowerCase();
       return l !== 'projects' && l !== 'project';
     });
@@ -55,9 +60,9 @@ export const showCommand: Command = {
       return {
         output: [
           'Error: Category name required.',
-          'Usage: show <category> [projects]'
+          'Usage: show <category> [projects]',
         ],
-        success: false
+        success: false,
       };
     }
 
@@ -66,10 +71,14 @@ export const showCommand: Command = {
     const categoryProjectsMap = new Map<string, typeof allProjects>();
 
     // Dynamically classify all projects
-    allProjects.forEach(p => {
+    allProjects.forEach((p) => {
       let classifications: string[] = [];
       if (p.githubRepository) {
-        classifications = classifyRepository(p.githubRepository, p.intelligence, graph);
+        classifications = classifyRepository(
+          p.githubRepository,
+          p.intelligence,
+          graph
+        );
       } else {
         // Fallback: use project's category properties if repository is not present
         const category = p.intelligence?.projectCategory || '';
@@ -78,7 +87,7 @@ export const showCommand: Command = {
         }
       }
 
-      classifications.forEach(c => {
+      classifications.forEach((c) => {
         if (!categoryProjectsMap.has(c)) {
           categoryProjectsMap.set(c, []);
         }
@@ -108,17 +117,17 @@ export const showCommand: Command = {
     if (!matchedCategoryName) {
       // Exclude 'Open Source' from listed categories for cleaner discovery
       const categoriesList = Array.from(categoryProjectsMap.keys())
-        .filter(c => c !== 'Open Source')
-        .map(c => `  * ${c}`);
+        .filter((c) => c !== 'Open Source')
+        .map((c) => `  * ${c}`);
 
       return {
         output: [
           `No projects found matching category: "${categoryQuery}"`,
           '',
           'Available Dynamic Categories:',
-          ...categoriesList
+          ...categoriesList,
         ],
-        success: true
+        success: true,
       };
     }
 
@@ -127,7 +136,7 @@ export const showCommand: Command = {
     const output: string[] = [
       `CATEGORY: ${matchedCategoryName.toUpperCase()}`,
       '==================================================',
-      ''
+      '',
     ];
 
     matchedProjects.forEach((project, idx) => {
@@ -149,7 +158,7 @@ export const showCommand: Command = {
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

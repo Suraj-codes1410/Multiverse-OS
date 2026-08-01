@@ -14,6 +14,6 @@ export function initializeOracleStartup() {
   OracleRecoveryManager.recoverCache();
   OracleRecoveryManager.recoverAnalytics();
 
-  console.log("SERVICES_INITIALIZED");
+  console.log('SERVICES_INITIALIZED');
 }
 export default initializeOracleStartup;

@@ -7,10 +7,10 @@ export const skillsCommand: Command = {
   description: 'Displays categorized technical skills.',
   execute: () => {
     const skills = getSkills();
-    
+
     // Group skills by category
     const categories: { [key: string]: string[] } = {};
-    skills.forEach(skill => {
+    skills.forEach((skill) => {
       const cat = skill.category || 'Other';
       if (!categories[cat]) {
         categories[cat] = [];
@@ -20,7 +20,7 @@ export const skillsCommand: Command = {
 
     const output: string[] = [
       'TECHNICAL SKILLS',
-      '=================================================='
+      '==================================================',
     ];
 
     for (const [category, skillList] of Object.entries(categories)) {
@@ -28,7 +28,7 @@ export const skillsCommand: Command = {
       output.push(`  ${skillList.join(', ')}`);
       output.push('');
     }
-    
+
     // Remove last empty line if present
     if (output[output.length - 1] === '') {
       output.pop();

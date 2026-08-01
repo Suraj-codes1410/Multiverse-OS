@@ -20,7 +20,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     return tokens.map((token, tidx) => {
       if (token.startsWith('`') && token.endsWith('`')) {
         return (
-          <code key={tidx} className="bg-bg-primary px-1.5 py-0.5 rounded font-mono text-[11px] text-accent-cyan border border-border-subtle/50">
+          <code
+            key={tidx}
+            className="bg-bg-primary px-1.5 py-0.5 rounded font-mono text-[11px] text-accent-cyan border border-border-subtle/50"
+          >
             {token.slice(1, -1)}
           </code>
         );
@@ -64,8 +67,15 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const lang = lines[0].slice(3).trim();
           const code = lines.slice(1, -1).join('\n');
           return (
-            <pre key={idx} className="bg-bg-primary border border-border-subtle p-4 rounded-lg font-mono text-xs text-text-primary overflow-x-auto my-3 select-all">
-              {lang && <div className="text-[10px] text-text-secondary uppercase mb-2 select-none border-b border-border-subtle/30 pb-1">{lang}</div>}
+            <pre
+              key={idx}
+              className="bg-bg-primary border border-border-subtle p-4 rounded-lg font-mono text-xs text-text-primary overflow-x-auto my-3 select-all"
+            >
+              {lang && (
+                <div className="text-[10px] text-text-secondary uppercase mb-2 select-none border-b border-border-subtle/30 pb-1">
+                  {lang}
+                </div>
+              )}
               <code>{code}</code>
             </pre>
           );
@@ -86,28 +96,46 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
               'text-xs font-bold uppercase mb-1.5 mt-2 text-text-secondary', // h6
             ];
             const style = headingStyles[level - 1] || headingStyles[5];
-            return React.createElement(`h${level}`, { key: idx, className: style }, renderInline(text));
+            return React.createElement(
+              `h${level}`,
+              { key: idx, className: style },
+              renderInline(text)
+            );
           }
         }
 
         // List items check
-        if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.match(/^\d+\.\s+/)) {
+        if (
+          trimmed.startsWith('- ') ||
+          trimmed.startsWith('* ') ||
+          trimmed.match(/^\d+\.\s+/)
+        ) {
           const lines = trimmed.split('\n');
           const items = lines.map((line, lidx) => {
             const itemText = line.replace(/^[-*\s]+|^\d+\.\s+/, '');
             return (
-              <li key={lidx} className="list-disc ml-5 mb-1 text-xs text-text-secondary leading-relaxed">
+              <li
+                key={lidx}
+                className="list-disc ml-5 mb-1 text-xs text-text-secondary leading-relaxed"
+              >
                 {renderInline(itemText)}
               </li>
             );
           });
-          return <ul key={idx} className="my-2.5 space-y-1">{items}</ul>;
+          return (
+            <ul key={idx} className="my-2.5 space-y-1">
+              {items}
+            </ul>
+          );
         }
 
         // Standard Paragraph
         const lines = trimmed.split('\n');
         return (
-          <p key={idx} className="text-xs text-text-secondary leading-relaxed my-2">
+          <p
+            key={idx}
+            className="text-xs text-text-secondary leading-relaxed my-2"
+          >
             {lines.map((line, lidx) => (
               <React.Fragment key={lidx}>
                 {lidx > 0 && <br />}
