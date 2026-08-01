@@ -297,7 +297,7 @@ export default function BootSequence() {
                 marginLeft: '0.4rem',
               }}
             >
-              {"// OS"}
+              {'// OS'}
             </span>
           </h1>
 
