@@ -2,10 +2,10 @@ import { registry } from '../lib/commands/registry';
 import '../lib/commands/index'; // triggers registration
 
 async function runCliTest() {
-  console.log("\n=== Testing Knowledge Query CLI Command ===");
+  console.log('\n=== Testing Knowledge Query CLI Command ===');
   const findCmd = registry.get('find');
   if (!findCmd) {
-    console.error("FAIL: find command not registered in the registry!");
+    console.error('FAIL: find command not registered in the registry!');
     return;
   }
 
@@ -17,7 +17,7 @@ async function runCliTest() {
       const result = await findCmd.execute(args, { clearTerminal: () => {} });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }
@@ -28,7 +28,7 @@ async function runCliTest() {
   // 2. Test related command
   const relatedCmd = registry.get('related');
   if (!relatedCmd) {
-    console.error("FAIL: related command not registered in the registry!");
+    console.error('FAIL: related command not registered in the registry!');
     return;
   }
 
@@ -37,10 +37,12 @@ async function runCliTest() {
   for (const args of relatedQueries) {
     console.log(`\n> related ${args.join(' ')}`);
     try {
-      const result = await relatedCmd.execute(args, { clearTerminal: () => {} });
+      const result = await relatedCmd.execute(args, {
+        clearTerminal: () => {},
+      });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }
@@ -51,7 +53,7 @@ async function runCliTest() {
   // 3. Test show command
   const showCmd = registry.get('show');
   if (!showCmd) {
-    console.error("FAIL: show command not registered in the registry!");
+    console.error('FAIL: show command not registered in the registry!');
     return;
   }
 
@@ -60,7 +62,7 @@ async function runCliTest() {
     ['backend', 'projects'],
     ['distributed-systems', 'projects'],
     ['frontend', 'projects'],
-    ['fullstack', 'projects']
+    ['fullstack', 'projects'],
   ];
 
   for (const args of showQueries) {
@@ -69,7 +71,7 @@ async function runCliTest() {
       const result = await showCmd.execute(args, { clearTerminal: () => {} });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }
@@ -80,7 +82,7 @@ async function runCliTest() {
   // 4. Test what command
   const whatCmd = registry.get('what');
   if (!whatCmd) {
-    console.error("FAIL: what command not registered in the registry!");
+    console.error('FAIL: what command not registered in the registry!');
     return;
   }
 
@@ -88,7 +90,7 @@ async function runCliTest() {
     ['uses', 'fastapi'],
     ['uses', 'kafka'],
     ['uses', 'grpc'],
-    ['uses', 'react']
+    ['uses', 'react'],
   ];
 
   for (const args of whatQueries) {
@@ -97,7 +99,7 @@ async function runCliTest() {
       const result = await whatCmd.execute(args, { clearTerminal: () => {} });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }
@@ -108,7 +110,7 @@ async function runCliTest() {
   // 5. Test repos filter queries
   const reposCmd = registry.get('repos');
   if (!reposCmd) {
-    console.error("FAIL: repos command not registered in the registry!");
+    console.error('FAIL: repos command not registered in the registry!');
     return;
   }
 
@@ -117,7 +119,7 @@ async function runCliTest() {
     ['backend'],
     ['distributed-systems'],
     ['fastapi'],
-    ['kafka']
+    ['kafka'],
   ];
 
   for (const args of reposQueries) {
@@ -126,7 +128,7 @@ async function runCliTest() {
       const result = await reposCmd.execute(args, { clearTerminal: () => {} });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }
@@ -141,7 +143,7 @@ async function runCliTest() {
   const milestonesCmd = registry.get('milestones');
 
   if (!timelineCmd || !achievementsCmd || !hackathonsCmd || !milestonesCmd) {
-    console.error("FAIL: One or more career path commands not registered!");
+    console.error('FAIL: One or more career path commands not registered!');
     return;
   }
 
@@ -149,7 +151,7 @@ async function runCliTest() {
     { cmd: timelineCmd, name: 'timeline' },
     { cmd: achievementsCmd, name: 'achievements' },
     { cmd: hackathonsCmd, name: 'hackathons' },
-    { cmd: milestonesCmd, name: 'milestones' }
+    { cmd: milestonesCmd, name: 'milestones' },
   ];
 
   for (const item of careerCommands) {
@@ -158,7 +160,7 @@ async function runCliTest() {
       const result = await item.cmd.execute([], { clearTerminal: () => {} });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }
@@ -174,7 +176,7 @@ async function runCliTest() {
   const bestProjCmd = registry.get('best-projects');
 
   if (!strengthsCmd || !backendExpCmd || !aiExpCmd || !dsCmd || !bestProjCmd) {
-    console.error("FAIL: One or more recruiter commands not registered!");
+    console.error('FAIL: One or more recruiter commands not registered!');
     return;
   }
 
@@ -183,7 +185,7 @@ async function runCliTest() {
     { cmd: backendExpCmd, name: 'backend-experience' },
     { cmd: aiExpCmd, name: 'ai-experience' },
     { cmd: dsCmd, name: 'distributed-systems' },
-    { cmd: bestProjCmd, name: 'best-projects' }
+    { cmd: bestProjCmd, name: 'best-projects' },
   ];
 
   for (const item of recruiterCommands) {
@@ -192,7 +194,7 @@ async function runCliTest() {
       const result = await item.cmd.execute([], { clearTerminal: () => {} });
       console.log(`Success: ${result.success}`);
       if (Array.isArray(result.output)) {
-        result.output.forEach(line => console.log(line));
+        result.output.forEach((line) => console.log(line));
       } else {
         console.log(result.output);
       }

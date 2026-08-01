@@ -11,14 +11,19 @@ export class RecruiterInsightEngine {
   /**
    * Evaluates query keywords to find the most matching ranking dimension and returns evidence-backed recommendations.
    */
-  static async evaluateQuery(query: string): Promise<RecruiterRecommendationResult | null> {
+  static async evaluateQuery(
+    query: string
+  ): Promise<RecruiterRecommendationResult | null> {
     const queryLower = query.toLowerCase().trim();
     const rankings = await ProjectRankingService.getRankings();
 
     const contains = (words: string[]) => {
-      return words.some(word => {
+      return words.some((word) => {
         // Use word boundary check
-        const regex = new RegExp(`\\b${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i');
+        const regex = new RegExp(
+          `\\b${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`,
+          'i'
+        );
         return regex.test(queryLower);
       });
     };
@@ -38,7 +43,7 @@ export class RecruiterInsightEngine {
         'network',
         'grpc',
         'message',
-        'messages'
+        'messages',
       ])
     ) {
       matchedDimension = 'Distributed Systems';
@@ -50,19 +55,11 @@ export class RecruiterInsightEngine {
         'rag',
         'llm',
         'vector',
-        'similarity'
+        'similarity',
       ])
     ) {
       matchedDimension = 'AI/ML';
-    } else if (
-      contains([
-        'full stack',
-        'frontend',
-        'ui',
-        'web',
-        'fullstack'
-      ])
-    ) {
+    } else if (contains(['full stack', 'frontend', 'ui', 'web', 'fullstack'])) {
       matchedDimension = 'Full Stack';
     } else if (
       contains([
@@ -70,7 +67,7 @@ export class RecruiterInsightEngine {
         'scalable',
         'throughput',
         'performance',
-        'concurrency'
+        'concurrency',
       ])
     ) {
       matchedDimension = 'Scalability';
@@ -83,7 +80,7 @@ export class RecruiterInsightEngine {
         'architecture',
         'recruiter',
         'recruiters',
-        'start'
+        'start',
       ])
     ) {
       // Default fallback / "which should recruiters review first"
@@ -94,7 +91,9 @@ export class RecruiterInsightEngine {
       return null;
     }
 
-    const dimensionRanking = rankings.find(r => r.dimension === matchedDimension);
+    const dimensionRanking = rankings.find(
+      (r) => r.dimension === matchedDimension
+    );
     if (!dimensionRanking || dimensionRanking.rankings.length === 0) {
       return null;
     }
@@ -103,7 +102,7 @@ export class RecruiterInsightEngine {
       query,
       bestDimensionMatched: matchedDimension,
       recommendedProject: dimensionRanking.rankings[0],
-      rankings: dimensionRanking.rankings
+      rankings: dimensionRanking.rankings,
     };
   }
 }

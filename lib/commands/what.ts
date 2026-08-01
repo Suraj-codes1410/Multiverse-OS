@@ -5,7 +5,8 @@ import { buildKnowledgeGraph } from '@/lib/knowledge/builder';
 export const whatCommand: Command = {
   name: 'what',
   aliases: ['technology-usage', 'tech-usage'],
-  description: 'Explores and lists all projects, repositories, related technologies, complexity ratings, and architecture patterns utilizing a specific technology.',
+  description:
+    'Explores and lists all projects, repositories, related technologies, complexity ratings, and architecture patterns utilizing a specific technology.',
   execute: async (args) => {
     if (args.length < 2 || args[0].toLowerCase() !== 'uses') {
       return {
@@ -15,9 +16,9 @@ export const whatCommand: Command = {
           '  what uses fastapi',
           '  what uses kafka',
           '  what uses grpc',
-          '  what uses react'
+          '  what uses react',
         ],
-        success: false
+        success: false,
       };
     }
 
@@ -26,16 +27,23 @@ export const whatCommand: Command = {
     const graph = await buildKnowledgeGraph();
 
     // Dynamically query projects and repositories using metadata, intelligence, and the graph
-    const matchingProjects = allProjects.filter(p => {
+    const matchingProjects = allProjects.filter((p) => {
       // 1. Check project tech stack
-      const inTechStack = p.techStack?.some(t => t.toLowerCase() === techQuery);
+      const inTechStack = p.techStack?.some(
+        (t) => t.toLowerCase() === techQuery
+      );
 
       // 2. Check repository intelligence extracted technologies
-      const inIntelligence = p.intelligence?.technologies?.some(t => t.toLowerCase() === techQuery);
+      const inIntelligence = p.intelligence?.technologies?.some(
+        (t) => t.toLowerCase() === techQuery
+      );
 
       // 3. Check GitHub repository topics and primary language
-      const inRepoTopics = p.githubRepository?.topics?.some(t => t.toLowerCase() === techQuery);
-      const isRepoLanguage = p.githubRepository?.language?.toLowerCase() === techQuery;
+      const inRepoTopics = p.githubRepository?.topics?.some(
+        (t) => t.toLowerCase() === techQuery
+      );
+      const isRepoLanguage =
+        p.githubRepository?.language?.toLowerCase() === techQuery;
 
       // 4. Check Knowledge Graph neighbors
       let inGraph = false;
@@ -45,19 +53,27 @@ export const whatCommand: Command = {
         const neighbors = graph.getNeighbors(skillNodeId, 'both');
         const connectedProjId = `project:${p.id.toLowerCase()}`;
         const connectedRepoId = `repository:${p.githubRepository?.name.toLowerCase()}`;
-        inGraph = neighbors.some(n => n.node.id === connectedProjId || n.node.id === connectedRepoId);
+        inGraph = neighbors.some(
+          (n) => n.node.id === connectedProjId || n.node.id === connectedRepoId
+        );
       }
 
-      return inTechStack || inIntelligence || inRepoTopics || isRepoLanguage || inGraph;
+      return (
+        inTechStack ||
+        inIntelligence ||
+        inRepoTopics ||
+        isRepoLanguage ||
+        inGraph
+      );
     });
 
     if (matchingProjects.length === 0) {
       return {
         output: [
           `No projects or repositories found utilizing technology: "${techQuery}"`,
-          'Verify keyword (e.g. "fastapi", "kafka", "grpc", "react").'
+          'Verify keyword (e.g. "fastapi", "kafka", "grpc", "react").',
         ],
-        success: true
+        success: true,
       };
     }
 
@@ -67,13 +83,13 @@ export const whatCommand: Command = {
 
     // 1. Projects
     output.push('Projects');
-    matchingProjects.forEach(p => output.push(`  * ${p.title}`));
+    matchingProjects.forEach((p) => output.push(`  * ${p.title}`));
     output.push('');
 
     // 2. Repositories
     output.push('Repositories');
     const repoAdded = new Set<string>();
-    matchingProjects.forEach(p => {
+    matchingProjects.forEach((p) => {
       if (p.githubRepository && !repoAdded.has(p.githubRepository.name)) {
         repoAdded.add(p.githubRepository.name);
         output.push(`  * ${p.githubRepository.name}`);
@@ -87,13 +103,13 @@ export const whatCommand: Command = {
     // 3. Related Technologies
     output.push('Related Technologies');
     const relatedTechs = new Set<string>();
-    matchingProjects.forEach(p => {
-      p.techStack?.forEach(t => {
+    matchingProjects.forEach((p) => {
+      p.techStack?.forEach((t) => {
         if (t.toLowerCase() !== techQuery) {
           relatedTechs.add(t);
         }
       });
-      p.intelligence?.technologies?.forEach(t => {
+      p.intelligence?.technologies?.forEach((t) => {
         if (t.toLowerCase() !== techQuery) {
           relatedTechs.add(t);
         }
@@ -108,19 +124,24 @@ export const whatCommand: Command = {
 
     // 4. Complexity
     output.push('Complexity');
-    matchingProjects.forEach(p => {
-      const rating = p.intelligence?.complexityAnalysis?.overallRating || 'Unknown';
+    matchingProjects.forEach((p) => {
+      const rating =
+        p.intelligence?.complexityAnalysis?.overallRating || 'Unknown';
       const score = p.intelligence?.complexityAnalysis?.totalScore;
       const maxScore = p.intelligence?.complexityAnalysis?.maxTotalScore;
-      const scoreStr = score !== undefined ? ` (Score: ${score}/${maxScore})` : '';
+      const scoreStr =
+        score !== undefined ? ` (Score: ${score}/${maxScore})` : '';
       output.push(`  * ${p.title}: ${rating}${scoreStr}`);
     });
     output.push('');
 
     // 5. Architecture Patterns
     output.push('Architecture Patterns');
-    matchingProjects.forEach(p => {
-      const pattern = p.intelligence?.architectureAnalysis?.architecturePattern || p.architecture || 'Unknown';
+    matchingProjects.forEach((p) => {
+      const pattern =
+        p.intelligence?.architectureAnalysis?.architecturePattern ||
+        p.architecture ||
+        'Unknown';
       output.push(`  * ${p.title}: ${pattern}`);
     });
 
@@ -128,7 +149,7 @@ export const whatCommand: Command = {
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

@@ -27,9 +27,11 @@ export function Tooltip({
 
   const arrowClasses = {
     top: 'top-full left-1/2 -translate-x-1/2 border-t-bg-panel border-r-transparent border-b-transparent border-l-transparent',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-bg-panel border-r-transparent border-t-transparent border-l-transparent',
+    bottom:
+      'bottom-full left-1/2 -translate-x-1/2 border-b-bg-panel border-r-transparent border-t-transparent border-l-transparent',
     left: 'left-full top-1/2 -translate-y-1/2 border-l-bg-panel border-r-transparent border-b-transparent border-t-transparent',
-    right: 'right-full top-1/2 -translate-y-1/2 border-r-bg-panel border-t-transparent border-b-transparent border-l-transparent',
+    right:
+      'right-full top-1/2 -translate-y-1/2 border-r-bg-panel border-t-transparent border-b-transparent border-l-transparent',
   };
 
   return (

@@ -19,5 +19,5 @@ export const experience: WorkExperience[] = [
       'Refactored bundle structures reducing hydrate lag times.',
     ],
     technologies: ['TypeScript', 'Next.js', 'React'],
-  }
+  },
 ];

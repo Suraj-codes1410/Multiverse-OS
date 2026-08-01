@@ -1,14 +1,14 @@
 import { OracleContextBuilder } from './builder';
-import { 
-  OracleContext, 
-  CandidateProfile, 
-  TechnicalSkillContext, 
-  ProjectContext, 
-  RepositoryContext, 
-  AchievementContext, 
-  TimelineContext, 
-  TechnologyRelationshipContext, 
-  RepositoryRelationshipContext 
+import {
+  OracleContext,
+  CandidateProfile,
+  TechnicalSkillContext,
+  ProjectContext,
+  RepositoryContext,
+  AchievementContext,
+  TimelineContext,
+  TechnologyRelationshipContext,
+  RepositoryRelationshipContext,
 } from './types';
 
 export class ContextService {

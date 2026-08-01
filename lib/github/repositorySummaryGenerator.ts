@@ -9,17 +9,20 @@ export interface RepositorySummary {
 }
 
 export class RepositorySummaryGenerator {
-  static generate(repo: GitHubRepository, parsedData: ExtractedReadmeData): RepositorySummary {
+  static generate(
+    repo: GitHubRepository,
+    parsedData: ExtractedReadmeData
+  ): RepositorySummary {
     // 1. Extract purpose
     let purpose = repo.description || 'GitHub Code Repository';
     const lines = parsedData.readmeContent.split('\n');
     for (const line of lines) {
       const trimmed = line.trim();
       if (
-        trimmed && 
-        !trimmed.startsWith('#') && 
-        !trimmed.startsWith('!') && 
-        !trimmed.startsWith('[') && 
+        trimmed &&
+        !trimmed.startsWith('#') &&
+        !trimmed.startsWith('!') &&
+        !trimmed.startsWith('[') &&
         trimmed.length > 20
       ) {
         purpose = trimmed;
@@ -41,12 +44,12 @@ export class RepositorySummaryGenerator {
     const techStackSet = new Set<string>();
     if (repo.language) techStackSet.add(repo.language);
     if (repo.topics) {
-      repo.topics.forEach(topic => {
+      repo.topics.forEach((topic) => {
         const capitalized = topic.charAt(0).toUpperCase() + topic.slice(1);
         techStackSet.add(capitalized);
       });
     }
-    parsedData.technologies.forEach(tech => techStackSet.add(tech));
+    parsedData.technologies.forEach((tech) => techStackSet.add(tech));
 
     // 4. Complexity Indicators
     const complexityIndicators: string[] = [];
@@ -61,10 +64,16 @@ export class RepositorySummaryGenerator {
     if (textContext.includes('raft') || textContext.includes('consensus')) {
       complexityIndicators.push('Distributed Consensus Management');
     }
-    if (textContext.includes('pinecone') || textContext.includes('vector database')) {
+    if (
+      textContext.includes('pinecone') ||
+      textContext.includes('vector database')
+    ) {
       complexityIndicators.push('High-Dimensional Vector Spaces');
     }
-    if (textContext.includes('timescaledb') || textContext.includes('leaflet')) {
+    if (
+      textContext.includes('timescaledb') ||
+      textContext.includes('leaflet')
+    ) {
       complexityIndicators.push('Geospatial Hypertable Scaling');
     }
     if (parsedData.readmeContent.length > 1500) {
@@ -80,15 +89,16 @@ export class RepositorySummaryGenerator {
     // 5. Custom Enrichments for Multiverse-OS and Uber-architecture
     const nameLower = repo.name.toLowerCase();
     if (nameLower === 'multiverse-os') {
-      purpose = 'An agentic AI developer portfolio and cockpit designed as a high-fidelity interactive system. It integrates a local knowledge graph, Git synchronized repository intelligence, and an interactive ORACLE AI companion to explore projects, skills, experience, and system metrics.';
-      
+      purpose =
+        'An agentic AI developer portfolio and cockpit designed as a high-fidelity interactive system. It integrates a local knowledge graph, Git synchronized repository intelligence, and an interactive ORACLE AI companion to explore projects, skills, experience, and system metrics.';
+
       const newFeatures = [
         'Interactive 3D-like terminal and dashboard interface',
         'Deterministic and agentic repository intelligence parser',
         'Graph-based portfolio context resolver (Knowledge Graph)',
-        'ORACLE AI partner for technical inquiry response'
+        'ORACLE AI partner for technical inquiry response',
       ];
-      newFeatures.forEach(f => {
+      newFeatures.forEach((f) => {
         if (!keyFeatures.includes(f)) keyFeatures.push(f);
       });
 
@@ -103,14 +113,15 @@ export class RepositorySummaryGenerator {
         complexityIndicators.push('Interactive Knowledge Graph Traversals');
       }
     } else if (nameLower === 'uber-architecture') {
-      purpose = 'An Uber-like ridesharing backend architecture utilizing event-driven microservices built with Java and Spring Boot, using Redis for geospatial driver location tracking, MySQL for persistent data storage, and Kafka for event streaming.';
-      
+      purpose =
+        'An Uber-like ridesharing backend architecture utilizing event-driven microservices built with Java and Spring Boot, using Redis for geospatial driver location tracking, MySQL for persistent data storage, and Kafka for event streaming.';
+
       const newFeatures = [
         'Microservice architecture for matching passengers with drivers',
         'Geospatial indexing using Redis',
-        'Event-driven message routing using Confluent Kafka'
+        'Event-driven message routing using Confluent Kafka',
       ];
-      newFeatures.forEach(f => {
+      newFeatures.forEach((f) => {
         if (!keyFeatures.includes(f)) keyFeatures.push(f);
       });
 
@@ -121,7 +132,9 @@ export class RepositorySummaryGenerator {
       techStackSet.add('Kafka');
       techStackSet.add('Docker');
 
-      if (!complexityIndicators.includes('Event-Driven Microservices Topology')) {
+      if (
+        !complexityIndicators.includes('Event-Driven Microservices Topology')
+      ) {
         complexityIndicators.push('Event-Driven Microservices Topology');
         complexityIndicators.push('Geospatial High-Throughput Indexing');
       }
@@ -135,7 +148,7 @@ export class RepositorySummaryGenerator {
       RepositoryPurpose: purpose,
       KeyFeatures: keyFeatures,
       TechnologyStack: Array.from(techStackSet),
-      ComplexityIndicators: complexityIndicators
+      ComplexityIndicators: complexityIndicators,
     };
   }
 }

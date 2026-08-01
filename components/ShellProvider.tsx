@@ -1,7 +1,19 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Terminal, Sparkles, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
+import {
+  Terminal,
+  Sparkles,
+  CheckCircle,
+  AlertCircle,
+  Info,
+} from 'lucide-react';
 import CliTerminal from '@/components/CliTerminal';
 import OracleWindow from '@/components/OracleWindow';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,7 +51,10 @@ interface ShellContextType {
 
   // Notification State
   notifications: NotificationInstance[];
-  addNotification: (message: string, type?: NotificationInstance['type']) => void;
+  addNotification: (
+    message: string,
+    type?: NotificationInstance['type']
+  ) => void;
   dismissNotification: (id: string) => void;
 }
 
@@ -60,76 +75,85 @@ interface ShellProviderProps {
 export default function ShellProvider({ children }: ShellProviderProps) {
   const [isCliOpen, setCliOpen] = useState(false);
   const [isOracleOpen, setOracleOpen] = useState(false);
-  const [isAudioMuted, setAudioMuted] = useState(true);
+  const [isAudioMuted, setAudioMuted] = useState(false);
   const [systemStatus, setSystemStatus] = useState<SystemStatus>('nominal');
-  const [notifications, setNotifications] = useState<NotificationInstance[]>([]);
+  const [notifications, setNotifications] = useState<NotificationInstance[]>(
+    []
+  );
 
   // HTML5 Web Audio API Synthesizer (Zero asset dependencies arpeggiator)
-  const playSound = useCallback((soundType: 'startup' | 'notification' | 'click') => {
-    if (isAudioMuted) return;
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContextClass) return;
-      
-      const ctx = new AudioContextClass();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      const now = ctx.currentTime;
-      
-      if (soundType === 'startup') {
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.12, now + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
-        
-        osc.frequency.setValueAtTime(261.63, now); // C4
-        osc.frequency.setValueAtTime(329.63, now + 0.15); // E4
-        osc.frequency.setValueAtTime(392.00, now + 0.3); // G4
-        osc.frequency.setValueAtTime(523.25, now + 0.45); // C5
-        
-        osc.start(now);
-        osc.stop(now + 1.3);
-      } else if (soundType === 'notification') {
-        osc.type = 'triangle';
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
-        
-        osc.frequency.setValueAtTime(523.25, now); // C5
-        osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
-        
-        osc.start(now);
-        osc.stop(now + 0.7);
-      } else if (soundType === 'click') {
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.03, now + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-        
-        osc.frequency.setValueAtTime(800, now);
-        
-        osc.start(now);
-        osc.stop(now + 0.12);
+  const playSound = useCallback(
+    (soundType: 'startup' | 'notification' | 'click') => {
+      if (isAudioMuted) return;
+      try {
+        const AudioContextClass =
+          window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioContextClass) return;
+
+        const ctx = new AudioContextClass();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+
+        if (soundType === 'startup') {
+          osc.type = 'sine';
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+
+          osc.frequency.setValueAtTime(261.63, now); // C4
+          osc.frequency.setValueAtTime(329.63, now + 0.15); // E4
+          osc.frequency.setValueAtTime(392.0, now + 0.3); // G4
+          osc.frequency.setValueAtTime(523.25, now + 0.45); // C5
+
+          osc.start(now);
+          osc.stop(now + 1.3);
+        } else if (soundType === 'notification') {
+          osc.type = 'triangle';
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+
+          osc.start(now);
+          osc.stop(now + 0.7);
+        } else if (soundType === 'click') {
+          osc.type = 'sine';
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(0.03, now + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+
+          osc.frequency.setValueAtTime(800, now);
+
+          osc.start(now);
+          osc.stop(now + 0.12);
+        }
+      } catch (e) {
+        console.warn('Audio arpeggiator failed:', e);
       }
-    } catch (e) {
-      console.warn('Audio arpeggiator failed:', e);
-    }
-  }, [isAudioMuted]);
+    },
+    [isAudioMuted]
+  );
 
   // Notifications push arpeggiator
-  const addNotification = useCallback((message: string, type: NotificationInstance['type'] = 'info') => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setNotifications((prev) => [...prev, { id, message, type }]);
-    playSound('notification');
+  const addNotification = useCallback(
+    (message: string, type: NotificationInstance['type'] = 'info') => {
+      const id = Math.random().toString(36).substring(2, 9);
+      setNotifications((prev) => [...prev, { id, message, type }]);
+      playSound('notification');
 
-    // Auto dismiss
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 4500);
-  }, [playSound]);
+      // Auto dismiss
+      setTimeout(() => {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+      }, 4500);
+    },
+    [playSound]
+  );
 
   const dismissNotification = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
@@ -137,7 +161,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
 
   const toggleCli = () => setCliOpen((prev) => !prev);
   const toggleOracle = () => setOracleOpen((prev) => !prev);
-  
+
   const toggleAudio = () => {
     setAudioMuted((prev) => {
       const nextMute = !prev;
@@ -159,7 +183,10 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         }
         // Emit startup notification welcome arpeggio
         setTimeout(() => {
-          addNotification('Welcome to Suraj.OS! Terminal modules loaded successfully.', 'success');
+          addNotification(
+            'Welcome to Suraj.OS! Terminal modules loaded successfully.',
+            'success'
+          );
         }, 1000);
       }
     }, 500);
@@ -178,7 +205,8 @@ export default function ShellProvider({ children }: ShellProviderProps) {
 
       if (isInput) return;
 
-      const isBooting = sessionStorage.getItem('multiverse_boot_completed') !== 'true';
+      const isBooting =
+        sessionStorage.getItem('multiverse_boot_completed') !== 'true';
       if (isBooting) return;
 
       // Ctrl/Cmd + O arpeggio to toggle assistant
@@ -213,7 +241,10 @@ export default function ShellProvider({ children }: ShellProviderProps) {
       const appId = (e as CustomEvent).detail;
       if (appId) {
         playSound('click');
-        addNotification(`Initializing application package: ${appId}...`, 'info');
+        addNotification(
+          `Initializing application package: ${appId}...`,
+          'info'
+        );
       }
     };
     window.addEventListener('launchApp', handleLaunch);
@@ -248,8 +279,15 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         id="shell-overlay-region"
         className="fixed inset-0 pointer-events-none z-[9990] font-mono text-xs"
       >
-        {isCliOpen && <CliTerminal isOpen={isCliOpen} onClose={() => setCliOpen(false)} />}
-        {isOracleOpen && <OracleWindow isOpen={isOracleOpen} onClose={() => setOracleOpen(false)} />}
+        {isCliOpen && (
+          <CliTerminal isOpen={isCliOpen} onClose={() => setCliOpen(false)} />
+        )}
+        {isOracleOpen && (
+          <OracleWindow
+            isOpen={isOracleOpen}
+            onClose={() => setOracleOpen(false)}
+          />
+        )}
       </div>
 
       {/* Reusable Notification Overlay Layer */}
@@ -260,20 +298,24 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         <AnimatePresence>
           {notifications.map((n) => {
             let Icon = Info;
-            let themeClass = 'border-accent-purple/35 bg-bg-panel/90 text-text-primary shadow-lg';
+            let themeClass =
+              'border-accent-purple/35 bg-bg-panel/90 text-text-primary shadow-lg';
             let iconClass = 'text-accent-purple';
 
             if (n.type === 'success') {
               Icon = CheckCircle;
-              themeClass = 'border-success-green/20 bg-[#F2F7F2]/95 text-text-primary shadow-lg';
+              themeClass =
+                'border-success-green/20 bg-[#F2F7F2]/95 text-text-primary shadow-lg';
               iconClass = 'text-success-green';
             } else if (n.type === 'error') {
               Icon = AlertCircle;
-              themeClass = 'border-red-500/20 bg-[#FAF2F2]/95 text-text-primary shadow-lg';
+              themeClass =
+                'border-red-500/20 bg-[#FAF2F2]/95 text-text-primary shadow-lg';
               iconClass = 'text-red-500';
             } else if (n.type === 'warning') {
               Icon = AlertCircle;
-              themeClass = 'border-warning-amber/25 bg-[#FAF6F2]/95 text-text-primary shadow-lg';
+              themeClass =
+                'border-warning-amber/25 bg-[#FAF6F2]/95 text-text-primary shadow-lg';
               iconClass = 'text-warning-amber';
             }
 
@@ -334,12 +376,16 @@ export default function ShellProvider({ children }: ShellProviderProps) {
           <span className="flex h-1.5 w-1.5 relative">
             <span
               className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                systemStatus === 'nominal' ? 'bg-success-green' : 'bg-warning-amber'
+                systemStatus === 'nominal'
+                  ? 'bg-success-green'
+                  : 'bg-warning-amber'
               }`}
             />
             <span
               className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
-                systemStatus === 'nominal' ? 'bg-success-green' : 'bg-warning-amber'
+                systemStatus === 'nominal'
+                  ? 'bg-success-green'
+                  : 'bg-warning-amber'
               }`}
             />
           </span>

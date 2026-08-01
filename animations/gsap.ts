@@ -5,11 +5,7 @@ export const gsapConfig = {
     ease: 'power3.out',
   },
   terminalScan: {
-    keyframes: [
-      { opacity: 0.8 },
-      { opacity: 1 },
-      { opacity: 0.8 }
-    ],
+    keyframes: [{ opacity: 0.8 }, { opacity: 1 }, { opacity: 0.8 }],
     duration: 0.15,
     repeat: -1,
     yoyo: true,
@@ -20,7 +16,7 @@ export const gsapConfig = {
     y: 200,
     duration: 0.35,
     ease: 'back.in(1.5)',
-  }
+  },
 } as const;
 
 export type GsapConfig = typeof gsapConfig;

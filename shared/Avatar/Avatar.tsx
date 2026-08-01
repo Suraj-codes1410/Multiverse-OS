@@ -22,14 +22,12 @@ export function Avatar({
   };
 
   return (
-    <div className={`relative inline-flex items-center justify-center rounded-full overflow-hidden border border-border-subtle bg-bg-panel text-text-primary font-mono select-none ${sizeStyles[size]} ${className}`}>
+    <div
+      className={`relative inline-flex items-center justify-center rounded-full overflow-hidden border border-border-subtle bg-bg-panel text-text-primary font-mono select-none ${sizeStyles[size]} ${className}`}
+    >
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover"
-        />
+        <img src={src} alt={alt} className="w-full h-full object-cover" />
       ) : (
         <span>{fallbackText.slice(0, 2).toUpperCase()}</span>
       )}

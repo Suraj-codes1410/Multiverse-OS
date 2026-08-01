@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Award, 
-  Briefcase, 
-  GraduationCap, 
-  Flag, 
+import {
+  Award,
+  Briefcase,
+  GraduationCap,
+  Flag,
   ArrowRight,
-  Trophy
+  Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import Card from './Card';
@@ -29,9 +29,12 @@ export default function CareerTimeline({ milestones }: CareerTimelineProps) {
     return b.year.localeCompare(a.year) || b.id.localeCompare(a.id);
   });
 
-  const filteredMilestones = selectedType === 'All'
-    ? sortedMilestones
-    : sortedMilestones.filter(m => m.type.toLowerCase() === selectedType.toLowerCase());
+  const filteredMilestones =
+    selectedType === 'All'
+      ? sortedMilestones
+      : sortedMilestones.filter(
+          (m) => m.type.toLowerCase() === selectedType.toLowerCase()
+        );
 
   const getIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -113,7 +116,11 @@ export default function CareerTimeline({ milestones }: CareerTimelineProps) {
                     <span className="text-xs font-mono text-text-secondary/60 font-semibold uppercase">
                       {milestone.date}
                     </span>
-                    <Badge color={getBadgeColor(milestone.type)} variant="solid" className="text-[9px]">
+                    <Badge
+                      color={getBadgeColor(milestone.type)}
+                      variant="solid"
+                      className="text-[9px]"
+                    >
                       {milestone.type.toUpperCase()}
                     </Badge>
                   </div>
@@ -125,7 +132,7 @@ export default function CareerTimeline({ milestones }: CareerTimelineProps) {
                 <h3 className="text-base font-bold text-text-primary mb-2">
                   {milestone.title}
                 </h3>
-                
+
                 <p className="text-sm text-text-secondary leading-relaxed font-sans font-light">
                   {milestone.description}
                 </p>

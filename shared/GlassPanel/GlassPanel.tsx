@@ -24,8 +24,8 @@ export function GlassPanel({
     thick: 'bg-bg-panel/85 border-border-subtle/60 backdrop-blur-lg',
   };
 
-  const hoverStyles = hoverable 
-    ? 'hover:border-border-bright/80 hover:bg-bg-panel-hover/60 hover:-translate-y-0.5' 
+  const hoverStyles = hoverable
+    ? 'hover:border-border-bright/80 hover:bg-bg-panel-hover/60 hover:-translate-y-0.5'
     : '';
 
   const combinedStyles = `rounded-xl p-6 border transition-all duration-300 ${intensityBgs[intensity]} ${hoverStyles} ${className}`;
@@ -43,9 +43,5 @@ export function GlassPanel({
     );
   }
 
-  return (
-    <div className={combinedStyles}>
-      {children}
-    </div>
-  );
+  return <div className={combinedStyles}>{children}</div>;
 }

@@ -22,10 +22,10 @@ export const fadeIn = {
   initial: { opacity: 0, y: 15 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 15 },
-  transition: { duration: 0.5 }
+  transition: { duration: 0.5 },
 } as const;
 
 export const hoverScale = {
   whileHover: { scale: 1.01 },
-  whileTap: { scale: 0.99 }
+  whileTap: { scale: 0.99 },
 } as const;

@@ -5,15 +5,18 @@ import { Cpu, Sun, HardDrive, Compass } from 'lucide-react';
 import { useDesktop } from './DesktopContext';
 import { motion } from 'framer-motion';
 import { onBootPhase, getBootPhase, isReturningVisitor } from '@/lib/bootPhase';
+import { usePathname } from 'next/navigation';
 
 /**
  * WidgetLayer renders the desktop background layer.
  * Includes glassmorphic system widgets on the right and ambient UI.
  */
 export function WidgetLayer() {
+  const pathname = usePathname();
   const { openWindow } = useDesktop();
   // Boot reveal — fades in with widgets at ~3.0s
   const [revealed, setRevealed] = useState(() => getBootPhase() === 'done');
+
   useEffect(() => {
     if (revealed) return;
     return onBootPhase((phase) => {
@@ -23,7 +26,7 @@ export function WidgetLayer() {
       }
     });
   }, [revealed]);
-  
+
   // Stateful telemetry variables
   const [time, setTime] = useState<string>('');
   const [date, setDate] = useState<string>('');
@@ -34,8 +37,21 @@ export function WidgetLayer() {
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }));
-      setDate(now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }));
+      setTime(
+        now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        })
+      );
+      setDate(
+        now.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      );
     };
     updateClock();
     const interval = setInterval(updateClock, 1000);
@@ -51,6 +67,11 @@ export function WidgetLayer() {
     return () => clearInterval(interval);
   }, []);
 
+  // Hide widgets on all routes except the root desktop workspace page
+  if (pathname !== '/') {
+    return null;
+  }
+
   return (
     <div
       className="absolute inset-0 z-10 pointer-events-none flex select-none box-border"
@@ -59,10 +80,8 @@ export function WidgetLayer() {
         transition: 'opacity 600ms cubic-bezier(0.16,1,0.3,1)',
       }}
     >
-
-
       {/* 2. RIGHT SIDE: System Dashboard Widgets */}
-      <aside 
+      <aside
         className="absolute right-8 top-20 bottom-24 w-80 flex flex-col gap-4 pointer-events-auto overflow-y-auto pr-2 scrollbar-none hidden xl:flex"
         aria-label="System Dashboard Widgets"
       >
@@ -82,9 +101,15 @@ export function WidgetLayer() {
             <Sun className="w-6 h-6 text-warning-amber animate-spin-slow" />
           </div>
           <div className="flex flex-col font-sans">
-            <span className="text-[9px] font-mono text-text-secondary/75 uppercase tracking-wider">Orbit Base // Clear</span>
-            <span className="text-sm font-semibold text-text-primary mt-0.5">21°C</span>
-            <span className="text-[8px] font-mono text-text-secondary/60 mt-0.5">WIND: NW 3.2m/s // HUMIDITY: 45%</span>
+            <span className="text-[9px] font-mono text-text-secondary/75 uppercase tracking-wider">
+              Orbit Base // Clear
+            </span>
+            <span className="text-sm font-semibold text-text-primary mt-0.5">
+              21°C
+            </span>
+            <span className="text-[8px] font-mono text-text-secondary/60 mt-0.5">
+              WIND: NW 3.2m/s // HUMIDITY: 45%
+            </span>
           </div>
         </div>
 
@@ -99,10 +124,10 @@ export function WidgetLayer() {
           </div>
           {/* Telemetry percentage bar indicator */}
           <div className="h-1.5 w-full bg-bg-primary/30 rounded-full overflow-hidden border border-border-subtle/20">
-            <motion.div 
-              animate={{ width: `${cpuUsage}%` }} 
-              transition={{ type: 'spring', stiffness: 80 }} 
-              className="h-full bg-accent-cyan" 
+            <motion.div
+              animate={{ width: `${cpuUsage}%` }}
+              transition={{ type: 'spring', stiffness: 80 }}
+              className="h-full bg-accent-cyan"
             />
           </div>
 
@@ -111,12 +136,14 @@ export function WidgetLayer() {
               <HardDrive className="w-3.5 h-3.5 text-accent-purple" />
               <span>RAM ALLOCATION</span>
             </div>
-            <span className="text-accent-purple font-bold">{ramUsage} GB / 16.0 GB</span>
+            <span className="text-accent-purple font-bold">
+              {ramUsage} GB / 16.0 GB
+            </span>
           </div>
           <div className="h-1.5 w-full bg-bg-primary/30 rounded-full overflow-hidden border border-border-subtle/20">
-            <div 
-              style={{ width: `${(parseFloat(ramUsage) / 16) * 100}%` }} 
-              className="h-full bg-accent-purple" 
+            <div
+              style={{ width: `${(parseFloat(ramUsage) / 16) * 100}%` }}
+              className="h-full bg-accent-purple"
             />
           </div>
         </div>
@@ -125,10 +152,13 @@ export function WidgetLayer() {
         <div className="system-widget-card p-4.5 rounded-2xl bg-bg-panel/20 border border-border-subtle/30 backdrop-blur-md flex flex-col gap-3.5 shadow-md hover:border-accent-cyan/20 transition-colors">
           <div className="flex items-center gap-2 font-mono text-[10px] text-text-primary">
             <Compass className="w-4 h-4 text-accent-cyan animate-pulse" />
-            <span className="font-bold uppercase tracking-wider">Narrative Core Router</span>
+            <span className="font-bold uppercase tracking-wider">
+              Narrative Core Router
+            </span>
           </div>
           <p className="font-sans text-[11px] text-text-secondary leading-relaxed">
-            Need details about Suraj's skill matrix? Query the smart Narrative engine directly:
+            Need details about Suraj's skill matrix? Query the smart Narrative
+            engine directly:
           </p>
           <button
             onClick={() => openWindow('oracle')}

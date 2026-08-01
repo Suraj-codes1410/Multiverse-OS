@@ -3,7 +3,7 @@
    ========================================================================== */
 
 /* 1. Obsidian Dark Theme Override */
-[data-theme="dark"] {
+[data-theme='dark'] {
   color-scheme: dark;
   --bg-primary: #030407;
   --bg-panel: #0a0c16;
@@ -27,9 +27,12 @@
 
   /* Shadow overrides */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --glow-cyan: 0 0 10px rgba(0, 242, 254, 0.15);
   --glow-purple: 0 0 12px rgba(168, 85, 247, 0.35);
 
@@ -69,7 +72,7 @@
 }
 
 /* 2. Cyberpunk Theme Override */
-[data-theme="cyberpunk"] {
+[data-theme='cyberpunk'] {
   color-scheme: dark;
   --bg-primary: #0a0512;
   --bg-panel: #140b24;
@@ -109,7 +112,7 @@
 }
 
 /* 3. Matrix Theme Override */
-[data-theme="matrix"] {
+[data-theme='matrix'] {
   color-scheme: dark;
   --bg-primary: #000a02;
   --bg-panel: #001504;
@@ -149,7 +152,7 @@
 }
 
 /* 4. High Contrast Theme Override */
-[data-theme="high-contrast"] {
+[data-theme='high-contrast'] {
   color-scheme: dark;
   --bg-primary: #000000;
   --bg-panel: #000000;

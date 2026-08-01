@@ -3,7 +3,12 @@
 import React, { useState, useMemo } from 'react';
 import GithubRepoCard from './GithubRepoCard';
 import { GitHubRepository } from '@/lib/types';
-import { Search, SlidersHorizontal, AlertTriangle, ArrowUpDown } from 'lucide-react';
+import {
+  Search,
+  SlidersHorizontal,
+  AlertTriangle,
+  ArrowUpDown,
+} from 'lucide-react';
 
 interface GithubExplorerProps {
   repositories: GitHubRepository[];
@@ -21,7 +26,7 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
   // Compute languages dynamically from repos
   const languages = useMemo(() => {
     const list = new Set<string>();
-    repositories.forEach(repo => {
+    repositories.forEach((repo) => {
       if (repo.language) {
         list.add(repo.language);
       }
@@ -35,17 +40,20 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
 
     // Filter by Language
     if (selectedLanguage !== 'All') {
-      result = result.filter(r => r.language?.toLowerCase() === selectedLanguage.toLowerCase());
+      result = result.filter(
+        (r) => r.language?.toLowerCase() === selectedLanguage.toLowerCase()
+      );
     }
 
     // Filter by Search Query (simple text search)
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
-      result = result.filter(r => 
-        r.name.toLowerCase().includes(query) || 
-        (r.description && r.description.toLowerCase().includes(query)) ||
-        r.topics.some(t => t.toLowerCase().includes(query)) ||
-        (r.language && r.language.toLowerCase().includes(query))
+      result = result.filter(
+        (r) =>
+          r.name.toLowerCase().includes(query) ||
+          (r.description && r.description.toLowerCase().includes(query)) ||
+          r.topics.some((t) => t.toLowerCase().includes(query)) ||
+          (r.language && r.language.toLowerCase().includes(query))
       );
     }
 
@@ -58,7 +66,9 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
         return b.forksCount - a.forksCount;
       }
       if (sortBy === 'updated') {
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        return (
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
       }
       if (sortBy === 'name') {
         return a.name.localeCompare(b.name);
@@ -83,7 +93,7 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
       {/* Search and Filters Control Center */}
       <div className="flex flex-col gap-4 bg-bg-panel border border-border-subtle p-5 rounded-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-accent-cyan/5 rounded-full blur-2xl pointer-events-none" />
-        
+
         {/* Search Bar Row */}
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
@@ -92,7 +102,11 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={semanticSearchActive ? "Describe features, code patterns, or algorithms..." : "Search repositories by name, description, or topics..."}
+              placeholder={
+                semanticSearchActive
+                  ? 'Describe features, code patterns, or algorithms...'
+                  : 'Search repositories by name, description, or topics...'
+              }
               className="w-full bg-bg-primary border border-border-subtle p-2 pl-9 rounded-lg text-xs font-mono text-text-primary focus:outline-none focus:border-accent-cyan/50"
             />
           </div>
@@ -135,12 +149,17 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
               <AlertTriangle className="w-4 h-4 text-accent-purple" />
             </div>
             <div className="space-y-1">
-              <div className="text-accent-purple font-bold">SEMANTIC_SEARCH_ENGINE_OFFLINE</div>
+              <div className="text-accent-purple font-bold">
+                SEMANTIC_SEARCH_ENGINE_OFFLINE
+              </div>
               <p>
-                Embedding indices are not loaded. Standard textual filtration is currently active as a fallback. 
+                Embedding indices are not loaded. Standard textual filtration is
+                currently active as a fallback.
               </p>
               <p className="text-[10px] text-text-secondary/70">
-                In Phase 4, this search gate will translate your prompt into vector embedding coordinates and run similarity scans against github repositories code trees.
+                In Phase 4, this search gate will translate your prompt into
+                vector embedding coordinates and run similarity scans against
+                github repositories code trees.
               </p>
             </div>
           </div>
@@ -148,7 +167,9 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
 
         {/* Language Category Buttons */}
         <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border-subtle/30 select-none">
-          <span className="text-[10px] font-mono text-text-secondary mr-2 uppercase">LANGUAGES:</span>
+          <span className="text-[10px] font-mono text-text-secondary mr-2 uppercase">
+            LANGUAGES:
+          </span>
           {languages.map((lang) => (
             <button
               key={lang}
@@ -167,11 +188,18 @@ export default function GithubExplorer({ repositories }: GithubExplorerProps) {
 
       {/* Results Telemetry Header */}
       <div className="flex items-center justify-between text-xs font-mono text-text-secondary select-none">
-        <span>FETCHED_REPOSITORIES_STREAM: <strong className="text-accent-cyan">{filteredAndSortedRepos.length}</strong></span>
+        <span>
+          FETCHED_REPOSITORIES_STREAM:{' '}
+          <strong className="text-accent-cyan">
+            {filteredAndSortedRepos.length}
+          </strong>
+        </span>
         <span>
           INDEXING_STATUS:{' '}
           {searchQuery.trim() !== '' ? (
-            <span className="text-accent-cyan font-bold animate-pulse">QUERY_MATCHING</span>
+            <span className="text-accent-cyan font-bold animate-pulse">
+              QUERY_MATCHING
+            </span>
           ) : (
             <span className="text-success-green font-bold">STABLE</span>
           )}

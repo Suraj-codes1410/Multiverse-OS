@@ -15,7 +15,8 @@
  *   'done'       - Overlay dissolved, desktop interactive ~4.2s
  */
 
-export type BootPhase = 'idle' | 'logo' | 'progress' | 'messages' | 'reveal' | 'done';
+export type BootPhase =
+  'idle' | 'logo' | 'progress' | 'messages' | 'reveal' | 'done';
 
 const EVENT_NAME = 'multiverse-boot-phase';
 

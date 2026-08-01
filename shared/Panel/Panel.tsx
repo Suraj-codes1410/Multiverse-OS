@@ -6,11 +6,7 @@ export interface PanelProps {
   border?: boolean;
 }
 
-export function Panel({
-  children,
-  className = '',
-  border = true,
-}: PanelProps) {
+export function Panel({ children, className = '', border = true }: PanelProps) {
   const borderStyles = border ? 'border border-border-subtle' : '';
   return (
     <div className={`bg-bg-panel rounded-xl p-6 ${borderStyles} ${className}`}>

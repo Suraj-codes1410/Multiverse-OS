@@ -12,5 +12,5 @@ export const skills: Skill[] = [
     category: 'Frontend',
     level: 'Expert',
     yearsOfExperience: 5,
-  }
+  },
 ];

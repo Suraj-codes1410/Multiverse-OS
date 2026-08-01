@@ -3,6 +3,7 @@
 import React from 'react';
 import { LayoutProvider, useLayout } from '@/providers/LayoutProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
+import { ScrollProvider } from '@/providers/ScrollProvider';
 import { DesktopShell } from '@/desktop';
 import { MobileShell } from '@/mobile';
 
@@ -22,14 +23,18 @@ function LayoutSwitcher({ children }: { children: React.ReactNode }) {
 
 import { SpotlightSearch } from '@/components/SpotlightSearch';
 import { ContextMenu } from '@/components/ContextMenu';
+import { ThemeSoundtrack } from '@/components/ThemeSoundtrack';
 
 export function SharedLayout({ children }: SharedLayoutProps) {
   return (
     <ThemeProvider>
       <LayoutProvider>
-        <LayoutSwitcher>{children}</LayoutSwitcher>
-        <SpotlightSearch />
-        <ContextMenu />
+        <ScrollProvider>
+          <ThemeSoundtrack />
+          <LayoutSwitcher>{children}</LayoutSwitcher>
+          <SpotlightSearch />
+          <ContextMenu />
+        </ScrollProvider>
       </LayoutProvider>
     </ThemeProvider>
   );

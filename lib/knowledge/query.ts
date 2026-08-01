@@ -29,19 +29,22 @@ export class KnowledgeQueryEngine {
   ): KnowledgeNode[] {
     const neighbors = this.graph.getNeighbors(nodeId, 'both');
     return neighbors
-      .filter(item => {
+      .filter((item) => {
         const typeMatch = item.node.type === targetType;
         const relMatch = !relType || item.relationship.type === relType;
         return typeMatch && relMatch;
       })
-      .map(item => item.node);
+      .map((item) => item.node);
   }
 
   /**
    * Query 1: Find all projects using a specific skill/technology (e.g. "FastAPI").
    */
   findProjectsBySkill(skillName: string): KnowledgeNode[] {
-    const skillId = `skill:${skillName.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
+    const skillId = `skill:${skillName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')}`;
     return this.findConnectedNodes(skillId, 'Project');
   }
 
@@ -53,33 +56,54 @@ export class KnowledgeQueryEngine {
     const normalizedConcept = concept.toLowerCase().trim();
     const allProjects = this.graph.getNodesByType('Project');
 
-    return allProjects.filter(project => {
+    return allProjects.filter((project) => {
       // 1. Match category properties or subtitle
-      if (project.properties.category?.toLowerCase().includes(normalizedConcept)) {
+      if (
+        project.properties.category?.toLowerCase().includes(normalizedConcept)
+      ) {
         return true;
       }
-      
+
       // 2. Match project descriptions
-      if (project.properties.description?.toLowerCase().includes(normalizedConcept)) {
+      if (
+        project.properties.description
+          ?.toLowerCase()
+          .includes(normalizedConcept)
+      ) {
         return true;
       }
-      if ((project.properties.originalData as Project)?.problem?.toLowerCase().includes(normalizedConcept)) {
+      if (
+        (project.properties.originalData as Project)?.problem
+          ?.toLowerCase()
+          .includes(normalizedConcept)
+      ) {
         return true;
       }
-      if ((project.properties.originalData as Project)?.solution?.toLowerCase().includes(normalizedConcept)) {
+      if (
+        (project.properties.originalData as Project)?.solution
+          ?.toLowerCase()
+          .includes(normalizedConcept)
+      ) {
         return true;
       }
 
       // 3. Match connected skills categories or names
       const connectedSkills = this.findConnectedNodes(project.id, 'Skill');
-      return connectedSkills.some(skill => {
+      return connectedSkills.some((skill) => {
         if (skill.label.toLowerCase().includes(normalizedConcept)) {
           return true;
         }
-        if (skill.properties.category?.toLowerCase().includes(normalizedConcept)) {
+        if (
+          skill.properties.category?.toLowerCase().includes(normalizedConcept)
+        ) {
           return true;
         }
-        if (skill.properties.relatedDomain && String(skill.properties.relatedDomain).toLowerCase().includes(normalizedConcept)) {
+        if (
+          skill.properties.relatedDomain &&
+          String(skill.properties.relatedDomain)
+            .toLowerCase()
+            .includes(normalizedConcept)
+        ) {
           return true;
         }
         return false;
@@ -91,7 +115,10 @@ export class KnowledgeQueryEngine {
    * Query 3: Find achievements related to a project (e.g. "ORBITAIR").
    */
   findAchievementsByProject(projectTitleOrId: string): KnowledgeNode[] {
-    let projectId = projectTitleOrId.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-');
+    let projectId = projectTitleOrId
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-');
     if (!projectId.startsWith('project:')) {
       projectId = `project:${projectId}`;
     }
@@ -102,7 +129,10 @@ export class KnowledgeQueryEngine {
    * Query 4: Find repositories using a specific technology (e.g. "Kafka").
    */
   findRepositoriesBySkill(skillName: string): KnowledgeNode[] {
-    const skillId = `skill:${skillName.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
+    const skillId = `skill:${skillName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')}`;
     return this.findConnectedNodes(skillId, 'Repository', 'USES');
   }
 
@@ -112,7 +142,7 @@ export class KnowledgeQueryEngine {
   explainPathway(sourceId: string, targetId: string): string[] | null {
     const path = this.graph.findPath(sourceId, targetId);
     if (!path) return null;
-    return path.map(node => `[${node.type.toUpperCase()}] ${node.label}`);
+    return path.map((node) => `[${node.type.toUpperCase()}] ${node.label}`);
   }
 
   /**

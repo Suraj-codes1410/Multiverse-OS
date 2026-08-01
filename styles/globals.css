@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "./variables.css";
-@import "./theme.css";
+@import 'tailwindcss';
+@import './variables.css';
+@import './theme.css';
 
 @theme {
   --color-bg-primary: var(--bg-primary);
@@ -66,4 +66,33 @@ body {
 .page-fade-enter-active {
   opacity: 1;
   transition: opacity 200ms ease-out;
+}
+
+/* Lenis smooth scrolling integration config */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overflow: clip;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom scrollbars matching theme system variables */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
 }

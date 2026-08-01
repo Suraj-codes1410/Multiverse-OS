@@ -7,16 +7,19 @@ export const projectsCommand: Command = {
   description: 'Displays portfolio projects and details.',
   execute: async (args) => {
     const projects = await getProjects();
-    
+
     if (args.length > 0) {
       // Find details for a specific project
       const query = args.join(' ').toLowerCase();
-      const project = projects.find(p => p.title.toLowerCase().includes(query) || p.id.toLowerCase() === query);
-      
+      const project = projects.find(
+        (p) =>
+          p.title.toLowerCase().includes(query) || p.id.toLowerCase() === query
+      );
+
       if (!project) {
         return {
           output: `No project found matching: "${args.join(' ')}"`,
-          success: false
+          success: false,
         };
       }
 
@@ -37,12 +40,12 @@ export const projectsCommand: Command = {
         `  ${project.solution}`,
         project.githubUrl ? `GitHub:   ${project.githubUrl}` : '',
         project.liveUrl ? `Live URL: ${project.liveUrl}` : '',
-        '=================================================='
-      ].filter(line => line !== '');
+        '==================================================',
+      ].filter((line) => line !== '');
 
       return {
         output,
-        success: true
+        success: true,
       };
     }
 
@@ -51,7 +54,7 @@ export const projectsCommand: Command = {
       'PROJECTS PORTFOLIO',
       '==================================================',
       'Type "projects <name>" to view detailed information on a specific project.',
-      ''
+      '',
     ];
 
     projects.forEach((project, idx) => {

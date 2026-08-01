@@ -31,7 +31,9 @@ export function Icon({
   };
 
   return (
-    <IconComponent className={`${sizeClasses[size]} ${colorClasses[color]} ${className}`} />
+    <IconComponent
+      className={`${sizeClasses[size]} ${colorClasses[color]} ${className}`}
+    />
   );
 }
 export default Icon;

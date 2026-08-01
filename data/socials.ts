@@ -15,5 +15,5 @@ export const socials: SocialLink[] = [
     platform: 'LinkedIn',
     url: 'https://www.linkedin.com/in/suraj-samanta1410/',
     userName: 'suraj-samanta1410',
-  }
+  },
 ];

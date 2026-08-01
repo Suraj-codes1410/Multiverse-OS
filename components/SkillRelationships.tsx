@@ -8,9 +8,12 @@ interface SkillRelationshipsProps {
   projectMap: Record<string, string>;
 }
 
-export default function SkillRelationships({ skill, projectMap }: SkillRelationshipsProps) {
-  const hasRelationships = 
-    skill.relatedDomain || 
+export default function SkillRelationships({
+  skill,
+  projectMap,
+}: SkillRelationshipsProps) {
+  const hasRelationships =
+    skill.relatedDomain ||
     (skill.relatedTechnologies && skill.relatedTechnologies.length > 0) ||
     (skill.relatedProjects && skill.relatedProjects.length > 0);
 
@@ -24,7 +27,9 @@ export default function SkillRelationships({ skill, projectMap }: SkillRelations
           <span className="text-text-secondary/50 uppercase tracking-wider block mb-1 flex items-center gap-1.5 select-none">
             <Globe className="w-3 h-3 text-accent-cyan" /> Related Domain
           </span>
-          <span className="text-text-primary pl-4.5 font-medium">{skill.relatedDomain}</span>
+          <span className="text-text-primary pl-4.5 font-medium">
+            {skill.relatedDomain}
+          </span>
         </div>
       )}
 
@@ -44,7 +49,8 @@ export default function SkillRelationships({ skill, projectMap }: SkillRelations
       {skill.relatedProjects && skill.relatedProjects.length > 0 && (
         <div>
           <span className="text-text-secondary/50 uppercase tracking-wider block mb-1 flex items-center gap-1.5 select-none">
-            <Briefcase className="w-3 h-3 text-success-green" /> Related Projects
+            <Briefcase className="w-3 h-3 text-success-green" /> Related
+            Projects
           </span>
           <div className="pl-4.5 flex flex-wrap gap-x-2 gap-y-1">
             {skill.relatedProjects.map((projId) => {
@@ -80,24 +86,41 @@ export interface GraphLink {
   relationship: string;
 }
 
-export function getSkillGraphData(skill: Skill): { nodes: GraphNode[]; links: GraphLink[] } {
-  const nodes: GraphNode[] = [{ id: skill.name, label: skill.name, type: 'skill' }];
+export function getSkillGraphData(skill: Skill): {
+  nodes: GraphNode[];
+  links: GraphLink[];
+} {
+  const nodes: GraphNode[] = [
+    { id: skill.name, label: skill.name, type: 'skill' },
+  ];
   const links: GraphLink[] = [];
 
   if (skill.relatedDomain) {
-    nodes.push({ id: skill.relatedDomain, label: skill.relatedDomain, type: 'domain' });
-    links.push({ source: skill.name, target: skill.relatedDomain, relationship: 'domain' });
+    nodes.push({
+      id: skill.relatedDomain,
+      label: skill.relatedDomain,
+      type: 'domain',
+    });
+    links.push({
+      source: skill.name,
+      target: skill.relatedDomain,
+      relationship: 'domain',
+    });
   }
 
   if (skill.relatedTechnologies) {
-    skill.relatedTechnologies.forEach(tech => {
+    skill.relatedTechnologies.forEach((tech) => {
       nodes.push({ id: tech, label: tech, type: 'tech' });
-      links.push({ source: skill.name, target: tech, relationship: 'technology' });
+      links.push({
+        source: skill.name,
+        target: tech,
+        relationship: 'technology',
+      });
     });
   }
 
   if (skill.relatedProjects) {
-    skill.relatedProjects.forEach(proj => {
+    skill.relatedProjects.forEach((proj) => {
       nodes.push({ id: proj, label: proj, type: 'project' });
       links.push({ source: skill.name, target: proj, relationship: 'project' });
     });

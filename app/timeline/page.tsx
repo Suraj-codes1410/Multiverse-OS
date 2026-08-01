@@ -5,7 +5,8 @@ import { getTimeline } from '@/lib/data';
 
 export const metadata = {
   title: 'Timeline | Suraj Samanta',
-  description: "Explore Suraj Samanta's chronological career timeline, tracking projects, hackathons, and achievements.",
+  description:
+    "Explore Suraj Samanta's chronological career timeline, tracking projects, hackathons, and achievements.",
 };
 
 export default function TimelinePage() {

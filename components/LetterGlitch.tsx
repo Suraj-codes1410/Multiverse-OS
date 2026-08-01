@@ -24,11 +24,16 @@ export function LetterGlitch({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const letters = useRef<
-    { char: string; color: string; targetColor: string; colorProgress: number }[]
+    {
+      char: string;
+      color: string;
+      targetColor: string;
+      colorProgress: number;
+    }[]
   >([]);
   const grid = useRef({ columns: 0, rows: 0 });
   const context = useRef<CanvasRenderingContext2D | null>(null);
-  const lastGlitchTime = useRef(Date.now());
+  const lastGlitchTime = useRef(0);
 
   const lettersAndSymbols = Array.from(characters);
   const fontSize = 16;
@@ -136,7 +141,11 @@ export function LetterGlitch({
         const startRgb = hexToRgb(letter.color);
         const endRgb = hexToRgb(letter.targetColor);
         if (startRgb && endRgb) {
-          letter.color = interpolateColor(startRgb, endRgb, letter.colorProgress);
+          letter.color = interpolateColor(
+            startRgb,
+            endRgb,
+            letter.colorProgress
+          );
           needsRedraw = true;
         }
       }
@@ -149,6 +158,7 @@ export function LetterGlitch({
     if (!canvas) return;
     context.current = canvas.getContext('2d');
     resizeCanvas();
+    lastGlitchTime.current = Date.now();
 
     const animate = () => {
       const now = Date.now();
@@ -192,14 +202,18 @@ export function LetterGlitch({
       }}
       className={className}
     >
-      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+      />
       {outerVignette && (
         <div
           style={{
             position: 'absolute',
             inset: 0,
             pointerEvents: 'none',
-            background: 'radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,10,2,1) 100%)',
+            background:
+              'radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,10,2,1) 100%)',
           }}
         />
       )}
@@ -209,7 +223,8 @@ export function LetterGlitch({
             position: 'absolute',
             inset: 0,
             pointerEvents: 'none',
-            background: 'radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)',
+            background:
+              'radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)',
           }}
         />
       )}

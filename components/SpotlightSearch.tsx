@@ -1,7 +1,20 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, Terminal, Sparkles, User, Briefcase, Compass, Calendar, FileText, Mail, Settings, ShieldAlert, Folder } from 'lucide-react';
+import {
+  Search,
+  Terminal,
+  Sparkles,
+  User,
+  Briefcase,
+  Compass,
+  Calendar,
+  FileText,
+  Mail,
+  Settings,
+  ShieldAlert,
+  Folder,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import Static Search Target Data
@@ -26,7 +39,7 @@ export function SpotlightSearch() {
 
   // Toggle state
   const toggleSearch = () => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
     setQuery('');
     setActiveIndex(0);
   };
@@ -69,20 +82,75 @@ export function SpotlightSearch() {
 
     // 1. Applications
     const apps = [
-      { id: 'home', title: 'Profile Home', subtitle: 'View core biography and greeting panel', icon: User },
-      { id: 'projects', title: 'Projects Explorer', subtitle: 'Search and inspect software projects', icon: Briefcase },
-      { id: 'skills', title: 'Skills Matrix', subtitle: 'Inspect tech stack relationships', icon: Compass },
-      { id: 'timeline', title: 'Career Timeline', subtitle: 'Browse history milestones', icon: Calendar },
-      { id: 'resume', title: 'Curriculum Vitae', subtitle: 'Download Suraj\'s technical resume', icon: FileText },
-      { id: 'contact', title: 'Contact Direct', subtitle: 'Send a message to Suraj', icon: Mail },
-      { id: 'recruiter', title: 'Recruiter Dashboard', subtitle: 'Availability and HR match tools', icon: ShieldAlert },
-      { id: 'explorer', title: 'File System Explorer', subtitle: 'Browse codebase folders', icon: Folder },
-      { id: 'terminal', title: 'CLI Terminal', subtitle: 'Open standard Unix command terminal', icon: Terminal },
-      { id: 'oracle', title: 'Oracle AI Chat', subtitle: 'Initiate narrative conversation', icon: Sparkles },
-      { id: 'settings', title: 'System Settings', subtitle: 'Change themes and appearance settings', icon: Settings },
+      {
+        id: 'home',
+        title: 'Profile Home',
+        subtitle: 'View core biography and greeting panel',
+        icon: User,
+      },
+      {
+        id: 'projects',
+        title: 'Projects Explorer',
+        subtitle: 'Search and inspect software projects',
+        icon: Briefcase,
+      },
+      {
+        id: 'skills',
+        title: 'Skills Matrix',
+        subtitle: 'Inspect tech stack relationships',
+        icon: Compass,
+      },
+      {
+        id: 'timeline',
+        title: 'Career Timeline',
+        subtitle: 'Browse history milestones',
+        icon: Calendar,
+      },
+      {
+        id: 'resume',
+        title: 'Curriculum Vitae',
+        subtitle: "Download Suraj's technical resume",
+        icon: FileText,
+      },
+      {
+        id: 'contact',
+        title: 'Contact Direct',
+        subtitle: 'Send a message to Suraj',
+        icon: Mail,
+      },
+      {
+        id: 'recruiter',
+        title: 'Recruiter Dashboard',
+        subtitle: 'Availability and HR match tools',
+        icon: ShieldAlert,
+      },
+      {
+        id: 'explorer',
+        title: 'File System Explorer',
+        subtitle: 'Browse codebase folders',
+        icon: Folder,
+      },
+      {
+        id: 'terminal',
+        title: 'CLI Terminal',
+        subtitle: 'Open standard Unix command terminal',
+        icon: Terminal,
+      },
+      {
+        id: 'oracle',
+        title: 'Oracle AI Chat',
+        subtitle: 'Initiate narrative conversation',
+        icon: Sparkles,
+      },
+      {
+        id: 'settings',
+        title: 'System Settings',
+        subtitle: 'Change themes and appearance settings',
+        icon: Settings,
+      },
     ];
 
-    apps.forEach(app => {
+    apps.forEach((app) => {
       items.push({
         id: app.id,
         type: 'app',
@@ -94,7 +162,7 @@ export function SpotlightSearch() {
     });
 
     // 2. Projects Data
-    projectsData.forEach(proj => {
+    projectsData.forEach((proj) => {
       items.push({
         id: proj.id,
         type: 'project',
@@ -105,14 +173,16 @@ export function SpotlightSearch() {
           triggerAppLaunch('projects');
           // Dispatch micro project open transition
           setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('openProjectDetail', { detail: proj.id }));
+            window.dispatchEvent(
+              new CustomEvent('openProjectDetail', { detail: proj.id })
+            );
           }, 150);
         },
       });
     });
 
     // 3. Skills Data
-    skillsData.forEach(skill => {
+    skillsData.forEach((skill) => {
       items.push({
         id: skill.name,
         type: 'skill',
@@ -134,10 +204,13 @@ export function SpotlightSearch() {
     if (!query.trim()) return searchPool.slice(0, 7); // Show top 7 default apps if input empty
 
     const cleanQuery = query.toLowerCase().trim();
-    return searchPool.filter(item => 
-      item.title.toLowerCase().includes(cleanQuery) ||
-      item.subtitle.toLowerCase().includes(cleanQuery)
-    ).slice(0, 9); // Cap at 9 results for layout stability
+    return searchPool
+      .filter(
+        (item) =>
+          item.title.toLowerCase().includes(cleanQuery) ||
+          item.subtitle.toLowerCase().includes(cleanQuery)
+      )
+      .slice(0, 9); // Cap at 9 results for layout stability
   }, [query, searchPool]);
 
   // Navigate index
@@ -151,10 +224,12 @@ export function SpotlightSearch() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex(prev => (prev + 1) % filteredResults.length);
+      setActiveIndex((prev) => (prev + 1) % filteredResults.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex(prev => (prev - 1 + filteredResults.length) % filteredResults.length);
+      setActiveIndex(
+        (prev) => (prev - 1 + filteredResults.length) % filteredResults.length
+      );
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (filteredResults[activeIndex]) {
@@ -166,7 +241,10 @@ export function SpotlightSearch() {
   // Close when clicking outside modal bounds
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -195,7 +273,7 @@ export function SpotlightSearch() {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={e => {
+                onChange={(e) => {
                   setQuery(e.target.value);
                   setActiveIndex(0);
                 }}
@@ -227,13 +305,19 @@ export function SpotlightSearch() {
                       }`}
                     >
                       <div className="flex items-center gap-3 truncate">
-                        <div className={`p-1.5 rounded-lg border flex items-center justify-center flex-shrink-0 ${
-                          isActive ? 'bg-accent-cyan/10 border-accent-cyan/20' : 'bg-bg-panel/30 border-border-subtle/50'
-                        }`}>
+                        <div
+                          className={`p-1.5 rounded-lg border flex items-center justify-center flex-shrink-0 ${
+                            isActive
+                              ? 'bg-accent-cyan/10 border-accent-cyan/20'
+                              : 'bg-bg-panel/30 border-border-subtle/50'
+                          }`}
+                        >
                           <Icon className="w-3.5 h-3.5" />
                         </div>
                         <div className="flex flex-col truncate leading-tight">
-                          <span className={`text-xs font-sans font-medium ${isActive ? 'text-accent-cyan' : 'text-text-primary'}`}>
+                          <span
+                            className={`text-xs font-sans font-medium ${isActive ? 'text-accent-cyan' : 'text-text-primary'}`}
+                          >
                             {item.title}
                           </span>
                           <span className="text-[9px] font-mono opacity-65 truncate mt-0.5">

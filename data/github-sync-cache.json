@@ -1,6 +1,20 @@
 {
   "repositories": [
     {
+      "id": 1311864469,
+      "name": "-NorthPeak-_Digital",
+      "fullName": "Suraj-codes1410/-NorthPeak-_Digital",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/-NorthPeak-_Digital",
+      "homepage": "https://north-peak-digital-nine-gamma.vercel.app",
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": "TypeScript",
+      "topics": [],
+      "updatedAt": "2026-07-26T10:51:15Z",
+      "createdAt": "2026-07-25T09:52:00Z"
+    },
+    {
       "id": 1182246563,
       "name": "AILEARNING",
       "fullName": "Suraj-codes1410/AILEARNING",
@@ -25,7 +39,7 @@
       "forksCount": 0,
       "language": null,
       "topics": [],
-      "updatedAt": "2025-08-20T19:22:39Z",
+      "updatedAt": "2026-06-26T18:02:55Z",
       "createdAt": "2025-08-20T19:22:36Z"
     },
     {
@@ -39,7 +53,7 @@
       "forksCount": 0,
       "language": "TypeScript",
       "topics": [],
-      "updatedAt": "2025-10-04T16:04:55Z",
+      "updatedAt": "2026-07-24T17:41:25Z",
       "createdAt": "2025-10-04T15:58:37Z"
     },
     {
@@ -71,18 +85,32 @@
       "createdAt": "2025-08-22T19:49:45Z"
     },
     {
-      "id": 1273395230,
-      "name": "oracle-sync-test",
-      "fullName": "Suraj-codes1410/oracle-sync-test",
+      "id": 1285823527,
+      "name": "kafka-learning",
+      "fullName": "Suraj-codes1410/kafka-learning",
       "description": null,
-      "htmlUrl": "https://github.com/Suraj-codes1410/oracle-sync-test",
+      "htmlUrl": "https://github.com/Suraj-codes1410/kafka-learning",
       "homepage": null,
       "starsCount": 0,
       "forksCount": 0,
-      "language": null,
+      "language": "Java",
       "topics": [],
-      "updatedAt": "2026-06-19T04:57:11Z",
-      "createdAt": "2026-06-18T13:34:56Z"
+      "updatedAt": "2026-07-08T17:32:24Z",
+      "createdAt": "2026-07-01T07:15:51Z"
+    },
+    {
+      "id": 1270165012,
+      "name": "Multiverse-OS",
+      "fullName": "Suraj-codes1410/Multiverse-OS",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/Multiverse-OS",
+      "homepage": "https://surajdev.indevs.in",
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": "TypeScript",
+      "topics": [],
+      "updatedAt": "2026-07-28T15:37:48Z",
+      "createdAt": "2026-06-15T12:56:33Z"
     },
     {
       "id": 1169792177,
@@ -127,6 +155,20 @@
       "createdAt": "2026-06-14T18:14:04Z"
     },
     {
+      "id": 1295419796,
+      "name": "ResumeRank_AI",
+      "fullName": "Suraj-codes1410/ResumeRank_AI",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/ResumeRank_AI",
+      "homepage": "https://resume-rank-ai-iota.vercel.app",
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": "Java",
+      "topics": [],
+      "updatedAt": "2026-07-23T15:17:55Z",
+      "createdAt": "2026-07-09T14:57:50Z"
+    },
+    {
       "id": 1274687205,
       "name": "Sahai",
       "fullName": "Suraj-codes1410/Sahai",
@@ -169,6 +211,66 @@
       "createdAt": "2026-02-19T07:34:57Z"
     },
     {
+      "id": 1269240548,
+      "name": "Uber-architecture",
+      "fullName": "Suraj-codes1410/Uber-architecture",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/Uber-architecture",
+      "homepage": null,
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": "Java",
+      "topics": [],
+      "updatedAt": "2026-06-30T18:10:55Z",
+      "createdAt": "2026-06-14T13:25:25Z"
+    },
+    {
+      "id": 1268591358,
+      "name": "User-microservice",
+      "fullName": "Suraj-codes1410/User-microservice",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/User-microservice",
+      "homepage": null,
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": "Java",
+      "topics": [],
+      "updatedAt": "2026-06-13T18:16:26Z",
+      "createdAt": "2026-06-13T17:59:29Z"
+    },
+    {
+      "id": 1317297746,
+      "name": "protfoliosync",
+      "fullName": "Suraj-codes1410/protfoliosync",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/protfoliosync",
+      "homepage": null,
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": null,
+      "topics": [],
+      "updatedAt": "2026-07-30T13:26:41Z",
+      "createdAt": "2026-07-30T13:26:40Z",
+      "classifications": [
+        "Backend Engineering",
+        "Open Source"
+      ]
+    },
+    {
+      "id": 1273395230,
+      "name": "oracle-sync-test",
+      "fullName": "Suraj-codes1410/oracle-sync-test",
+      "description": null,
+      "htmlUrl": "https://github.com/Suraj-codes1410/oracle-sync-test",
+      "homepage": null,
+      "starsCount": 0,
+      "forksCount": 0,
+      "language": null,
+      "topics": [],
+      "updatedAt": "2026-06-19T04:57:11Z",
+      "createdAt": "2026-06-18T13:34:56Z"
+    },
+    {
       "id": 1164984293,
       "name": "SPRING_SECURITY_",
       "fullName": "Suraj-codes1410/SPRING_SECURITY_",
@@ -209,55 +311,7 @@
       "topics": [],
       "updatedAt": "2026-06-19T05:04:24Z",
       "createdAt": "2026-06-19T05:04:23Z"
-    },
-    {
-      "id": 1269240548,
-      "name": "Uber-architecture",
-      "fullName": "Suraj-codes1410/Uber-architecture",
-      "description": null,
-      "htmlUrl": "https://github.com/Suraj-codes1410/Uber-architecture",
-      "homepage": null,
-      "starsCount": 0,
-      "forksCount": 0,
-      "language": "Java",
-      "topics": [],
-      "updatedAt": "2026-06-14T14:09:22Z",
-      "createdAt": "2026-06-14T13:25:25Z"
-    },
-    {
-      "id": 1268591358,
-      "name": "User-microservice",
-      "fullName": "Suraj-codes1410/User-microservice",
-      "description": null,
-      "htmlUrl": "https://github.com/Suraj-codes1410/User-microservice",
-      "homepage": null,
-      "starsCount": 0,
-      "forksCount": 0,
-      "language": "Java",
-      "topics": [],
-      "updatedAt": "2026-06-13T18:16:26Z",
-      "createdAt": "2026-06-13T17:59:29Z"
-    },
-    {
-      "id": 1270165012,
-      "name": "Multiverse-OS",
-      "fullName": "Suraj-codes1410/Multiverse-OS",
-      "description": null,
-      "htmlUrl": "https://github.com/Suraj-codes1410/Multiverse-OS",
-      "homepage": "https://suraj-multiverse-os.vercel.app",
-      "starsCount": 0,
-      "forksCount": 0,
-      "language": "TypeScript",
-      "topics": [],
-      "updatedAt": "2026-06-20T12:30:46Z",
-      "createdAt": "2026-06-15T12:56:33Z",
-      "classifications": [
-        "Backend Engineering",
-        "Frontend Development",
-        "Full Stack Development",
-        "Open Source"
-      ]
     }
   ],
-  "lastUpdated": "2026-06-20T13:05:53.505Z"
+  "lastUpdated": "2026-07-30T13:44:15.704Z"
 }

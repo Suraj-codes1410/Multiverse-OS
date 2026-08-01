@@ -14,7 +14,6 @@ export function MobileShell() {
     <NavigationProvider>
       <GestureProvider>
         <div className="relative w-screen h-screen flex flex-col overflow-hidden bg-bg-primary text-text-primary font-sans">
-          
           {/* Layer 0: Animated Watercolor Gradient Wallpaper Backdrop */}
           <Wallpaper />
 
@@ -29,7 +28,6 @@ export function MobileShell() {
 
           {/* Layer 4: Phone Bottom Navigation Control Bar */}
           <BottomNavigation />
-          
         </div>
       </GestureProvider>
     </NavigationProvider>

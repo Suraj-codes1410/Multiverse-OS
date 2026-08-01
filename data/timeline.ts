@@ -14,7 +14,8 @@ export const timeline: TimelineEvent[] = [
     date: '2024',
     title: 'Multiverse-OS Release',
     subtitle: 'Production launch',
-    description: 'Published the first release of the visual portfolio shell and Oracle API sync client.',
+    description:
+      'Published the first release of the visual portfolio shell and Oracle API sync client.',
     category: 'milestone',
-  }
+  },
 ];

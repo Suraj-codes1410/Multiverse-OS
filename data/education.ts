@@ -14,6 +14,9 @@ export const education: Education[] = [
     institution: 'Technology University',
     degree: 'Bachelor of Science in Computer Science',
     period: '2019 - 2023',
-    highlights: ['Specialized in Distributed Systems', 'Deans List academic award'],
-  }
+    highlights: [
+      'Specialized in Distributed Systems',
+      'Deans List academic award',
+    ],
+  },
 ];

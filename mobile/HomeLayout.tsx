@@ -3,25 +3,26 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from './NavigationProvider';
 import { MobileHome } from './MobileHome';
-import { 
-  AboutAppContent, 
-  ProjectsAppContent, 
-  SkillsAppContent, 
-  TimelineAppContent, 
-  ResumeAppContent, 
-  ContactAppContent, 
-  ExplorerAppContent, 
-  SettingsAppContent, 
-  DashboardAppContent 
+import {
+  AboutAppContent,
+  ProjectsAppContent,
+  SkillsAppContent,
+  TimelineAppContent,
+  ResumeAppContent,
+  ContactAppContent,
+  ExplorerAppContent,
+  SettingsAppContent,
+  DashboardAppContent,
 } from '@/desktop/WindowManager';
 import CliTerminal from '@/components/CliTerminal';
 import { ChevronLeft } from 'lucide-react';
 import { Project } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/animations';
 
 export function HomeLayout() {
   const { activeTab, setActiveTab, activeAppId, closeApp } = useNavigation();
-  
+
   // Dynamic stats telemetry states
   const [projects, setProjects] = useState<Project[]>([]);
   const [repos, setRepos] = useState<any[]>([]);
@@ -33,19 +34,19 @@ export function HomeLayout() {
       try {
         const { getProjects } = await import('@/lib/data');
         const { getRepositories } = await import('@/lib/github/github');
-        
+
         const [projectsList, reposList] = await Promise.all([
           getProjects(),
-          getRepositories()
+          getRepositories(),
         ]);
-        
+
         if (active) {
           setProjects(projectsList);
           setRepos(reposList);
           setLoading(false);
         }
       } catch (err) {
-        console.error("Failed to load projects dynamic data in mobile:", err);
+        console.error('Failed to load projects dynamic data in mobile:', err);
       }
     };
     loadDynamicData();
@@ -54,21 +55,27 @@ export function HomeLayout() {
     };
   }, []);
 
-  // Back Button Header Wrapper for App Screen
+  const shouldReduceMotion = useReducedMotion();
+
+  // Back Button Header Wrapper for App Screen with native bottom-sheet slide animation
   const renderAppWrapper = (title: string, content: React.ReactNode) => {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 15 }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-0 bg-bg-panel flex flex-col z-40 overflow-hidden"
+        initial={shouldReduceMotion ? { opacity: 0 } : { y: '100%' }}
+        animate={shouldReduceMotion ? { opacity: 1 } : { y: 0 }}
+        exit={shouldReduceMotion ? { opacity: 0 } : { y: '100%' }}
+        transition={
+          shouldReduceMotion
+            ? { duration: 0.15 }
+            : { duration: 0.25, ease: [0.32, 0.94, 0.6, 1] } // Native bottom sheet slide transition
+        }
+        className="absolute inset-x-0 bottom-0 top-0 bg-bg-panel flex flex-col z-40 overflow-hidden rounded-t-3xl border-t border-border-subtle/20 shadow-2xl"
       >
         {/* App Top Header Bar */}
         <header className="h-12 border-b border-border-subtle/30 px-4 flex items-center gap-2 select-none flex-shrink-0 bg-bg-panel/95 backdrop-blur-md">
           <button
             onClick={closeApp}
-            className="p-1 -ml-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors flex items-center justify-center cursor-pointer"
+            className="w-11 h-11 -ml-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors flex items-center justify-center cursor-pointer"
             aria-label="Go back to Home Screen"
           >
             <ChevronLeft className="w-5 h-5 text-accent-cyan" />
@@ -93,7 +100,10 @@ export function HomeLayout() {
       case 'about':
         return renderAppWrapper('About Suraj', <AboutAppContent />);
       case 'projects':
-        return renderAppWrapper('Projects Explorer', <ProjectsAppContent projects={projects} />);
+        return renderAppWrapper(
+          'Projects Explorer',
+          <ProjectsAppContent projects={projects} />
+        );
       case 'skills':
         return renderAppWrapper('Skills Matrix', <SkillsAppContent />);
       case 'timeline':
@@ -103,11 +113,17 @@ export function HomeLayout() {
       case 'contact':
         return renderAppWrapper('Contact Direct', <ContactAppContent />);
       case 'recruiter':
-        return renderAppWrapper('Recruiter Dashboard', <DashboardAppContent projects={projects} />);
+        return renderAppWrapper(
+          'Recruiter Dashboard',
+          <DashboardAppContent projects={projects} />
+        );
       case 'settings':
         return renderAppWrapper('Appearance Settings', <SettingsAppContent />);
       case 'explorer':
-        return renderAppWrapper('File System Explorer', <ExplorerAppContent repos={repos} loading={loading} />);
+        return renderAppWrapper(
+          'File System Explorer',
+          <ExplorerAppContent repos={repos} loading={loading} />
+        );
       default:
         return (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 text-text-secondary select-none font-mono">
@@ -120,7 +136,6 @@ export function HomeLayout() {
 
   return (
     <div className="flex-grow w-full relative overflow-hidden bg-bg-primary flex flex-col">
-      
       {/* 1. Terminal screen overlay (as tab) */}
       <AnimatePresence>
         {activeTab === 'terminal' && (
@@ -155,7 +170,6 @@ export function HomeLayout() {
           </div>
         )}
       </AnimatePresence>
-      
     </div>
   );
 }

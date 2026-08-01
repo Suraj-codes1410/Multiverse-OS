@@ -6,16 +6,16 @@
   color-scheme: light;
 
   /* --- 1. Colors --- */
-  --bg-primary: #DCEBE8;         /* Soft pastel blue-green desktop */
-  --bg-panel: #F7F2EB;           /* Warm ivory / cream window background */
-  --bg-panel-hover: #ECE6DC;     /* Slightly darker warm cream on hover */
-  --card-bg: #FFFFFF;            /* Lighter paper white card background */
-  --accent-cyan: #E06A3F;        /* Terracotta / warm copper accent */
-  --accent-purple: #8FA6B2;      /* Dusty blue secondary */
-  --success-green: #7D8C77;      /* Muted olive green success */
-  --warning-amber: #D1A25E;      /* Soft amber warning */
-  --text-primary: #2B2D2F;        /* Deep graphite/charcoal text */
-  --text-secondary: #6A6D70;      /* Warm gray secondary text */
+  --bg-primary: #dcebe8; /* Soft pastel blue-green desktop */
+  --bg-panel: #f7f2eb; /* Warm ivory / cream window background */
+  --bg-panel-hover: #ece6dc; /* Slightly darker warm cream on hover */
+  --card-bg: #ffffff; /* Lighter paper white card background */
+  --accent-cyan: #e06a3f; /* Terracotta / warm copper accent */
+  --accent-purple: #8fa6b2; /* Dusty blue secondary */
+  --success-green: #7d8c77; /* Muted olive green success */
+  --warning-amber: #d1a25e; /* Soft amber warning */
+  --text-primary: #2b2d2f; /* Deep graphite/charcoal text */
+  --text-secondary: #6a6d70; /* Warm gray secondary text */
   --border-subtle: rgba(43, 45, 47, 0.08); /* Very soft warm charcoal border */
   --border-bright: rgba(43, 45, 47, 0.15); /* Slightly darker border */
 
@@ -48,9 +48,15 @@
 
   /* --- 5. Elevation (Layered shadows) --- */
   --shadow-sm: 0 1px 3px rgba(43, 45, 47, 0.04);
-  --shadow-md: 0 4px 12px -2px rgba(43, 45, 47, 0.08), 0 2px 4px -1px rgba(43, 45, 47, 0.03);
-  --shadow-lg: 0 12px 28px -4px rgba(43, 45, 47, 0.12), 0 4px 10px -2px rgba(43, 45, 47, 0.05);
-  --shadow-xl: 0 24px 48px -6px rgba(43, 45, 47, 0.14), 0 12px 24px -4px rgba(43, 45, 47, 0.07);
+  --shadow-md:
+    0 4px 12px -2px rgba(43, 45, 47, 0.08),
+    0 2px 4px -1px rgba(43, 45, 47, 0.03);
+  --shadow-lg:
+    0 12px 28px -4px rgba(43, 45, 47, 0.12),
+    0 4px 10px -2px rgba(43, 45, 47, 0.05);
+  --shadow-xl:
+    0 24px 48px -6px rgba(43, 45, 47, 0.14),
+    0 12px 24px -4px rgba(43, 45, 47, 0.07);
   --glow-cyan: none;
   --glow-purple: none;
 
@@ -61,17 +67,17 @@
   --window-title-color: var(--text-primary);
 
   /* --- 7. Terminal Simulator --- */
-  --terminal-bg: #FAF6EE;
+  --terminal-bg: #faf6ee;
   --terminal-text: var(--text-primary);
   --terminal-glow: none;
   --terminal-cursor: var(--accent-cyan);
-  --terminal-header-bg: #ECE6DC;
+  --terminal-header-bg: #ece6dc;
 
   /* --- 8. Oracle AI Assistant --- */
-  --oracle-bg: #FAF6EE;
+  --oracle-bg: #faf6ee;
   --oracle-accent: var(--accent-cyan);
   --oracle-glow: none;
-  --oracle-header: #ECE6DC;
+  --oracle-header: #ece6dc;
 
   /* --- 9. Control Dock --- */
   --dock-bg: rgba(247, 242, 235, 0.85);
@@ -81,7 +87,7 @@
   /* --- 10. Robot Status --- */
   --robot-color-idle: var(--success-green);
   --robot-color-active: var(--accent-cyan);
-  --robot-color-error: #C85B53;
+  --robot-color-error: #c85b53;
 
   /* --- 11. Wallpaper & Mesh --- */
   --wallpaper-grid-color: rgba(43, 45, 47, 0.03);

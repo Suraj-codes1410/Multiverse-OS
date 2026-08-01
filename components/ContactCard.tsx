@@ -40,7 +40,8 @@ export default function ContactCard({ type, value, label }: ContactCardProps) {
     }
   };
 
-  const displayValue = type === 'email' ? value : value.replace(/^https?:\/\/(www\.)?/, '');
+  const displayValue =
+    type === 'email' ? value : value.replace(/^https?:\/\/(www\.)?/, '');
 
   return (
     <a
@@ -49,7 +50,11 @@ export default function ContactCard({ type, value, label }: ContactCardProps) {
       rel={type !== 'email' ? 'noopener noreferrer' : undefined}
       className="block group focus:outline-none"
     >
-      <Card hoverable glowOnHover className="flex items-center justify-between p-5 md:p-6">
+      <Card
+        hoverable
+        glowOnHover
+        className="flex items-center justify-between p-5 md:p-6"
+      >
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center p-3 rounded-lg bg-bg-panel border border-border-subtle group-hover:border-accent-cyan/20 group-hover:shadow-[0_0_12px_rgba(0,242,254,0.1)] transition-all">
             {getIcon()}
@@ -63,7 +68,7 @@ export default function ContactCard({ type, value, label }: ContactCardProps) {
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           {type === 'email' && (
             <button

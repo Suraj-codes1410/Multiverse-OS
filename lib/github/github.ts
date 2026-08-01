@@ -1,5 +1,6 @@
 import { GitHubRepository } from '../types';
 import githubConfig from '@/data/github-config.json';
+import syncCacheData from '@/data/github-sync-cache.json';
 
 // Initialize global variables to store repository cache in-memory for serverless environments
 const globalAny = global as any;
@@ -7,11 +8,19 @@ if (!globalAny.githubSyncCache) {
   globalAny.githubSyncCache = null;
 }
 
-
 function loadCachedRepositories(): GitHubRepository[] | null {
   const globalAny = global as any;
-  if (globalAny.githubSyncCache && Array.isArray(globalAny.githubSyncCache.repositories)) {
+  if (
+    globalAny.githubSyncCache &&
+    Array.isArray(globalAny.githubSyncCache.repositories)
+  ) {
     return globalAny.githubSyncCache.repositories;
+  }
+
+  // Use statically imported JSON data first (works on client & server)
+  if (syncCacheData && Array.isArray((syncCacheData as any).repositories)) {
+    globalAny.githubSyncCache = syncCacheData;
+    return (syncCacheData as any).repositories;
   }
 
   if (typeof window === 'undefined') {
@@ -34,28 +43,36 @@ function loadCachedRepositories(): GitHubRepository[] | null {
   return null;
 }
 
-
 // Local fallback cache to avoid rate-limiting issues on GitHub public APIs during development/builds
 const MOCK_REPOSITORIES: GitHubRepository[] = [
   {
     id: 201,
     name: 'patient-management-service',
     fullName: 'Suraj-codes1410/patient-management-service',
-    description: 'Hospital Billing & Microservices System using Spring Boot, gRPC, and Kafka.',
+    description:
+      'Hospital Billing & Microservices System using Spring Boot, gRPC, and Kafka.',
     htmlUrl: 'https://github.com/Suraj-codes1410/Patient-management-services',
     homepage: null,
     starsCount: 15,
     forksCount: 3,
     language: 'Java',
-    topics: ['java', 'spring-boot', 'kafka', 'grpc', 'docker', 'spring-security'],
+    topics: [
+      'java',
+      'spring-boot',
+      'kafka',
+      'grpc',
+      'docker',
+      'spring-security',
+    ],
     updatedAt: '2026-06-15T08:00:00Z',
-    createdAt: '2025-01-10T10:00:00Z'
+    createdAt: '2025-01-10T10:00:00Z',
   },
   {
     id: 202,
     name: 'sahai',
     fullName: 'Suraj-codes1410/sahai',
-    description: 'SAHAI — Mental Health & Lifestyle Platform with Pinecone-backed RAG and WebSockets.',
+    description:
+      'SAHAI — Mental Health & Lifestyle Platform with Pinecone-backed RAG and WebSockets.',
     htmlUrl: 'https://github.com/Suraj-codes1410/Sahai',
     homepage: null,
     starsCount: 28,
@@ -63,27 +80,67 @@ const MOCK_REPOSITORIES: GitHubRepository[] = [
     language: 'Python',
     topics: ['django', 'fastapi', 'react', 'websockets', 'mysql', 'pinecone'],
     updatedAt: '2026-06-14T15:30:00Z',
-    createdAt: '2025-02-15T11:00:00Z'
+    createdAt: '2025-02-15T11:00:00Z',
   },
   {
     id: 203,
     name: 'orbitair',
     fullName: 'Suraj-codes1410/orbitair',
-    description: 'ORBITAIR — AI-Powered AQI Forecasting with TimescaleDB geospatial indexing.',
-    htmlUrl: 'https://github.com/Suraj-codes1410/orbit-ops/tree/OrbitAir_website',
+    description:
+      'ORBITAIR — AI-Powered AQI Forecasting with TimescaleDB geospatial indexing.',
+    htmlUrl:
+      'https://github.com/Suraj-codes1410/orbit-ops/tree/OrbitAir_website',
     homepage: null,
     starsCount: 35,
     forksCount: 9,
     language: 'Python',
     topics: ['fastapi', 'timescaledb', 'react', 'leaflet', 'machine-learning'],
     updatedAt: '2026-06-15T18:00:00Z',
-    createdAt: '2025-03-20T14:00:00Z'
+    createdAt: '2025-03-20T14:00:00Z',
+  },
+  {
+    id: 204,
+    name: 'ResumeRank_AI',
+    fullName: 'Suraj-codes1410/ResumeRank_AI',
+    description:
+      'ResumeRank AI — LLM-driven candidate extraction, scoring, and recruitment dashboard.',
+    htmlUrl: 'https://github.com/Suraj-codes1410/ResumeRank_AI',
+    homepage: 'https://resume-rank-ai-iota.vercel.app/',
+    starsCount: 12,
+    forksCount: 2,
+    language: 'Java',
+    topics: [
+      'spring-boot',
+      'fastapi',
+      'nextjs',
+      'postgresql',
+      'flyway',
+      'testcontainers',
+    ],
+    updatedAt: '2026-07-29T10:00:00Z',
+    createdAt: '2025-06-01T08:00:00Z',
+  },
+  {
+    id: 205,
+    name: 'portfoliosync',
+    fullName: 'Suraj-codes1410/portfoliosync',
+    description:
+      'Automatic repository synchronization tool to populate Multiverse OS portfolio pages dynamically.',
+    htmlUrl: 'https://github.com/Suraj-codes1410/portfoliosync',
+    homepage: null,
+    starsCount: 0,
+    forksCount: 0,
+    language: 'TypeScript',
+    topics: ['github-api', 'automation', 'portfolio-sync'],
+    updatedAt: '2026-07-30T18:00:00Z',
+    createdAt: '2026-07-30T18:00:00Z',
   },
   {
     id: 301,
     name: 'oracle-sync-test',
     fullName: 'Suraj-codes1410/oracle-sync-test',
-    description: 'A test repository for verifying GitHub synchronization functionality.',
+    description:
+      'A test repository for verifying GitHub synchronization functionality.',
     htmlUrl: 'https://github.com/Suraj-codes1410/oracle-sync-test',
     homepage: null,
     starsCount: 0,
@@ -91,8 +148,8 @@ const MOCK_REPOSITORIES: GitHubRepository[] = [
     language: 'Next.js',
     topics: ['typescript', 'github-actions'],
     updatedAt: '2026-06-19T04:57:11Z',
-    createdAt: '2026-06-18T13:34:56Z'
-  }
+    createdAt: '2026-06-18T13:34:56Z',
+  },
 ];
 
 interface GitHubRepoResponse {
@@ -111,23 +168,34 @@ interface GitHubRepoResponse {
 }
 
 export async function getRepositories(): Promise<GitHubRepository[]> {
+  if (typeof window !== 'undefined') {
+    const res = await fetch('/api/repositories');
+    if (!res.ok) throw new Error('Failed to fetch repositories API');
+    return res.json();
+  }
+
   const cached = loadCachedRepositories();
   if (cached) {
-    const cachedNames = new Set(cached.map(r => r.name.toLowerCase()));
-    const merged = cached.map(cachedRepo => {
-      const mock = MOCK_REPOSITORIES.find(m => m.name.toLowerCase() === cachedRepo.name.toLowerCase());
+    const cachedNames = new Set(cached.map((r) => r.name.toLowerCase()));
+    const merged = cached.map((cachedRepo) => {
+      const mock = MOCK_REPOSITORIES.find(
+        (m) => m.name.toLowerCase() === cachedRepo.name.toLowerCase()
+      );
       if (mock) {
         return {
           ...cachedRepo,
           description: cachedRepo.description || mock.description,
           language: cachedRepo.language || mock.language,
-          topics: cachedRepo.topics && cachedRepo.topics.length > 0 ? cachedRepo.topics : mock.topics
+          topics:
+            cachedRepo.topics && cachedRepo.topics.length > 0
+              ? cachedRepo.topics
+              : mock.topics,
         };
       }
       return cachedRepo;
     });
 
-    MOCK_REPOSITORIES.forEach(mockRepo => {
+    MOCK_REPOSITORIES.forEach((mockRepo) => {
       if (!cachedNames.has(mockRepo.name.toLowerCase())) {
         merged.push(mockRepo);
       }
@@ -141,16 +209,21 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
   try {
     const username = githubConfig.username;
     // Cache GitHub requests for 1 hour to optimize performance and prevent rate limiting
-    const response = await fetch(`https://api.github.com/users/${username}/repos`, {
-      next: { revalidate: 3600 },
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'suraj-multiverse-os'
+    const response = await fetch(
+      `https://api.github.com/users/${username}/repos`,
+      {
+        next: { revalidate: 3600 },
+        headers: {
+          Accept: 'application/vnd.github.v3+json',
+          'User-Agent': 'suraj-multiverse-os',
+        },
       }
-    });
+    );
 
     if (!response.ok) {
-      console.warn(`GitHub API returned status ${response.status}. Falling back to cached local mock data.`);
+      console.warn(
+        `GitHub API returned status ${response.status}. Falling back to cached local mock data.`
+      );
       return MOCK_REPOSITORIES;
     }
 
@@ -171,24 +244,29 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
       language: repo.language,
       topics: repo.topics || [],
       updatedAt: repo.updated_at,
-      createdAt: repo.created_at
+      createdAt: repo.created_at,
     }));
 
-    const apiRepoNames = new Set(apiRepos.map(r => r.name.toLowerCase()));
-    const mergedRepos = apiRepos.map(apiRepo => {
-      const mock = MOCK_REPOSITORIES.find(m => m.name.toLowerCase() === apiRepo.name.toLowerCase());
+    const apiRepoNames = new Set(apiRepos.map((r) => r.name.toLowerCase()));
+    const mergedRepos = apiRepos.map((apiRepo) => {
+      const mock = MOCK_REPOSITORIES.find(
+        (m) => m.name.toLowerCase() === apiRepo.name.toLowerCase()
+      );
       if (mock) {
         return {
           ...apiRepo,
           description: apiRepo.description || mock.description,
           language: apiRepo.language || mock.language,
-          topics: apiRepo.topics && apiRepo.topics.length > 0 ? apiRepo.topics : mock.topics
+          topics:
+            apiRepo.topics && apiRepo.topics.length > 0
+              ? apiRepo.topics
+              : mock.topics,
         };
       }
       return apiRepo;
     });
 
-    MOCK_REPOSITORIES.forEach(mockRepo => {
+    MOCK_REPOSITORIES.forEach((mockRepo) => {
       if (!apiRepoNames.has(mockRepo.name.toLowerCase())) {
         mergedRepos.push(mockRepo);
       }
@@ -196,7 +274,10 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
 
     return mergedRepos;
   } catch (error) {
-    console.error('Error fetching GitHub repositories, returning mock cache.', error);
+    console.error(
+      'Error fetching GitHub repositories, returning mock cache.',
+      error
+    );
     return MOCK_REPOSITORIES;
   }
 }
@@ -204,20 +285,28 @@ export async function getRepositories(): Promise<GitHubRepository[]> {
 export async function getFeaturedRepositories(): Promise<GitHubRepository[]> {
   const allRepos = await getRepositories();
   const featuredNames = githubConfig.syncRepositories
-    .filter(r => r.featured)
-    .map(r => r.name.toLowerCase());
-  return allRepos.filter(repo => featuredNames.includes(repo.name.toLowerCase()));
+    .filter((r) => r.featured)
+    .map((r) => r.name.toLowerCase());
+  return allRepos.filter((repo) =>
+    featuredNames.includes(repo.name.toLowerCase())
+  );
 }
 
-export async function getRepositoryByName(name: string): Promise<GitHubRepository | undefined> {
+export async function getRepositoryByName(
+  name: string
+): Promise<GitHubRepository | undefined> {
   const allRepos = await getRepositories();
-  return allRepos.find(repo => repo.name.toLowerCase() === name.toLowerCase());
+  return allRepos.find(
+    (repo) => repo.name.toLowerCase() === name.toLowerCase()
+  );
 }
 
 export async function getPinnedRepositories(): Promise<GitHubRepository[]> {
   const allRepos = await getRepositories();
   const highlightedNames = githubConfig.syncRepositories
-    .filter(r => r.highlighted)
-    .map(r => r.name.toLowerCase());
-  return allRepos.filter(repo => highlightedNames.includes(repo.name.toLowerCase()));
+    .filter((r) => r.highlighted)
+    .map((r) => r.name.toLowerCase());
+  return allRepos.filter((repo) =>
+    highlightedNames.includes(repo.name.toLowerCase())
+  );
 }

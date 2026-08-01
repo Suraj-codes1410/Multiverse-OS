@@ -7,11 +7,11 @@ export const shadow = {
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
   },
   glow: {
-    cyan: '0 0 10px rgba(0, 242, 254, 0.15)',      // Cyan interactive overlay glow
-    purple: '0 0 12px rgba(168, 85, 247, 0.35)',    // Purple focus highlight glow
-    success: '0 0 10px rgba(16, 185, 129, 0.2)',    // Emerald green nominal status glow
-    warning: '0 0 10px rgba(245, 158, 11, 0.2)',    // Amber yellow alerts status glow
-  }
+    cyan: '0 0 10px rgba(0, 242, 254, 0.15)', // Cyan interactive overlay glow
+    purple: '0 0 12px rgba(168, 85, 247, 0.35)', // Purple focus highlight glow
+    success: '0 0 10px rgba(16, 185, 129, 0.2)', // Emerald green nominal status glow
+    warning: '0 0 10px rgba(245, 158, 11, 0.2)', // Amber yellow alerts status glow
+  },
 } as const;
 
 export type ShadowToken = typeof shadow;

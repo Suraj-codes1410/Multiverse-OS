@@ -47,12 +47,16 @@ export function BottomNavigation() {
             <div className="relative z-10 flex flex-col items-center gap-1 transition-transform group-active:scale-95 duration-100">
               <Icon
                 className={`w-5 h-5 transition-colors duration-300 ${
-                  isActive ? 'text-accent-cyan' : 'text-text-secondary group-hover:text-text-primary'
+                  isActive
+                    ? 'text-accent-cyan'
+                    : 'text-text-secondary group-hover:text-text-primary'
                 }`}
               />
               <span
                 className={`text-[9px] font-sans font-medium transition-colors duration-300 ${
-                  isActive ? 'text-accent-cyan' : 'text-text-secondary group-hover:text-text-primary'
+                  isActive
+                    ? 'text-accent-cyan'
+                    : 'text-text-secondary group-hover:text-text-primary'
                 }`}
               >
                 {item.label}

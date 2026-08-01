@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { 
-  GitBranch, 
-  Star, 
-  GitFork, 
-  ExternalLink, 
-  Calendar, 
-  Cpu, 
-  BookOpen, 
+import {
+  GitBranch,
+  Star,
+  GitFork,
+  ExternalLink,
+  Calendar,
+  Cpu,
+  BookOpen,
   Terminal,
   AlertTriangle,
   ArrowLeft,
@@ -18,7 +18,7 @@ import {
   Layers,
   Sparkles,
   Workflow,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 import Card from './Card';
 import Badge from './Badge';
@@ -37,19 +37,20 @@ interface GithubRepoDetailProps {
   relatedTechnologies?: string[];
 }
 
-export default function GithubRepoDetail({ 
-  repo, 
+export default function GithubRepoDetail({
+  repo,
   readme,
   relatedProjects = [],
   relatedSkills = [],
-  relatedTechnologies = []
+  relatedTechnologies = [],
 }: GithubRepoDetailProps) {
   const [oracleQuery, setOracleQuery] = useState('');
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
   const [isOracleLoading, setIsOracleLoading] = useState(false);
-  
+
   const intelligence = generateRepositoryIntelligence(repo, readme);
-  const classifications = repo.classifications || classifyRepository(repo, intelligence);
+  const classifications =
+    repo.classifications || classifyRepository(repo, intelligence);
 
   // Format dates
   const createdDate = new Date(repo.createdAt).toLocaleDateString('en-US', {
@@ -57,7 +58,7 @@ export default function GithubRepoDetail({
     day: 'numeric',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 
   const updatedDate = new Date(repo.updatedAt).toLocaleDateString('en-US', {
@@ -65,19 +66,26 @@ export default function GithubRepoDetail({
     day: 'numeric',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 
   const getLanguageColor = (lang: string | null) => {
     if (!lang) return 'bg-text-secondary';
     switch (lang.toLowerCase()) {
-      case 'java': return 'bg-red-500';
-      case 'python': return 'bg-blue-500';
-      case 'go': return 'bg-cyan-500';
-      case 'rust': return 'bg-orange-500';
-      case 'typescript': return 'bg-indigo-500';
-      case 'javascript': return 'bg-yellow-500';
-      default: return 'bg-accent-cyan';
+      case 'java':
+        return 'bg-red-500';
+      case 'python':
+        return 'bg-blue-500';
+      case 'go':
+        return 'bg-cyan-500';
+      case 'rust':
+        return 'bg-orange-500';
+      case 'typescript':
+        return 'bg-indigo-500';
+      case 'javascript':
+        return 'bg-yellow-500';
+      default:
+        return 'bg-accent-cyan';
     }
   };
 
@@ -110,12 +118,12 @@ export default function GithubRepoDetail({
   };
 
   return (
-    <div className="py-8 font-sans text-sm">
+    <div className="min-h-screen w-full bg-bg-primary text-text-primary py-8 px-4 sm:px-6 lg:px-8 font-sans text-sm pointer-events-auto relative z-20">
       <Container>
         {/* Back Link */}
         <div className="mb-6 select-none">
-          <Link 
-            href="/github" 
+          <Link
+            href="/github"
             className="inline-flex items-center gap-2 text-xs font-mono text-text-secondary hover:text-accent-cyan transition-colors focus:outline-none"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> BACK_TO_EXPLORER
@@ -125,24 +133,35 @@ export default function GithubRepoDetail({
         {/* Repository Header Brief */}
         <div className="border border-border-subtle bg-bg-panel/40 p-6 md:p-8 rounded-2xl mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-accent-cyan/5 rounded-full blur-3xl pointer-events-none" />
-          
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-2 mb-2 font-mono text-xs select-none">
                 <GitBranch className="w-4 h-4 text-accent-cyan" />
                 <span className="text-text-secondary">REPOSITORY_DOSSIER:</span>
-                <Badge color="cyan" variant="solid" className="text-[9px]">ACTIVE</Badge>
+                <Badge color="cyan" variant="solid" className="text-[9px]">
+                  ACTIVE
+                </Badge>
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">
                 {repo.name}
               </h1>
               <p className="text-xs text-text-secondary font-mono">
-                FULL_NAME: <span className="text-text-primary font-bold">{repo.fullName}</span>
+                FULL_NAME:{' '}
+                <span className="text-text-primary font-bold">
+                  {repo.fullName}
+                </span>
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button href={repo.htmlUrl} target="_blank" rel="noopener noreferrer" variant="primary" size="md">
+              <Button
+                href={repo.htmlUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="primary"
+                size="md"
+              >
                 <ExternalLink className="w-4 h-4 mr-2" /> View GitHub Repository
               </Button>
             </div>
@@ -151,10 +170,8 @@ export default function GithubRepoDetail({
 
         {/* Details Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
           {/* Main Info Columns (2 Cols) */}
           <div className="lg:col-span-2 space-y-8">
-            
             {/* Core Metadata Dossier */}
             <Card hoverable={false}>
               <div className="flex items-center gap-2 mb-4 border-b border-border-subtle/40 pb-2 select-none">
@@ -166,18 +183,28 @@ export default function GithubRepoDetail({
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xs font-mono text-text-secondary uppercase mb-1">Description</h3>
+                  <h3 className="text-xs font-mono text-text-secondary uppercase mb-1">
+                    Description
+                  </h3>
                   <p className="text-sm text-text-primary leading-relaxed bg-bg-primary/30 p-4 border border-border-subtle rounded-lg">
-                    {repo.description || 'No description provided for this repository.'}
+                    {repo.description ||
+                      'No description provided for this repository.'}
                   </p>
                 </div>
 
                 {classifications && classifications.length > 0 && (
                   <div>
-                    <h3 className="text-xs font-mono text-text-secondary uppercase mb-2">Engine Classifications</h3>
+                    <h3 className="text-xs font-mono text-text-secondary uppercase mb-2">
+                      Engine Classifications
+                    </h3>
                     <div className="flex flex-wrap gap-1.5">
                       {classifications.map((cat) => (
-                        <Badge key={cat} color="purple" variant="solid" className="text-[10px] uppercase font-bold tracking-wider">
+                        <Badge
+                          key={cat}
+                          color="purple"
+                          variant="solid"
+                          className="text-[10px] uppercase font-bold tracking-wider"
+                        >
                           {cat}
                         </Badge>
                       ))}
@@ -187,10 +214,16 @@ export default function GithubRepoDetail({
 
                 {repo.topics && repo.topics.length > 0 && (
                   <div>
-                    <h3 className="text-xs font-mono text-text-secondary uppercase mb-2">Topics & Tags</h3>
+                    <h3 className="text-xs font-mono text-text-secondary uppercase mb-2">
+                      Topics & Tags
+                    </h3>
                     <div className="flex flex-wrap gap-1.5">
                       {repo.topics.map((topic) => (
-                        <Badge key={topic} color="default" className="text-[10px]">
+                        <Badge
+                          key={topic}
+                          color="default"
+                          className="text-[10px]"
+                        >
                           {topic}
                         </Badge>
                       ))}
@@ -201,42 +234,60 @@ export default function GithubRepoDetail({
                 {/* Technical Specifications Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                   <div className="bg-bg-primary/20 border border-border-subtle p-3.5 rounded-lg font-mono text-xs">
-                    <span className="text-text-secondary block mb-1">PRIMARY_LANGUAGE:</span>
+                    <span className="text-text-secondary block mb-1">
+                      PRIMARY_LANGUAGE:
+                    </span>
                     <div className="flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${getLanguageColor(repo.language)}`} />
-                      <span className="text-text-primary font-bold">{repo.language || 'Not Detected'}</span>
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full ${getLanguageColor(repo.language)}`}
+                      />
+                      <span className="text-text-primary font-bold">
+                        {repo.language || 'Not Detected'}
+                      </span>
                     </div>
                   </div>
 
                   <div className="bg-bg-primary/20 border border-border-subtle p-3.5 rounded-lg font-mono text-xs">
-                    <span className="text-text-secondary block mb-1">STARS_COUNT:</span>
+                    <span className="text-text-secondary block mb-1">
+                      STARS_COUNT:
+                    </span>
                     <div className="flex items-center gap-1.5">
                       <Star className="w-4 h-4 text-warning-amber" />
-                      <span className="text-text-primary font-bold">{repo.starsCount}</span>
+                      <span className="text-text-primary font-bold">
+                        {repo.starsCount}
+                      </span>
                     </div>
                   </div>
 
                   <div className="bg-bg-primary/20 border border-border-subtle p-3.5 rounded-lg font-mono text-xs">
-                    <span className="text-text-secondary block mb-1">FORKS_COUNT:</span>
+                    <span className="text-text-secondary block mb-1">
+                      FORKS_COUNT:
+                    </span>
                     <div className="flex items-center gap-1.5">
                       <GitFork className="w-4 h-4 text-accent-purple" />
-                      <span className="text-text-primary font-bold">{repo.forksCount}</span>
+                      <span className="text-text-primary font-bold">
+                        {repo.forksCount}
+                      </span>
                     </div>
                   </div>
 
                   <div className="bg-bg-primary/20 border border-border-subtle p-3.5 rounded-lg font-mono text-xs">
-                    <span className="text-text-secondary block mb-1">HOMEPAGE_URL:</span>
+                    <span className="text-text-secondary block mb-1">
+                      HOMEPAGE_URL:
+                    </span>
                     {repo.homepage ? (
-                      <a 
-                        href={repo.homepage} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                      <a
+                        href={repo.homepage}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-accent-cyan hover:underline truncate block font-bold"
                       >
                         {repo.homepage}
                       </a>
                     ) : (
-                      <span className="text-text-secondary italic">None declared</span>
+                      <span className="text-text-secondary italic">
+                        None declared
+                      </span>
                     )}
                   </div>
                 </div>
@@ -244,7 +295,10 @@ export default function GithubRepoDetail({
             </Card>
 
             {/* README Preview & Documentation */}
-            <Card hoverable={false} className="border-accent-cyan/15 bg-bg-panel/60">
+            <Card
+              hoverable={false}
+              className="border-accent-cyan/15 bg-bg-panel/60"
+            >
               <div className="flex items-center justify-between mb-4 border-b border-border-subtle/40 pb-2 select-none">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-accent-cyan" />
@@ -252,28 +306,40 @@ export default function GithubRepoDetail({
                     README_DOCUMENTATION_PREVIEW
                   </h3>
                 </div>
-                <Badge color="green" variant="outline" className="text-[8px]">LIVE_DATA</Badge>
+                <Badge color="green" variant="outline" className="text-[8px]">
+                  LIVE_DATA
+                </Badge>
               </div>
 
               <div className="space-y-4">
                 <div className="p-5 bg-bg-primary/30 border border-border-subtle/70 rounded-lg max-h-[500px] overflow-y-auto">
                   <MarkdownRenderer content={readme} />
                 </div>
-                
+
                 <div className="p-3 bg-bg-primary/10 border border-border-subtle/40 rounded-lg font-mono text-[9px] text-text-secondary leading-relaxed flex gap-2">
                   <div className="flex-shrink-0 mt-0.5">
                     <AlertTriangle className="w-3.5 h-3.5 text-accent-cyan" />
                   </div>
                   <div>
-                    <span className="text-accent-cyan font-bold block mb-0.5">EXTENSION_SLOT: AGENTIC_COMPATIBILITY</span>
-                    <span>This raw README stream is exposed inside the portfolio. In Phase 4, the ORACLE system will build vector embeddings of these markdown nodes to permit natural language queries on repository codebase contexts.</span>
+                    <span className="text-accent-cyan font-bold block mb-0.5">
+                      EXTENSION_SLOT: AGENTIC_COMPATIBILITY
+                    </span>
+                    <span>
+                      This raw README stream is exposed inside the portfolio. In
+                      Phase 4, the ORACLE system will build vector embeddings of
+                      these markdown nodes to permit natural language queries on
+                      repository codebase contexts.
+                    </span>
                   </div>
                 </div>
               </div>
             </Card>
 
             {/* Repository Intelligence Analysis */}
-            <Card hoverable={false} className="border-accent-purple/15 bg-bg-panel/60">
+            <Card
+              hoverable={false}
+              className="border-accent-purple/15 bg-bg-panel/60"
+            >
               <div className="flex items-center justify-between mb-4 border-b border-border-subtle/40 pb-2 select-none">
                 <div className="flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-accent-purple" />
@@ -281,19 +347,29 @@ export default function GithubRepoDetail({
                     DETERMINISTIC_REPOSITORIES_INTELLIGENCE
                   </h3>
                 </div>
-                <Badge color="purple" variant="outline" className="text-[8px]">STATIC_ANALYSIS</Badge>
+                <Badge color="purple" variant="outline" className="text-[8px]">
+                  STATIC_ANALYSIS
+                </Badge>
               </div>
 
               <div className="space-y-4">
                 {/* Type & Category */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-bg-primary/30 border border-border-subtle p-3 rounded-lg text-xs">
-                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1">PROJECT_TYPE:</span>
-                    <span className="text-text-primary font-bold">{intelligence.projectType}</span>
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1">
+                      PROJECT_TYPE:
+                    </span>
+                    <span className="text-text-primary font-bold">
+                      {intelligence.projectType}
+                    </span>
                   </div>
                   <div className="bg-bg-primary/30 border border-border-subtle p-3 rounded-lg text-xs">
-                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1">PROJECT_CATEGORY:</span>
-                    <span className="text-accent-purple font-bold">{intelligence.projectCategory}</span>
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1">
+                      PROJECT_CATEGORY:
+                    </span>
+                    <span className="text-accent-purple font-bold">
+                      {intelligence.projectCategory}
+                    </span>
                   </div>
                 </div>
 
@@ -301,37 +377,59 @@ export default function GithubRepoDetail({
                 {intelligence.architectureAnalysis && (
                   <div className="bg-bg-primary/40 border border-border-subtle/80 p-4 rounded-xl space-y-3">
                     <div className="flex items-center justify-between border-b border-border-subtle/30 pb-2">
-                      <span className="text-[10px] font-mono text-text-secondary uppercase">ARCHITECTURE_PATTERN:</span>
-                      <span className="text-sm font-bold text-accent-purple uppercase tracking-wide">{intelligence.architectureAnalysis.architecturePattern}</span>
+                      <span className="text-[10px] font-mono text-text-secondary uppercase">
+                        ARCHITECTURE_PATTERN:
+                      </span>
+                      <span className="text-sm font-bold text-accent-purple uppercase tracking-wide">
+                        {intelligence.architectureAnalysis.architecturePattern}
+                      </span>
                     </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
-                      {intelligence.architectureAnalysis.communication && intelligence.architectureAnalysis.communication.length > 0 && (
-                        <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
-                          <span className="text-[8px] text-text-secondary block mb-1">COMMUNICATION:</span>
-                          <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
-                            {intelligence.architectureAnalysis.communication.join(', ')}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {intelligence.architectureAnalysis.security && intelligence.architectureAnalysis.security.length > 0 && (
-                        <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
-                          <span className="text-[8px] text-text-secondary block mb-1">SECURITY:</span>
-                          <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
-                            {intelligence.architectureAnalysis.security.join(', ')}
-                          </div>
-                        </div>
-                      )}
 
-                      {intelligence.architectureAnalysis.dataLayer && intelligence.architectureAnalysis.dataLayer.length > 0 && (
-                        <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
-                          <span className="text-[8px] text-text-secondary block mb-1">DATA_LAYER:</span>
-                          <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
-                            {intelligence.architectureAnalysis.dataLayer.join(', ')}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
+                      {intelligence.architectureAnalysis.communication &&
+                        intelligence.architectureAnalysis.communication.length >
+                          0 && (
+                          <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
+                            <span className="text-[8px] text-text-secondary block mb-1">
+                              COMMUNICATION:
+                            </span>
+                            <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
+                              {intelligence.architectureAnalysis.communication.join(
+                                ', '
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+
+                      {intelligence.architectureAnalysis.security &&
+                        intelligence.architectureAnalysis.security.length >
+                          0 && (
+                          <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
+                            <span className="text-[8px] text-text-secondary block mb-1">
+                              SECURITY:
+                            </span>
+                            <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
+                              {intelligence.architectureAnalysis.security.join(
+                                ', '
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                      {intelligence.architectureAnalysis.dataLayer &&
+                        intelligence.architectureAnalysis.dataLayer.length >
+                          0 && (
+                          <div className="font-mono bg-bg-panel/30 p-2.5 border border-border-subtle/40 rounded">
+                            <span className="text-[8px] text-text-secondary block mb-1">
+                              DATA_LAYER:
+                            </span>
+                            <div className="flex flex-wrap gap-1 font-bold text-text-primary text-[10px]">
+                              {intelligence.architectureAnalysis.dataLayer.join(
+                                ', '
+                              )}
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </div>
                 )}
@@ -340,65 +438,89 @@ export default function GithubRepoDetail({
                 {intelligence.complexityAnalysis && (
                   <div className="bg-bg-primary/40 border border-border-subtle/80 p-4 rounded-xl space-y-4">
                     <div className="flex items-center justify-between border-b border-border-subtle/30 pb-2">
-                      <span className="text-[10px] font-mono text-text-secondary uppercase">REPOSITORY_COMPLEXITY:</span>
+                      <span className="text-[10px] font-mono text-text-secondary uppercase">
+                        REPOSITORY_COMPLEXITY:
+                      </span>
                       <div className="flex items-center gap-2">
-                        <Badge 
+                        <Badge
                           color={
-                            intelligence.complexityAnalysis.overallRating === 'Advanced' 
-                              ? 'purple' 
-                              : intelligence.complexityAnalysis.overallRating === 'Intermediate' 
-                              ? 'cyan' 
-                              : 'green'
-                          } 
-                          variant="solid" 
+                            intelligence.complexityAnalysis.overallRating ===
+                            'Advanced'
+                              ? 'purple'
+                              : intelligence.complexityAnalysis
+                                    .overallRating === 'Intermediate'
+                                ? 'cyan'
+                                : 'green'
+                          }
+                          variant="solid"
                           className="text-xs font-bold tracking-wider font-mono scale-95"
                         >
                           {intelligence.complexityAnalysis.overallRating.toUpperCase()}
                         </Badge>
                         <span className="text-xs font-mono text-text-secondary font-bold">
-                          ({intelligence.complexityAnalysis.totalScore}/{intelligence.complexityAnalysis.maxTotalScore} PTS)
+                          ({intelligence.complexityAnalysis.totalScore}/
+                          {intelligence.complexityAnalysis.maxTotalScore} PTS)
                         </span>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="w-full bg-bg-primary/60 rounded-full h-1.5 overflow-hidden border border-border-subtle/30">
-                      <div 
+                      <div
                         className={`h-full rounded-full ${
-                          intelligence.complexityAnalysis.overallRating === 'Advanced' 
-                            ? 'bg-accent-purple' 
-                            : intelligence.complexityAnalysis.overallRating === 'Intermediate' 
-                            ? 'bg-accent-cyan' 
-                            : 'bg-success-green'
+                          intelligence.complexityAnalysis.overallRating ===
+                          'Advanced'
+                            ? 'bg-accent-purple'
+                            : intelligence.complexityAnalysis.overallRating ===
+                                'Intermediate'
+                              ? 'bg-accent-cyan'
+                              : 'bg-success-green'
                         }`}
-                        style={{ width: `${(intelligence.complexityAnalysis.totalScore / intelligence.complexityAnalysis.maxTotalScore) * 100}%` }}
+                        style={{
+                          width: `${(intelligence.complexityAnalysis.totalScore / intelligence.complexityAnalysis.maxTotalScore) * 100}%`,
+                        }}
                       />
                     </div>
 
                     {/* Dimensions List */}
                     <div className="space-y-3 pt-1">
-                      {Object.entries(intelligence.complexityAnalysis.dimensions).map(([key, dim]) => {
-                        const label = key.replace(/([A-Z])/g, '_$1').toUpperCase();
+                      {Object.entries(
+                        intelligence.complexityAnalysis.dimensions
+                      ).map(([key, dim]) => {
+                        const label = key
+                          .replace(/([A-Z])/g, '_$1')
+                          .toUpperCase();
                         return (
-                          <div key={key} className="bg-bg-panel/40 border border-border-subtle/40 rounded-lg p-3 space-y-1.5">
+                          <div
+                            key={key}
+                            className="bg-bg-panel/40 border border-border-subtle/40 rounded-lg p-3 space-y-1.5"
+                          >
                             <div className="flex items-center justify-between font-mono text-[9px] font-bold">
-                              <span className="text-text-secondary">{label}</span>
+                              <span className="text-text-secondary">
+                                {label}
+                              </span>
                               <div className="flex items-center gap-1.5">
-                                <span className={
-                                  dim.rating === 'High' 
-                                    ? 'text-accent-purple' 
-                                    : dim.rating === 'Medium' 
-                                    ? 'text-accent-cyan' 
-                                    : 'text-text-secondary'
-                                }>
+                                <span
+                                  className={
+                                    dim.rating === 'High'
+                                      ? 'text-accent-purple'
+                                      : dim.rating === 'Medium'
+                                        ? 'text-accent-cyan'
+                                        : 'text-text-secondary'
+                                  }
+                                >
                                   {dim.rating}
                                 </span>
-                                <span className="text-text-secondary">({dim.score}/{dim.maxScore} PTS)</span>
+                                <span className="text-text-secondary">
+                                  ({dim.score}/{dim.maxScore} PTS)
+                                </span>
                               </div>
                             </div>
                             <ul className="list-disc list-inside space-y-0.5 text-xs text-text-secondary pl-1">
                               {dim.details.map((detail, dIdx) => (
-                                <li key={dIdx} className="leading-relaxed">{detail}</li>
+                                <li key={dIdx} className="leading-relaxed">
+                                  {detail}
+                                </li>
                               ))}
                             </ul>
                           </div>
@@ -409,16 +531,34 @@ export default function GithubRepoDetail({
                 )}
 
                 {/* Tech Stack */}
-                {intelligence.technologyProfile && Object.keys(intelligence.technologyProfile.categories).length > 0 ? (
+                {intelligence.technologyProfile &&
+                Object.keys(intelligence.technologyProfile.categories).length >
+                  0 ? (
                   <div>
-                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">STRUCTURED_TECHNOLOGY_PROFILE:</span>
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">
+                      STRUCTURED_TECHNOLOGY_PROFILE:
+                    </span>
                     <div className="space-y-3 bg-bg-primary/20 p-4 border border-border-subtle/60 rounded-lg">
-                      {Object.entries(intelligence.technologyProfile.categories).map(([category, techs]) => (
-                        <div key={category} className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 border-b border-border-subtle/20 pb-2 last:border-0 last:pb-0">
-                          <span className="text-[10px] font-mono font-bold text-accent-cyan uppercase tracking-wider">{category}</span>
+                      {Object.entries(
+                        intelligence.technologyProfile.categories
+                      ).map(([category, techs]) => (
+                        <div
+                          key={category}
+                          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 border-b border-border-subtle/20 pb-2 last:border-0 last:pb-0"
+                        >
+                          <span className="text-[10px] font-mono font-bold text-accent-cyan uppercase tracking-wider">
+                            {category}
+                          </span>
                           <div className="flex flex-wrap gap-1 justify-start sm:justify-end">
-                            {techs.map(tech => (
-                              <Badge key={tech} color="cyan" variant="solid" className="text-[9px]">{tech}</Badge>
+                            {techs.map((tech) => (
+                              <Badge
+                                key={tech}
+                                color="cyan"
+                                variant="solid"
+                                className="text-[9px]"
+                              >
+                                {tech}
+                              </Badge>
                             ))}
                           </div>
                         </div>
@@ -427,10 +567,14 @@ export default function GithubRepoDetail({
                   </div>
                 ) : (
                   <div>
-                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5">DETECTED_TECHNOLOGIES:</span>
+                    <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5">
+                      DETECTED_TECHNOLOGIES:
+                    </span>
                     <div className="flex flex-wrap gap-1">
-                      {intelligence.technologies.map(tech => (
-                        <Badge key={tech} color="cyan" className="text-[9px]">{tech}</Badge>
+                      {intelligence.technologies.map((tech) => (
+                        <Badge key={tech} color="cyan" className="text-[9px]">
+                          {tech}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -438,10 +582,15 @@ export default function GithubRepoDetail({
 
                 {/* Key Concepts */}
                 <div>
-                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">CORE_ARCHITECTURAL_CONCEPTS:</span>
+                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">
+                    CORE_ARCHITECTURAL_CONCEPTS:
+                  </span>
                   <ul className="space-y-1 bg-bg-primary/20 p-3 border border-border-subtle/60 rounded-lg">
                     {intelligence.keyConcepts.map((concept, cidx) => (
-                      <li key={cidx} className="flex items-center gap-2 text-xs text-text-secondary">
+                      <li
+                        key={cidx}
+                        className="flex items-center gap-2 text-xs text-text-secondary"
+                      >
                         <Sparkles className="w-3.5 h-3.5 text-accent-purple flex-shrink-0" />
                         <span>{concept}</span>
                       </li>
@@ -451,12 +600,23 @@ export default function GithubRepoDetail({
 
                 {/* Complexity Indicators */}
                 <div>
-                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">COMPLEXITY_INDICATORS:</span>
+                  <span className="text-text-secondary block font-mono text-[9px] uppercase mb-1.5 font-bold">
+                    COMPLEXITY_INDICATORS:
+                  </span>
                   <div className="space-y-1">
                     {intelligence.complexityIndicators.map((indicator, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-bg-primary/30 border border-border-subtle/60 rounded text-xs font-mono text-text-secondary">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 bg-bg-primary/30 border border-border-subtle/60 rounded text-xs font-mono text-text-secondary"
+                      >
                         <span>{indicator}</span>
-                        <Badge color="purple" variant="outline" className="text-[8px] scale-90">VERIFIED</Badge>
+                        <Badge
+                          color="purple"
+                          variant="outline"
+                          className="text-[8px] scale-90"
+                        >
+                          VERIFIED
+                        </Badge>
                       </div>
                     ))}
                   </div>
@@ -464,14 +624,18 @@ export default function GithubRepoDetail({
 
                 {/* Activity Level */}
                 <div className="flex items-center justify-between pt-2 border-t border-border-subtle/30 text-xs font-mono">
-                  <span className="text-text-secondary">REPO_ACTIVITY_METRIC:</span>
-                  <span className={`font-bold ${
-                    intelligence.activityLevel === 'High' 
-                      ? 'text-success-green' 
-                      : intelligence.activityLevel === 'Medium' 
-                      ? 'text-accent-cyan' 
-                      : 'text-text-secondary'
-                  }`}>
+                  <span className="text-text-secondary">
+                    REPO_ACTIVITY_METRIC:
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      intelligence.activityLevel === 'High'
+                        ? 'text-success-green'
+                        : intelligence.activityLevel === 'Medium'
+                          ? 'text-accent-cyan'
+                          : 'text-text-secondary'
+                    }`}
+                  >
                     {intelligence.activityLevel.toUpperCase()}
                   </span>
                 </div>
@@ -482,32 +646,48 @@ export default function GithubRepoDetail({
                     <Lock className="w-3.5 h-3.5 text-accent-purple" />
                   </div>
                   <div>
-                    <span className="text-accent-purple font-bold block mb-0.5">EXTENSION_SLOT: NEURAL_COMPLEXITY_SCAN</span>
-                    <span>Deterministic telemetry matched successfully. In Phase 4, the ORACLE core will query active model channels to run structural AST analyses and estimate total developer hours.</span>
+                    <span className="text-accent-purple font-bold block mb-0.5">
+                      EXTENSION_SLOT: NEURAL_COMPLEXITY_SCAN
+                    </span>
+                    <span>
+                      Deterministic telemetry matched successfully. In Phase 4,
+                      the ORACLE core will query active model channels to run
+                      structural AST analyses and estimate total developer
+                      hours.
+                    </span>
                   </div>
                 </div>
               </div>
             </Card>
-
           </div>
 
           {/* Sidebar Area (1 Col) */}
           <div className="space-y-6">
-            
             {/* Repository Insights (Knowledge Graph connections) */}
-            <Card hoverable={false} className="border-accent-cyan/15 bg-bg-panel/60">
+            <Card
+              hoverable={false}
+              className="border-accent-cyan/15 bg-bg-panel/60"
+            >
               <h3 className="text-xs font-mono uppercase tracking-widest text-text-primary mb-4 border-b border-border-subtle/40 pb-2 flex items-center gap-2 select-none">
-                <Workflow className="w-4 h-4 text-accent-cyan" /> Repository Insights
+                <Workflow className="w-4 h-4 text-accent-cyan" /> Repository
+                Insights
               </h3>
 
               <div className="space-y-4">
                 {/* Related Projects */}
                 <div>
-                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">RELATED_PROJECTS_KG:</span>
+                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">
+                    RELATED_PROJECTS_KG:
+                  </span>
                   {relatedProjects.length > 0 ? (
                     <div className="flex flex-wrap gap-1.5">
-                      {relatedProjects.map(proj => (
-                        <Badge key={proj} color="cyan" variant="solid" className="text-[9px] uppercase tracking-wide font-bold">
+                      {relatedProjects.map((proj) => (
+                        <Badge
+                          key={proj}
+                          color="cyan"
+                          variant="solid"
+                          className="text-[9px] uppercase tracking-wide font-bold"
+                        >
                           {proj}
                         </Badge>
                       ))}
@@ -521,11 +701,18 @@ export default function GithubRepoDetail({
 
                 {/* Related Skills */}
                 <div>
-                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">RELATED_SKILLS_KG:</span>
+                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">
+                    RELATED_SKILLS_KG:
+                  </span>
                   {relatedSkills.length > 0 ? (
                     <div className="flex flex-wrap gap-1.5">
-                      {relatedSkills.map(skill => (
-                        <Badge key={skill} color="purple" variant="outline" className="text-[9px] uppercase font-bold tracking-wider">
+                      {relatedSkills.map((skill) => (
+                        <Badge
+                          key={skill}
+                          color="purple"
+                          variant="outline"
+                          className="text-[9px] uppercase font-bold tracking-wider"
+                        >
                           {skill}
                         </Badge>
                       ))}
@@ -539,11 +726,18 @@ export default function GithubRepoDetail({
 
                 {/* Related Technologies */}
                 <div>
-                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">RELATED_TECHNOLOGIES_KG:</span>
+                  <span className="text-[10px] font-mono text-text-secondary block mb-1.5 uppercase font-bold">
+                    RELATED_TECHNOLOGIES_KG:
+                  </span>
                   {relatedTechnologies.length > 0 ? (
                     <div className="flex flex-wrap gap-1.5">
-                      {relatedTechnologies.map(tech => (
-                        <Badge key={tech} color="cyan" variant="outline" className="text-[9px] font-bold">
+                      {relatedTechnologies.map((tech) => (
+                        <Badge
+                          key={tech}
+                          color="cyan"
+                          variant="outline"
+                          className="text-[9px] font-bold"
+                        >
                           {tech}
                         </Badge>
                       ))}
@@ -556,27 +750,39 @@ export default function GithubRepoDetail({
                 </div>
               </div>
             </Card>
-            
+
             {/* Datetime Telemetry */}
             <Card hoverable={false}>
               <h3 className="text-xs font-mono uppercase tracking-widest text-text-primary mb-4 border-b border-border-subtle/40 pb-2 flex items-center gap-2 select-none">
-                <Calendar className="w-4 h-4 text-accent-cyan" /> Datetime Telemetry
+                <Calendar className="w-4 h-4 text-accent-cyan" /> Datetime
+                Telemetry
               </h3>
 
               <div className="space-y-3 font-mono text-xs">
                 <div>
-                  <span className="text-text-secondary block mb-0.5">CREATED_ON:</span>
-                  <span className="text-text-primary font-bold">{createdDate}</span>
+                  <span className="text-text-secondary block mb-0.5">
+                    CREATED_ON:
+                  </span>
+                  <span className="text-text-primary font-bold">
+                    {createdDate}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-text-secondary block mb-0.5">LAST_PUSH_UPDATED:</span>
-                  <span className="text-text-primary font-bold">{updatedDate}</span>
+                  <span className="text-text-secondary block mb-0.5">
+                    LAST_PUSH_UPDATED:
+                  </span>
+                  <span className="text-text-primary font-bold">
+                    {updatedDate}
+                  </span>
                 </div>
               </div>
             </Card>
 
             {/* ORACLE Dialogue Console (Extension Point) */}
-            <Card hoverable={false} className="border-border-bright/20 bg-bg-panel/90">
+            <Card
+              hoverable={false}
+              className="border-border-bright/20 bg-bg-panel/90"
+            >
               <div className="flex items-center justify-between mb-4 border-b border-border-subtle/40 pb-2 select-none">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-accent-cyan animate-pulse" />
@@ -584,7 +790,13 @@ export default function GithubRepoDetail({
                     ORACLE_DIALOGUE_PORTAL
                   </h3>
                 </div>
-                <Badge color="green" variant="solid" className="text-[8px] animate-pulse">ONLINE</Badge>
+                <Badge
+                  color="green"
+                  variant="solid"
+                  className="text-[8px] animate-pulse"
+                >
+                  ONLINE
+                </Badge>
               </div>
 
               <form onSubmit={handleOracleSubmit} className="space-y-4">
@@ -617,7 +829,8 @@ export default function GithubRepoDetail({
                 {oracleResponse && (
                   <div className="p-3 bg-bg-primary/80 border border-accent-cyan/20 rounded text-xs text-text-primary leading-relaxed space-y-2 select-text">
                     <div className="flex items-center gap-1.5 text-accent-cyan font-mono text-[10px] font-bold border-b border-border-subtle/35 pb-1">
-                      <Sparkles className="w-3.5 h-3.5 text-accent-cyan" /> ORACLE_STATUS
+                      <Sparkles className="w-3.5 h-3.5 text-accent-cyan" />{' '}
+                      ORACLE_STATUS
                     </div>
                     <div className="prose prose-invert prose-xs max-w-none">
                       <MarkdownRenderer content={oracleResponse} />
@@ -630,27 +843,30 @@ export default function GithubRepoDetail({
             {/* Local CLI Command Reference */}
             <Card hoverable={false}>
               <h3 className="text-xs font-mono uppercase tracking-widest text-accent-purple mb-4 border-b border-border-subtle/40 pb-2 flex items-center gap-2 select-none">
-                <Terminal className="w-4 h-4 text-accent-purple" /> Local CLI Console
+                <Terminal className="w-4 h-4 text-accent-purple" /> Local CLI
+                Console
               </h3>
 
               <div className="space-y-3.5 font-mono text-[10px]">
                 <div>
-                  <span className="text-text-secondary block mb-1">SHOW_DETAILS:</span>
+                  <span className="text-text-secondary block mb-1">
+                    SHOW_DETAILS:
+                  </span>
                   <code className="text-accent-purple block bg-bg-primary/60 p-2 border border-border-subtle rounded">
                     multiverse repo show {repo.name}
                   </code>
                 </div>
                 <div>
-                  <span className="text-text-secondary block mb-1">CLONE_REPOSITORY:</span>
+                  <span className="text-text-secondary block mb-1">
+                    CLONE_REPOSITORY:
+                  </span>
                   <code className="text-accent-purple block bg-bg-primary/60 p-2 border border-border-subtle rounded">
                     multiverse repo clone {repo.name}
                   </code>
                 </div>
               </div>
             </Card>
-
           </div>
-
         </div>
       </Container>
     </div>

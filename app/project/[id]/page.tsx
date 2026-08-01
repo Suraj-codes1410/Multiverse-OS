@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const project = await getProjectById(id);
   if (!project) return { title: 'Project Not Found' };
-  
+
   return {
     title: `Mission Briefing: ${project.title} | Suraj Samanta`,
     description: project.description,

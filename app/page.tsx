@@ -11,9 +11,6 @@ export default async function HomePage() {
   const featuredProjects = await getFeaturedProjects();
 
   return (
-    <ClientHomePage 
-      portfolio={portfolio} 
-      featuredProjects={featuredProjects} 
-    />
+    <ClientHomePage portfolio={portfolio} featuredProjects={featuredProjects} />
   );
 }

@@ -10,35 +10,64 @@ export class OracleRecoveryManager {
       const fs = eval('require')('fs');
       const path = eval('require')('path');
       const cachePath = path.join(process.cwd(), 'data/github-sync-cache.json');
-      
+
       if (!fs.existsSync(cachePath)) {
-        console.log("RECOVERY_TRIGGERED", "Cache file missing. Initializing with empty repository list.");
+        console.log(
+          'RECOVERY_TRIGGERED',
+          'Cache file missing. Initializing with empty repository list.'
+        );
         if (process.env.VERCEL === '1') {
-          console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping recovery cache initialization.");
+          console.log(
+            'VERCEL_COMPATIBLE: Serverless environment detected. Skipping recovery cache initialization.'
+          );
         } else {
-          fs.writeFileSync(cachePath, JSON.stringify({ repositories: [], lastUpdated: new Date().toISOString() }, null, 2));
+          fs.writeFileSync(
+            cachePath,
+            JSON.stringify(
+              { repositories: [], lastUpdated: new Date().toISOString() },
+              null,
+              2
+            )
+          );
         }
       } else {
         const content = fs.readFileSync(cachePath, 'utf8');
         JSON.parse(content);
       }
     } catch (error) {
-      console.log("RECOVERY_TRIGGERED", "Cache corruption detected. Rebuilding cache file with defaults.");
+      console.log(
+        'RECOVERY_TRIGGERED',
+        'Cache corruption detected. Rebuilding cache file with defaults.'
+      );
       if (process.env.VERCEL === '1') {
-        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping corrupt cache flush.");
+        console.log(
+          'VERCEL_COMPATIBLE: Serverless environment detected. Skipping corrupt cache flush.'
+        );
       } else {
         try {
           const fs = eval('require')('fs');
           const path = eval('require')('path');
-          const cachePath = path.join(process.cwd(), 'data/github-sync-cache.json');
-          fs.writeFileSync(cachePath, JSON.stringify({ repositories: [], lastUpdated: new Date().toISOString() }, null, 2));
+          const cachePath = path.join(
+            process.cwd(),
+            'data/github-sync-cache.json'
+          );
+          fs.writeFileSync(
+            cachePath,
+            JSON.stringify(
+              { repositories: [], lastUpdated: new Date().toISOString() },
+              null,
+              2
+            )
+          );
         } catch (e) {
-          console.error("Failed to write default sync cache during recovery:", e);
+          console.error(
+            'Failed to write default sync cache during recovery:',
+            e
+          );
         }
       }
     }
   }
-
 
   /**
    * Recovers from analytics corruption or missing analytics file
@@ -47,36 +76,60 @@ export class OracleRecoveryManager {
     try {
       const fs = eval('require')('fs');
       const path = eval('require')('path');
-      const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
+      const analyticsPath = path.join(
+        process.cwd(),
+        'data/oracle-analytics.json'
+      );
 
       if (!fs.existsSync(analyticsPath)) {
-        console.log("RECOVERY_TRIGGERED", "Analytics file missing. Re-creating empty analytics database.");
+        console.log(
+          'RECOVERY_TRIGGERED',
+          'Analytics file missing. Re-creating empty analytics database.'
+        );
         if (process.env.VERCEL === '1') {
-          console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping recovery analytics initialization.");
+          console.log(
+            'VERCEL_COMPATIBLE: Serverless environment detected. Skipping recovery analytics initialization.'
+          );
         } else {
-          fs.writeFileSync(analyticsPath, JSON.stringify({ queries: [], providerCalls: [] }, null, 2));
+          fs.writeFileSync(
+            analyticsPath,
+            JSON.stringify({ queries: [], providerCalls: [] }, null, 2)
+          );
         }
       } else {
         const content = fs.readFileSync(analyticsPath, 'utf8');
         JSON.parse(content);
       }
     } catch (error) {
-      console.log("RECOVERY_TRIGGERED", "Analytics corruption detected. Flushing and recreating database.");
+      console.log(
+        'RECOVERY_TRIGGERED',
+        'Analytics corruption detected. Flushing and recreating database.'
+      );
       if (process.env.VERCEL === '1') {
-        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping corrupt analytics flush.");
+        console.log(
+          'VERCEL_COMPATIBLE: Serverless environment detected. Skipping corrupt analytics flush.'
+        );
       } else {
         try {
           const fs = eval('require')('fs');
           const path = eval('require')('path');
-          const analyticsPath = path.join(process.cwd(), 'data/oracle-analytics.json');
-          fs.writeFileSync(analyticsPath, JSON.stringify({ queries: [], providerCalls: [] }, null, 2));
+          const analyticsPath = path.join(
+            process.cwd(),
+            'data/oracle-analytics.json'
+          );
+          fs.writeFileSync(
+            analyticsPath,
+            JSON.stringify({ queries: [], providerCalls: [] }, null, 2)
+          );
         } catch (e) {
-          console.error("Failed to write default analytics during recovery:", e);
+          console.error(
+            'Failed to write default analytics during recovery:',
+            e
+          );
         }
       }
     }
   }
-
 
   /**
    * Safely fetches repositories, returning empty defaults if context or file loading fails
@@ -88,7 +141,10 @@ export class OracleRecoveryManager {
         return context.repositories;
       }
     } catch (error) {
-      console.log("RECOVERY_TRIGGERED", "Failed to retrieve context repositories. Falling back to default list.");
+      console.log(
+        'RECOVERY_TRIGGERED',
+        'Failed to retrieve context repositories. Falling back to default list.'
+      );
     }
     return [];
   }

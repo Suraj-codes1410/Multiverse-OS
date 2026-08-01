@@ -13,10 +13,12 @@ export async function generateMetadata({ params }: PageProps) {
   const { repository } = await params;
   const repo = await getRepositoryByName(repository);
   if (!repo) return { title: 'Repository Not Found' };
-  
+
   return {
     title: `Repository: ${repo.name} | Suraj Samanta`,
-    description: repo.description || `Technical dossier and metrics for GitHub repository ${repo.name}.`,
+    description:
+      repo.description ||
+      `Technical dossier and metrics for GitHub repository ${repo.name}.`,
   };
 }
 
@@ -32,27 +34,54 @@ export default async function RepositoryDetailPage({ params }: PageProps) {
 
   // Fetch the knowledge graph and locate related nodes
   const graph = await buildKnowledgeGraph();
-  const repoId = `repository:${repo.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
+  const repoId = `repository:${repo.name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')}`;
   const neighbors = graph.getNeighbors(repoId, 'both');
 
-  const relatedProjects = Array.from(new Set(
-    neighbors
-      .filter(item => item.node.type === 'Project')
-      .map(item => item.node.label)
-  ));
+  const relatedProjects = Array.from(
+    new Set(
+      neighbors
+        .filter((item) => item.node.type === 'Project')
+        .map((item) => item.node.label)
+    )
+  );
 
   const techKeywords = [
-    'spring boot', 'fastapi', 'django', 'hibernate', 'react', 'next.js', 'leaflet', 'kafka', 'rabbitmq', 'grpc', 'docker', 'spring security', 'websockets', 'pinecone', 'timescaledb', 'elasticsearch', 'redis', 'mysql', 'postgresql', 'mongodb', 'sqlite'
+    'spring boot',
+    'fastapi',
+    'django',
+    'hibernate',
+    'react',
+    'next.js',
+    'leaflet',
+    'kafka',
+    'rabbitmq',
+    'grpc',
+    'docker',
+    'spring security',
+    'websockets',
+    'pinecone',
+    'timescaledb',
+    'elasticsearch',
+    'redis',
+    'mysql',
+    'postgresql',
+    'mongodb',
+    'sqlite',
   ];
 
   const relatedSkills: string[] = [];
   const relatedTechnologies: string[] = [];
 
   neighbors
-    .filter(item => item.node.type === 'Skill')
-    .forEach(item => {
+    .filter((item) => item.node.type === 'Skill')
+    .forEach((item) => {
       const labelLower = item.node.label.toLowerCase();
-      const isTech = techKeywords.includes(labelLower) || item.node.properties.category === 'Tools';
+      const isTech =
+        techKeywords.includes(labelLower) ||
+        item.node.properties.category === 'Tools';
       if (isTech) {
         if (!relatedTechnologies.includes(item.node.label)) {
           relatedTechnologies.push(item.node.label);
@@ -65,9 +94,9 @@ export default async function RepositoryDetailPage({ params }: PageProps) {
     });
 
   return (
-    <GithubRepoDetail 
-      repo={repo} 
-      readme={readme} 
+    <GithubRepoDetail
+      repo={repo}
+      readme={readme}
       relatedProjects={relatedProjects}
       relatedSkills={relatedSkills}
       relatedTechnologies={relatedTechnologies}

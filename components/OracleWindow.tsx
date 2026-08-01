@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, X, Send, Loader2, ArrowRight, RefreshCw } from 'lucide-react';
+import {
+  Sparkles,
+  X,
+  Send,
+  Loader2,
+  ArrowRight,
+  RefreshCw,
+} from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
 
 interface Message {
@@ -48,7 +55,7 @@ const LOADING_PHASES = [
   'Scanning Knowledge Graph...',
   'Resolving Entity Relationships...',
   'Compiling Portfolio Telemetry...',
-  'Formatting Response...'
+  'Formatting Response...',
 ];
 
 // Pure helper function defined outside component scope to bypass React render purity checks
@@ -65,7 +72,7 @@ function buildMessage(
     content,
     timestamp: new Date(),
     metadata,
-    explainability
+    explainability,
   };
 }
 
@@ -111,17 +118,20 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
   // Fetch health status & log PUBLIC_LAUNCH_VIEW on open
   useEffect(() => {
     if (isOpen) {
-      console.log("PUBLIC_LAUNCH_VIEW");
+      console.log('PUBLIC_LAUNCH_VIEW');
       fetch('/api/health')
-        .then(res => res.json())
-        .then(data => setHealthStatus(data))
-        .catch(err => console.error("Error fetching health status:", err));
+        .then((res) => res.json())
+        .then((data) => setHealthStatus(data))
+        .catch((err) => console.error('Error fetching health status:', err));
 
       fetch('/api/oracle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: 'PUBLIC_LAUNCH_VIEW', eventType: 'PUBLIC_LAUNCH_VIEW' })
-      }).catch(err => console.error("Failed to log view event:", err));
+        body: JSON.stringify({
+          query: 'PUBLIC_LAUNCH_VIEW',
+          eventType: 'PUBLIC_LAUNCH_VIEW',
+        }),
+      }).catch((err) => console.error('Failed to log view event:', err));
     }
   }, [isOpen]);
 
@@ -130,7 +140,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     let interval: NodeJS.Timeout;
     if (isLoading) {
       interval = setInterval(() => {
-        setLoadingPhase(prev => (prev + 1) % LOADING_PHASES.length);
+        setLoadingPhase((prev) => (prev + 1) % LOADING_PHASES.length);
       }, 200);
     }
     return () => clearInterval(interval);
@@ -139,24 +149,26 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
   // Mount/unmount is managed cleanly by parent WindowManager. Always execute full hooks list.
 
   const getStatusText = () => {
-    if (!healthStatus) return "Connecting...";
-    if (healthStatus.status === 'healthy') return "Healthy";
-    if (healthStatus.services?.githubSync) return "Sync Active";
-    if (healthStatus.services?.analytics) return "Analytics Online";
-    return "Degraded";
+    if (!healthStatus) return 'Connecting...';
+    if (healthStatus.status === 'healthy') return 'Healthy';
+    if (healthStatus.services?.githubSync) return 'Sync Active';
+    if (healthStatus.services?.analytics) return 'Analytics Online';
+    return 'Degraded';
   };
 
   const getStatusColor = () => {
-    if (!healthStatus) return "text-text-secondary border-border-subtle bg-bg-panel/40";
-    if (healthStatus.status === 'healthy') return "text-success-green border-success-green/20 bg-success-green/10";
-    return "text-warning-amber border-warning-amber/20 bg-warning-amber/10";
+    if (!healthStatus)
+      return 'text-text-secondary border-border-subtle bg-bg-panel/40';
+    if (healthStatus.status === 'healthy')
+      return 'text-success-green border-success-green/20 bg-success-green/10';
+    return 'text-warning-amber border-warning-amber/20 bg-warning-amber/10';
   };
 
   const quickQueries = [
     { label: 'Projects', query: 'Show featured projects' },
     { label: 'Skills', query: 'List core skills' },
     { label: 'Timeline', query: 'Show career timeline' },
-    { label: 'Achievements', query: 'What are your achievements?' }
+    { label: 'Achievements', query: 'What are your achievements?' },
   ];
 
   const handleSend = async (text: string, eventType?: string) => {
@@ -168,8 +180,8 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
     // Use current counter to build user message
     const userMessage = buildMessage('user', text, counter);
     const nextCounter = counter + 1;
-    
-    setMessages(prev => [...prev, userMessage]);
+
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setLoadingPhase(0);
     setIsLoading(true);
@@ -193,37 +205,44 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Pragma': 'no-cache',
-          'Cache-Control': 'no-cache, no-store'
+          Pragma: 'no-cache',
+          'Cache-Control': 'no-cache, no-store',
         },
-        body: JSON.stringify({ query: text, eventType })
+        body: JSON.stringify({ query: text, eventType }),
       });
 
       const data = await apiResponse.json().catch(() => ({}));
 
       if (apiResponse.ok && data.text) {
-        console.log("ROUTE_OPENROUTER");
+        console.log('ROUTE_OPENROUTER');
         replyText = data.text;
         replyMetadata = data.metadata;
         replyExplainability = data.explainability;
-        
+
         // Response validation & diagnostics check
         if (data.debug) {
           setDebugData(data.debug);
         }
-        
-        const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant');
+
+        const lastAssistantMsg = [...messages]
+          .reverse()
+          .find((m) => m.role === 'assistant');
         if (lastAssistantMsg && lastAssistantMsg.content === replyText) {
-          console.warn('WARNING: Repeated response detected in consecutive model completions.');
+          console.warn(
+            'WARNING: Repeated response detected in consecutive model completions.'
+          );
         }
       } else {
-        console.log("ROUTE_FALLBACK");
+        console.log('ROUTE_FALLBACK');
         if (data.error === 'API_KEY_MISSING') {
           console.warn('OpenRouter API key missing on server.');
         } else {
-          console.error('Oracle API Route returned error:', data.message || 'Unknown error');
+          console.error(
+            'Oracle API Route returned error:',
+            data.message || 'Unknown error'
+          );
         }
-        
+
         // Load mock diagnostics
         setDebugData({
           modelUsed: 'Offline Mock Responder',
@@ -234,16 +253,20 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
             projects: [],
             repositories: [],
             achievements: [],
-            sections: ['Local Fallback Rules']
-          }
+            sections: ['Local Fallback Rules'],
+          },
         });
-        
+
         // Simulate thinking delay for cognitive response feel
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(resolve, 800));
         replyText = await getDeterministicReply(text, {
-          statusCode: data.message?.includes('status 429') ? 429 : (data.message?.includes('status 404') ? 404 : apiResponse.status),
+          statusCode: data.message?.includes('status 429')
+            ? 429
+            : data.message?.includes('status 404')
+              ? 404
+              : apiResponse.status,
           errorType: data.error,
-          message: data.message
+          message: data.message,
         });
 
         // Mock metadata for offline responder fallback
@@ -255,17 +278,23 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
             projectsUsed: ['ORBITAIR — AI-Powered AQI Forecasting'],
             repositoriesUsed: ['orbitair'],
             achievementsUsed: ['NASA Space Apps Challenge — Top 5 in India'],
-            skillsUsed: ['Python', 'FastAPI', 'React', 'TimescaleDB', 'Leaflet']
+            skillsUsed: [
+              'Python',
+              'FastAPI',
+              'React',
+              'TimescaleDB',
+              'Leaflet',
+            ],
           };
           replyExplainability = {
             resolvedEntity: 'ORBITAIR (project)',
             traversedRelationships: [
               'project:orbitair -> BUILT_WITH -> Skill (5 nodes)',
               'project:orbitair -> RELATED_TO -> Achievement (1 nodes)',
-              'project:orbitair -> DEPENDS_ON -> Repository (1 nodes)'
+              'project:orbitair -> DEPENDS_ON -> Repository (1 nodes)',
             ],
             contextSizeTokens: 750,
-            confidenceLevel: 'High'
+            confidenceLevel: 'High',
           };
         } else if (lowerText.includes('sahai')) {
           replyMetadata = {
@@ -274,39 +303,48 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
             projectsUsed: ['SAHAI — Mental Health & Lifestyle Platform'],
             repositoriesUsed: ['sahai'],
             achievementsUsed: ['Smart India Hackathon — National Participant'],
-            skillsUsed: ['Python', 'FastAPI', 'Django', 'React', 'WebSockets', 'Pinecone']
+            skillsUsed: [
+              'Python',
+              'FastAPI',
+              'Django',
+              'React',
+              'WebSockets',
+              'Pinecone',
+            ],
           };
           replyExplainability = {
             resolvedEntity: 'SAHAI (project)',
             traversedRelationships: [
               'project:sahai -> BUILT_WITH -> Skill (6 nodes)',
               'project:sahai -> RELATED_TO -> Achievement (1 nodes)',
-              'project:sahai -> DEPENDS_ON -> Repository (1 nodes)'
+              'project:sahai -> DEPENDS_ON -> Repository (1 nodes)',
             ],
             contextSizeTokens: 830,
-            confidenceLevel: 'High'
+            confidenceLevel: 'High',
           };
         } else if (lowerText.includes('kafka')) {
           replyMetadata = {
-            confidence: 0.90,
+            confidence: 0.9,
             entitiesUsed: ['Kafka (skill)'],
             projectsUsed: ['patient-management-service'],
             repositoriesUsed: ['patient-management-service'],
             achievementsUsed: [],
-            skillsUsed: ['Kafka', 'Java', 'Go']
+            skillsUsed: ['Kafka', 'Java', 'Go'],
           };
           replyExplainability = {
             resolvedEntity: 'Kafka (skill)',
-            traversedRelationships: ['skill:kafka -> USED_IN -> Project (1 nodes)'],
+            traversedRelationships: [
+              'skill:kafka -> USED_IN -> Project (1 nodes)',
+            ],
             contextSizeTokens: 1180,
-            confidenceLevel: 'Medium'
+            confidenceLevel: 'Medium',
           };
         }
       }
     } catch (err) {
-      console.log("ROUTE_FALLBACK");
+      console.log('ROUTE_FALLBACK');
       console.error('Failed to contact Oracle API:', err);
-      
+
       setDebugData({
         modelUsed: 'Offline Fallback Handler',
         contextSizeChars: 0,
@@ -316,23 +354,32 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
           projects: [],
           repositories: [],
           achievements: [],
-          sections: ['Local Network Error Fallback']
-        }
+          sections: ['Local Network Error Fallback'],
+        },
       });
 
-      const isTimeout = err instanceof Error && (err.message.toLowerCase().includes('timeout') || err.message.toLowerCase().includes('timed out'));
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const isTimeout =
+        err instanceof Error &&
+        (err.message.toLowerCase().includes('timeout') ||
+          err.message.toLowerCase().includes('timed out'));
+      await new Promise((resolve) => setTimeout(resolve, 800));
       replyText = await getDeterministicReply(text, {
         errorType: isTimeout ? 'TIMEOUT' : 'NETWORK_FAILURE',
-        message: err instanceof Error ? err.message : String(err)
+        message: err instanceof Error ? err.message : String(err),
       });
     }
 
     // Use nextCounter to build assistant message
-    const assistantMessage = buildMessage('assistant', replyText, nextCounter, replyMetadata, replyExplainability);
+    const assistantMessage = buildMessage(
+      'assistant',
+      replyText,
+      nextCounter,
+      replyMetadata,
+      replyExplainability
+    );
     setCounter(nextCounter + 1);
 
-    setMessages(prev => [...prev, assistantMessage]);
+    setMessages((prev) => [...prev, assistantMessage]);
     setIsLoading(false);
   };
 
@@ -352,8 +399,8 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
         id: `welcome-${Date.now()}`,
         role: 'assistant',
         content: WELCOME_MESSAGE,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     ]);
   };
 
@@ -367,14 +414,19 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       <div className="border-b border-border-subtle bg-bg-panel/90 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-accent-purple" />
-          <span id="oracle-title" className="font-mono text-xs font-bold text-text-primary tracking-wide">
+          <span
+            id="oracle-title"
+            className="font-mono text-xs font-bold text-text-primary tracking-wide"
+          >
             ORACLE SYSTEM v1.0
           </span>
           <span className="flex h-1.5 w-1.5 relative ml-1">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-green opacity-75" />
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-success-green" />
           </span>
-          <span className="font-mono text-[9px] text-success-green/80 uppercase tracking-tighter">ONLINE</span>
+          <span className="font-mono text-[9px] text-success-green/80 uppercase tracking-tighter">
+            ONLINE
+          </span>
         </div>
         <div className="flex items-center gap-2">
           {messages.length > 0 && (
@@ -415,7 +467,9 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
                 AI-Powered Portfolio Intelligence
               </p>
               <p className="text-[11px] text-text-secondary leading-relaxed mt-2.5">
-                Ask questions about Suraj's projects, repositories, skills, and experience. Powered by local intelligence, semantic graph routing, and offline failovers.
+                Ask questions about Suraj's projects, repositories, skills, and
+                experience. Powered by local intelligence, semantic graph
+                routing, and offline failovers.
               </p>
             </div>
 
@@ -427,15 +481,28 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Backend Engineering", query: "Which project best demonstrates backend engineering?" },
-                  { label: "AI Engineering", query: "Which project best demonstrates AI/ML?" },
-                  { label: "Resume Review", query: "Why should Suraj be hired?" },
-                  { label: "Project Recs", query: "What is Suraj's strongest project?" }
+                  {
+                    label: 'Backend Engineering',
+                    query:
+                      'Which project best demonstrates backend engineering?',
+                  },
+                  {
+                    label: 'AI Engineering',
+                    query: 'Which project best demonstrates AI/ML?',
+                  },
+                  {
+                    label: 'Resume Review',
+                    query: 'Why should Suraj be hired?',
+                  },
+                  {
+                    label: 'Project Recs',
+                    query: "What is Suraj's strongest project?",
+                  },
                 ].map((action) => (
                   <button
                     key={action.label}
                     onClick={() => {
-                      console.log("RECRUITER_MODE_CLICK", action.label);
+                      console.log('RECRUITER_MODE_CLICK', action.label);
                       handleSend(action.query, 'RECRUITER_MODE_CLICK');
                     }}
                     className="p-2 border border-border-subtle bg-bg-panel/40 hover:bg-[#111424] hover:border-accent-cyan/50 text-left rounded-lg transition-all duration-200 cursor-pointer group"
@@ -457,20 +524,20 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
                 <span className="w-1.5 h-1.5 bg-accent-purple rounded-full" />
                 Suggested Starter Queries
               </h3>
-              
+
               <div className="flex flex-col gap-1.5">
                 {[
-                  "Which project best demonstrates backend engineering?",
-                  "Compare SAHAI and ORBITAIR.",
-                  "Why should Suraj be hired for a backend role?",
+                  'Which project best demonstrates backend engineering?',
+                  'Compare SAHAI and ORBITAIR.',
+                  'Why should Suraj be hired for a backend role?',
                   "Tell me Suraj's engineering journey.",
-                  "What technologies power ORBITAIR?",
-                  "What are Suraj's strongest technical skills?"
+                  'What technologies power ORBITAIR?',
+                  "What are Suraj's strongest technical skills?",
                 ].map((q) => (
                   <button
                     key={q}
                     onClick={() => {
-                      console.log("SUGGESTED_QUERY_CLICK", q);
+                      console.log('SUGGESTED_QUERY_CLICK', q);
                       handleSend(q, 'SUGGESTED_QUERY_CLICK');
                     }}
                     className="px-3 py-2 border border-border-subtle bg-bg-panel/30 hover:bg-bg-panel/85 hover:border-accent-purple/40 text-left text-[11px] text-text-secondary hover:text-text-primary transition-all rounded-lg cursor-pointer font-mono"
@@ -483,113 +550,160 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
 
             {/* Help / Tip Bar */}
             <div className="border border-border-subtle bg-bg-panel/20 rounded-xl p-3 text-center font-mono text-[10px] text-text-secondary">
-              <span className="text-text-primary">Tip:</span> Ask about specific technologies like <span className="text-accent-cyan font-bold">FastAPI</span>, <span className="text-accent-cyan font-bold">Spring Boot</span>, or <span className="text-accent-cyan font-bold">Kafka</span>.
+              <span className="text-text-primary">Tip:</span> Ask about specific
+              technologies like{' '}
+              <span className="text-accent-cyan font-bold">FastAPI</span>,{' '}
+              <span className="text-accent-cyan font-bold">Spring Boot</span>,
+              or <span className="text-accent-cyan font-bold">Kafka</span>.
             </div>
           </div>
         ) : (
           /* Message List Component (Clean system-log design, avoids speech bubbles) */
-          messages.map(msg => (
+          messages.map((msg) => (
             <div
               key={msg.id}
               className="flex flex-col w-full border-b border-border-subtle/30 pb-4 last:border-0"
             >
               <div className="flex items-center justify-between mb-2 font-mono text-[10px]">
-                <span className={`font-bold tracking-wide uppercase ${
-                  msg.role === 'user' ? 'text-text-secondary' : 'text-accent-purple'
-                }`}>
+                <span
+                  className={`font-bold tracking-wide uppercase ${
+                    msg.role === 'user'
+                      ? 'text-text-secondary'
+                      : 'text-accent-purple'
+                  }`}
+                >
                   {msg.role === 'user' ? '↳ QUERY' : '◆ ORACLE RESPONSE'}
                 </span>
                 <span className="text-text-secondary/40">
-                  {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  {msg.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}
                 </span>
               </div>
-              <div className={`text-xs text-text-primary leading-relaxed pl-3 border-l ${
-                msg.role === 'user' ? 'border-text-secondary/35 font-mono text-[11px] text-text-secondary' : 'border-accent-purple'
-              }`}>
+              <div
+                className={`text-xs text-text-primary leading-relaxed pl-3 border-l ${
+                  msg.role === 'user'
+                    ? 'border-text-secondary/35 font-mono text-[11px] text-text-secondary'
+                    : 'border-accent-purple'
+                }`}
+              >
                 {msg.role === 'assistant' ? (
                   <MarkdownRenderer content={msg.content} />
                 ) : (
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 )}
 
-                {msg.role === 'assistant' && (msg.metadata || msg.explainability) && (
-                  <div className="mt-4 pt-3 border-t border-border-subtle/30 space-y-3 font-mono text-[11px] select-none">
-                    {/* Confidence Indicator */}
-                    {msg.explainability && (
-                      <div className="flex items-center gap-1.5 text-text-secondary">
-                        <span className="font-bold">Confidence:</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                          msg.explainability.confidenceLevel === 'High' 
-                            ? 'bg-success-green/10 text-success-green border border-success-green/20' 
-                            : msg.explainability.confidenceLevel === 'Medium'
-                            ? 'bg-warning-amber/10 text-warning-amber border border-warning-amber/20'
-                            : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                        }`}>
-                          {msg.explainability.confidenceLevel}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Sources Used Section */}
-                    {msg.metadata && (
-                      <div className="space-y-1">
-                        <div className="text-[10px] uppercase font-bold text-accent-purple/90 tracking-wide">Sources Used</div>
-                        <ul className="pl-2 space-y-1 text-text-secondary">
-                          {msg.metadata.projectsUsed.length > 0 && (
-                            <li>
-                              <strong className="text-text-primary">Project:</strong> {msg.metadata.projectsUsed.join(', ')}
-                            </li>
-                          )}
-                          {msg.metadata.repositoriesUsed.length > 0 && (
-                            <li>
-                              <strong className="text-text-primary">Repository:</strong> {msg.metadata.repositoriesUsed.join(', ')}
-                            </li>
-                          )}
-                          {msg.metadata.achievementsUsed.length > 0 && (
-                            <li>
-                              <strong className="text-text-primary">Achievement:</strong> {msg.metadata.achievementsUsed.join(', ')}
-                            </li>
-                          )}
-                          {msg.metadata.skillsUsed.length > 0 && (
-                            <li>
-                              <strong className="text-text-primary">Technologies:</strong> {msg.metadata.skillsUsed.join(', ')}
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Reasoning Summary (Collapsible Section) */}
-                    {msg.explainability && (
-                      <details className="group border border-border-subtle/30 rounded bg-bg-primary/20 overflow-hidden">
-                        <summary className="px-2 py-1 text-[10px] text-text-secondary hover:text-text-primary cursor-pointer select-none font-bold uppercase tracking-wide flex items-center justify-between">
-                          <span>How this answer was generated</span>
-                          <span className="transition-transform duration-200 group-open:rotate-180">▼</span>
-                        </summary>
-                        <div className="px-2 py-2 border-t border-border-subtle/25 bg-bg-panel/20 text-text-secondary space-y-1 text-[10px]">
-                          <div>
-                            <strong className="text-text-primary">Entity Resolved:</strong> {msg.explainability.resolvedEntity || 'None'}
-                          </div>
-                          <div>
-                            <strong className="text-text-primary">Relationships Traversed:</strong>
-                            {msg.explainability.traversedRelationships.length > 0 ? (
-                              <ul className="pl-3 list-disc mt-0.5 space-y-0.5">
-                                {msg.explainability.traversedRelationships.map((r, i) => (
-                                  <li key={i}>{r}</li>
-                                ))}
-                              </ul>
-                            ) : (
-                              ' None (Direct model lookup)'
-                            )}
-                          </div>
-                          <div>
-                            <strong className="text-text-primary">Context Size:</strong> {msg.explainability.contextSizeTokens} tokens
-                          </div>
+                {msg.role === 'assistant' &&
+                  (msg.metadata || msg.explainability) && (
+                    <div className="mt-4 pt-3 border-t border-border-subtle/30 space-y-3 font-mono text-[11px] select-none">
+                      {/* Confidence Indicator */}
+                      {msg.explainability && (
+                        <div className="flex items-center gap-1.5 text-text-secondary">
+                          <span className="font-bold">Confidence:</span>
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              msg.explainability.confidenceLevel === 'High'
+                                ? 'bg-success-green/10 text-success-green border border-success-green/20'
+                                : msg.explainability.confidenceLevel ===
+                                    'Medium'
+                                  ? 'bg-warning-amber/10 text-warning-amber border border-warning-amber/20'
+                                  : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                            }`}
+                          >
+                            {msg.explainability.confidenceLevel}
+                          </span>
                         </div>
-                      </details>
-                    )}
-                  </div>
-                )}
+                      )}
+
+                      {/* Sources Used Section */}
+                      {msg.metadata && (
+                        <div className="space-y-1">
+                          <div className="text-[10px] uppercase font-bold text-accent-purple/90 tracking-wide">
+                            Sources Used
+                          </div>
+                          <ul className="pl-2 space-y-1 text-text-secondary">
+                            {msg.metadata.projectsUsed.length > 0 && (
+                              <li>
+                                <strong className="text-text-primary">
+                                  Project:
+                                </strong>{' '}
+                                {msg.metadata.projectsUsed.join(', ')}
+                              </li>
+                            )}
+                            {msg.metadata.repositoriesUsed.length > 0 && (
+                              <li>
+                                <strong className="text-text-primary">
+                                  Repository:
+                                </strong>{' '}
+                                {msg.metadata.repositoriesUsed.join(', ')}
+                              </li>
+                            )}
+                            {msg.metadata.achievementsUsed.length > 0 && (
+                              <li>
+                                <strong className="text-text-primary">
+                                  Achievement:
+                                </strong>{' '}
+                                {msg.metadata.achievementsUsed.join(', ')}
+                              </li>
+                            )}
+                            {msg.metadata.skillsUsed.length > 0 && (
+                              <li>
+                                <strong className="text-text-primary">
+                                  Technologies:
+                                </strong>{' '}
+                                {msg.metadata.skillsUsed.join(', ')}
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Reasoning Summary (Collapsible Section) */}
+                      {msg.explainability && (
+                        <details className="group border border-border-subtle/30 rounded bg-bg-primary/20 overflow-hidden">
+                          <summary className="px-2 py-1 text-[10px] text-text-secondary hover:text-text-primary cursor-pointer select-none font-bold uppercase tracking-wide flex items-center justify-between">
+                            <span>How this answer was generated</span>
+                            <span className="transition-transform duration-200 group-open:rotate-180">
+                              ▼
+                            </span>
+                          </summary>
+                          <div className="px-2 py-2 border-t border-border-subtle/25 bg-bg-panel/20 text-text-secondary space-y-1 text-[10px]">
+                            <div>
+                              <strong className="text-text-primary">
+                                Entity Resolved:
+                              </strong>{' '}
+                              {msg.explainability.resolvedEntity || 'None'}
+                            </div>
+                            <div>
+                              <strong className="text-text-primary">
+                                Relationships Traversed:
+                              </strong>
+                              {msg.explainability.traversedRelationships
+                                .length > 0 ? (
+                                <ul className="pl-3 list-disc mt-0.5 space-y-0.5">
+                                  {msg.explainability.traversedRelationships.map(
+                                    (r, i) => (
+                                      <li key={i}>{r}</li>
+                                    )
+                                  )}
+                                </ul>
+                              ) : (
+                                ' None (Direct model lookup)'
+                              )}
+                            </div>
+                            <div>
+                              <strong className="text-text-primary">
+                                Context Size:
+                              </strong>{' '}
+                              {msg.explainability.contextSizeTokens} tokens
+                            </div>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
           ))
@@ -619,8 +733,10 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       {/* Suggestion Chips */}
       {messages.length > 0 && !isLoading && (
         <div className="px-4 py-2 border-t border-border-subtle bg-bg-primary/20 flex flex-wrap gap-2 items-center">
-          <span className="text-[10px] text-text-secondary font-mono mr-1">Quick Queries:</span>
-          {quickQueries.map(chip => (
+          <span className="text-[10px] text-text-secondary font-mono mr-1">
+            Quick Queries:
+          </span>
+          {quickQueries.map((chip) => (
             <button
               key={chip.label}
               onClick={() => handleSend(chip.query)}
@@ -636,7 +752,10 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       {/* Collapsible Debug Panel (Development only) */}
       {process.env.NODE_ENV !== 'production' && debugData && (
         <div className="border-t border-border-subtle bg-bg-primary/40 px-4 py-2 font-mono text-[9px] text-text-secondary select-none">
-          <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowDebug(prev => !prev)}>
+          <div
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setShowDebug((prev) => !prev)}
+          >
             <span className="font-bold text-accent-cyan flex items-center gap-1">
               [DIAGNOSTICS] {showDebug ? '▼' : '▶'}
             </span>
@@ -644,16 +763,36 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
           </div>
           {showDebug && (
             <div className="mt-2 space-y-1.5 border-t border-border-subtle/30 pt-2 animate-in fade-in duration-200">
-              <div><strong className="text-text-primary">Model:</strong> {debugData.modelUsed}</div>
-              <div><strong className="text-text-primary">Payload Size:</strong> {debugData.contextSizeChars} chars (~{debugData.estimatedTokens} tokens)</div>
+              <div>
+                <strong className="text-text-primary">Model:</strong>{' '}
+                {debugData.modelUsed}
+              </div>
+              <div>
+                <strong className="text-text-primary">Payload Size:</strong>{' '}
+                {debugData.contextSizeChars} chars (~{debugData.estimatedTokens}{' '}
+                tokens)
+              </div>
               {debugData.selectedEntities.sections.length > 0 && (
-                <div><strong className="text-text-primary">Matched Sections:</strong> {debugData.selectedEntities.sections.join(', ')}</div>
+                <div>
+                  <strong className="text-text-primary">
+                    Matched Sections:
+                  </strong>{' '}
+                  {debugData.selectedEntities.sections.join(', ')}
+                </div>
               )}
               {debugData.selectedEntities.projects.length > 0 && (
-                <div><strong className="text-text-primary">Target Projects:</strong> {debugData.selectedEntities.projects.join(', ')}</div>
+                <div>
+                  <strong className="text-text-primary">
+                    Target Projects:
+                  </strong>{' '}
+                  {debugData.selectedEntities.projects.join(', ')}
+                </div>
               )}
               {debugData.selectedEntities.skills.length > 0 && (
-                <div><strong className="text-text-primary">Target Skills:</strong> {debugData.selectedEntities.skills.join(', ')}</div>
+                <div>
+                  <strong className="text-text-primary">Target Skills:</strong>{' '}
+                  {debugData.selectedEntities.skills.join(', ')}
+                </div>
               )}
             </div>
           )}
@@ -666,7 +805,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
           ref={inputRef}
           type="text"
           value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
+          onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask the Oracle..."
           className="flex-grow bg-bg-primary/50 border border-border-subtle rounded-lg px-3 py-2 text-xs focus:outline-none text-text-primary focus:border-accent-purple/50 placeholder:text-text-secondary/50 font-mono transition-colors"
@@ -694,47 +833,72 @@ async function getDeterministicReply(
     message?: string;
   }
 ): Promise<string> {
-  const title = "Oracle temporarily unavailable.";
-  let reason = "An unknown error occurred.";
-  let instructions = "Please try again shortly.";
+  const title = 'Oracle temporarily unavailable.';
+  let reason = 'An unknown error occurred.';
+  let instructions = 'Please try again shortly.';
 
   const messageLower = (options?.message || '').toLowerCase();
   const errorType = options?.errorType;
   const statusCode = options?.statusCode;
 
   // 1. Missing API Key
-  if (errorType === 'API_KEY_MISSING' || messageLower.includes('api key') || messageLower.includes('key missing')) {
-    reason = "Configuration error: OpenRouter API key is missing on the server.";
-    instructions = "Please configure the OPENROUTER_API_KEY environment variable.";
+  if (
+    errorType === 'API_KEY_MISSING' ||
+    messageLower.includes('api key') ||
+    messageLower.includes('key missing')
+  ) {
+    reason =
+      'Configuration error: OpenRouter API key is missing on the server.';
+    instructions =
+      'Please configure the OPENROUTER_API_KEY environment variable.';
   }
   // 2. Rate Limit (HTTP 429)
-  else if (statusCode === 429 || messageLower.includes('429') || messageLower.includes('rate limit') || messageLower.includes('quota')) {
-    reason = "OpenRouter rate limit reached (HTTP 429).";
-    instructions = "Try again in a few minutes.";
+  else if (
+    statusCode === 429 ||
+    messageLower.includes('429') ||
+    messageLower.includes('rate limit') ||
+    messageLower.includes('quota')
+  ) {
+    reason = 'OpenRouter rate limit reached (HTTP 429).';
+    instructions = 'Try again in a few minutes.';
   }
   // 3. Model/Provider Unavailable (HTTP 404)
-  else if (statusCode === 404 || messageLower.includes('404') || messageLower.includes('unavailable') || messageLower.includes('not found')) {
+  else if (
+    statusCode === 404 ||
+    messageLower.includes('404') ||
+    messageLower.includes('unavailable') ||
+    messageLower.includes('not found')
+  ) {
     reason = `AI Provider or Model unavailable (HTTP ${statusCode || 404}).`;
-    instructions = "Please verify your model configuration slug or check OpenRouter status.";
+    instructions =
+      'Please verify your model configuration slug or check OpenRouter status.';
   }
   // 4. Timeout
-  else if (errorType === 'TIMEOUT' || messageLower.includes('timeout') || messageLower.includes('timed out')) {
-    reason = "Request timed out.";
-    instructions = "Please check your network connection and retry.";
+  else if (
+    errorType === 'TIMEOUT' ||
+    messageLower.includes('timeout') ||
+    messageLower.includes('timed out')
+  ) {
+    reason = 'Request timed out.';
+    instructions = 'Please check your network connection and retry.';
   }
   // 5. Network Failure
-  else if (errorType === 'NETWORK_FAILURE' || messageLower.includes('fetch') || messageLower.includes('network')) {
-    reason = "Network connection failure.";
-    instructions = "Please check your internet connection and try again.";
+  else if (
+    errorType === 'NETWORK_FAILURE' ||
+    messageLower.includes('fetch') ||
+    messageLower.includes('network')
+  ) {
+    reason = 'Network connection failure.';
+    instructions = 'Please check your internet connection and try again.';
   }
   // Catch-all with status code if present
   else {
-    const statusText = statusCode ? ` (HTTP ${statusCode})` : "";
+    const statusText = statusCode ? ` (HTTP ${statusCode})` : '';
     reason = `OpenRouter API execution failure${statusText}.`;
     if (options?.message) {
       reason += ` Details: ${options.message}`;
     }
-    instructions = "Please try again shortly.";
+    instructions = 'Please try again shortly.';
   }
 
   return `### ${title}\n\n**Reason:**\n${reason}\n\n${instructions}`;

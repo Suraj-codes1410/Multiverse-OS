@@ -10,7 +10,9 @@ export interface LayoutState {
 const LayoutContext = createContext<LayoutState | null>(null);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [viewportType, setViewportType] = useState<'desktop' | 'mobile'>('desktop');
+  const [viewportType, setViewportType] = useState<'desktop' | 'mobile'>(
+    'desktop'
+  );
 
   useEffect(() => {
     const checkViewport = () => {

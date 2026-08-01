@@ -1,4 +1,10 @@
-import { IKnowledgeGraph, KnowledgeNode, KnowledgeRelationship, NodeType, RelationshipType } from './types';
+import {
+  IKnowledgeGraph,
+  KnowledgeNode,
+  KnowledgeRelationship,
+  NodeType,
+  RelationshipType,
+} from './types';
 
 export class KnowledgeGraph implements IKnowledgeGraph {
   nodes: Map<string, KnowledgeNode> = new Map();
@@ -13,10 +19,13 @@ export class KnowledgeGraph implements IKnowledgeGraph {
     if (rel.sourceId === rel.targetId) {
       return;
     }
-    
+
     // Prevent duplicate relationships
     const exists = this.relationships.some(
-      r => r.sourceId === rel.sourceId && r.targetId === rel.targetId && r.type === rel.type
+      (r) =>
+        r.sourceId === rel.sourceId &&
+        r.targetId === rel.targetId &&
+        r.type === rel.type
     );
     if (!exists) {
       this.relationships.push(rel);
@@ -39,16 +48,25 @@ export class KnowledgeGraph implements IKnowledgeGraph {
     id: string,
     direction: 'incoming' | 'outgoing' | 'both' = 'both'
   ): { node: KnowledgeNode; relationship: KnowledgeRelationship }[] {
-    const neighbors: { node: KnowledgeNode; relationship: KnowledgeRelationship }[] = [];
+    const neighbors: {
+      node: KnowledgeNode;
+      relationship: KnowledgeRelationship;
+    }[] = [];
 
-    this.relationships.forEach(rel => {
-      if ((direction === 'outgoing' || direction === 'both') && rel.sourceId === id) {
+    this.relationships.forEach((rel) => {
+      if (
+        (direction === 'outgoing' || direction === 'both') &&
+        rel.sourceId === id
+      ) {
         const targetNode = this.getNode(rel.targetId);
         if (targetNode) {
           neighbors.push({ node: targetNode, relationship: rel });
         }
       }
-      if ((direction === 'incoming' || direction === 'both') && rel.targetId === id) {
+      if (
+        (direction === 'incoming' || direction === 'both') &&
+        rel.targetId === id
+      ) {
         const sourceNode = this.getNode(rel.sourceId);
         if (sourceNode) {
           neighbors.push({ node: sourceNode, relationship: rel });
@@ -60,15 +78,17 @@ export class KnowledgeGraph implements IKnowledgeGraph {
   }
 
   getNodesByType(type: NodeType): KnowledgeNode[] {
-    return this.getNodes().filter(n => n.type === type);
+    return this.getNodes().filter((n) => n.type === type);
   }
 
   getRelationshipsByType(type: RelationshipType): KnowledgeRelationship[] {
-    return this.relationships.filter(r => r.type === type);
+    return this.relationships.filter((r) => r.type === type);
   }
 
   getRelationshipsForNode(id: string): KnowledgeRelationship[] {
-    return this.relationships.filter(r => r.sourceId === id || r.targetId === id);
+    return this.relationships.filter(
+      (r) => r.sourceId === id || r.targetId === id
+    );
   }
 
   findPath(sourceId: string, targetId: string): KnowledgeNode[] | null {
@@ -89,7 +109,7 @@ export class KnowledgeGraph implements IKnowledgeGraph {
       const lastNodeId = path[path.length - 1];
 
       if (lastNodeId === targetId) {
-        return path.map(id => this.getNode(id)!).filter(Boolean);
+        return path.map((id) => this.getNode(id)!).filter(Boolean);
       }
 
       // Check outgoing relationships for next steps
@@ -108,11 +128,13 @@ export class KnowledgeGraph implements IKnowledgeGraph {
 
   search(query: string): KnowledgeNode[] {
     const normalizedQuery = query.toLowerCase();
-    return this.getNodes().filter(node => {
+    return this.getNodes().filter((node) => {
       if (node.label.toLowerCase().includes(normalizedQuery)) {
         return true;
       }
-      if (node.properties.description?.toLowerCase().includes(normalizedQuery)) {
+      if (
+        node.properties.description?.toLowerCase().includes(normalizedQuery)
+      ) {
         return true;
       }
       if (node.type.toLowerCase().includes(normalizedQuery)) {

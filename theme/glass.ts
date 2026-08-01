@@ -6,10 +6,10 @@ export const glass = {
     lg: 'blur(16px)',
   },
   bg: {
-    thin: 'rgba(10, 12, 22, 0.3)',      // 30% alpha for standard interactive cards
-    medium: 'rgba(10, 12, 22, 0.5)',    // 50% alpha for page layout panels
-    thick: 'rgba(10, 12, 22, 0.85)',    // 85% alpha for solid dashboard overlays
-    primaryThin: 'rgba(3, 4, 7, 0.75)',  // 75% alpha for root backdrop overlays
+    thin: 'rgba(10, 12, 22, 0.3)', // 30% alpha for standard interactive cards
+    medium: 'rgba(10, 12, 22, 0.5)', // 50% alpha for page layout panels
+    thick: 'rgba(10, 12, 22, 0.85)', // 85% alpha for solid dashboard overlays
+    primaryThin: 'rgba(3, 4, 7, 0.75)', // 75% alpha for root backdrop overlays
   },
   border: {
     subtle: 'rgba(30, 41, 59, 0.4)',
@@ -31,8 +31,8 @@ export const glass = {
     overlay: {
       background: 'rgba(3, 4, 7, 0.75)',
       backdropFilter: 'blur(4px)',
-    }
-  }
+    },
+  },
 } as const;
 
 export type GlassToken = typeof glass;

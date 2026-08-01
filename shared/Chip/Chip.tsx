@@ -18,7 +18,8 @@ export function Chip({
   className = '',
   active = false,
 }: ChipProps) {
-  const baseStyles = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono select-none transition-all duration-200 border';
+  const baseStyles =
+    'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono select-none transition-all duration-200 border';
   const stateStyles = active
     ? 'bg-accent-cyan/15 text-accent-cyan border-accent-cyan/45 shadow-[0_0_8px_rgba(0,242,254,0.1)]'
     : 'bg-bg-panel/40 text-text-secondary border-border-subtle hover:text-text-primary hover:border-border-bright hover:bg-bg-panel/85';

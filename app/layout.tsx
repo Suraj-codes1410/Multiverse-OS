@@ -21,7 +21,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'Suraj Samanta | Backend Developer & AI Engineer',
-  description: 'Portfolio of Suraj Samanta, specializing in high-performance distributed backend architectures, scalable data systems, and multi-agent AI orchestration.',
+  description:
+    'Portfolio of Suraj Samanta, specializing in high-performance distributed backend architectures, scalable data systems, and multi-agent AI orchestration.',
   authors: [{ name: 'Suraj Samanta' }],
 };
 
@@ -40,9 +41,7 @@ export default function RootLayout({
           <SharedLayout>
             <BootSequence />
             <Navbar />
-            <main className="flex-grow flex flex-col">
-              {children}
-            </main>
+            <main className="flex-grow flex flex-col">{children}</main>
             <Footer />
           </SharedLayout>
         </ShellProvider>

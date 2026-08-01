@@ -33,8 +33,8 @@ export function GestureProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <GestureContext.Provider value={{ swipeDirection: 'none' }}>
-      <div 
-        onTouchStart={handleTouchStart} 
+      <div
+        onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         className="w-full h-full"
       >

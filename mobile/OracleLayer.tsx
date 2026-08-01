@@ -14,13 +14,18 @@ interface Message {
 export function OracleLayer() {
   const { activeTab, setActiveTab } = useNavigation();
   const isOpen = activeTab === 'oracle';
-  
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I am Oracle, Suraj's automated technical companion. Ask me anything about his systems experience, projects, or background.",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-    }
+      content:
+        "Hello! I am Oracle, Suraj's automated technical companion. Ask me anything about his systems experience, projects, or background.",
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }),
+    },
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,10 +38,14 @@ export function OracleLayer() {
     const userMsg: Message = {
       role: 'user',
       content: text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }),
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInputValue('');
     setIsLoading(true);
 
@@ -44,30 +53,44 @@ export function OracleLayer() {
       const response = await fetch('/api/oracle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text })
+        body: JSON.stringify({ query: text }),
       });
 
       const data = await response.json().catch(() => ({}));
-      
-      let replyText = "I encountered a processing issue. Please try again.";
+
+      let replyText = 'I encountered a processing issue. Please try again.';
       if (response.ok && data.text) {
         replyText = data.text;
       } else if (data.message) {
         replyText = `Oracle API Fallback: ${data.message}`;
       }
 
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: replyText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: replyText,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }),
+        },
+      ]);
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: "Network issue. Operating in degraded fallback mode.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'Network issue. Operating in degraded fallback mode.',
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }),
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -105,10 +128,10 @@ export function OracleLayer() {
   };
 
   const suggestions = [
-    "Core Technologies",
-    "Open Source Work",
-    "Contact Info",
-    "Availability Status"
+    'Core Technologies',
+    'Open Source Work',
+    'Contact Info',
+    'Availability Status',
   ];
 
   if (!isOpen) return null;
@@ -149,20 +172,49 @@ export function OracleLayer() {
               }`}
             >
               {/* Avatar Icon */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border shadow-sm ${
-                isUser 
-                  ? 'bg-accent-cyan/8 border-accent-cyan/20 text-accent-cyan' 
-                  : 'bg-white border-window-border text-text-secondary'
-              }`}>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border shadow-sm ${
+                  isUser
+                    ? 'bg-accent-cyan/8 border-accent-cyan/20 text-accent-cyan'
+                    : 'bg-white border-window-border text-text-secondary'
+                }`}
+              >
                 {isUser ? (
                   <User className="w-4 h-4" />
                 ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="w-4.5 h-4.5">
-                    <rect x="5" y="7" width="14" height="11" rx="4" fill="#FFFFFF" stroke="#6A6D70" strokeWidth="1.5" />
-                    <rect x="8" y="10" width="8" height="4" rx="1.5" fill="#2B2D2F" />
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="w-4.5 h-4.5"
+                  >
+                    <rect
+                      x="5"
+                      y="7"
+                      width="14"
+                      height="11"
+                      rx="4"
+                      fill="#FFFFFF"
+                      stroke="#6A6D70"
+                      strokeWidth="1.5"
+                    />
+                    <rect
+                      x="8"
+                      y="10"
+                      width="8"
+                      height="4"
+                      rx="1.5"
+                      fill="#2B2D2F"
+                    />
                     <circle cx="10" cy="12" r="0.75" fill="#E06A3F" />
                     <circle cx="14" cy="12" r="0.75" fill="#E06A3F" />
-                    <path d="M10 15C10.5 15.5 11.2 15.7 12 15.7C12.8 15.7 13.5 15.5 14 15" stroke="#6A6D70" strokeWidth="1.2" strokeLinecap="round" />
+                    <path
+                      d="M10 15C10.5 15.5 11.2 15.7 12 15.7C12.8 15.7 13.5 15.5 14 15"
+                      stroke="#6A6D70"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 )}
               </div>
@@ -178,7 +230,9 @@ export function OracleLayer() {
                 >
                   {msg.content}
                 </div>
-                <span className={`text-[8px] font-mono text-text-secondary/40 mt-1 ${isUser ? 'self-end' : 'self-start'}`}>
+                <span
+                  className={`text-[8px] font-mono text-text-secondary/40 mt-1 ${isUser ? 'self-end' : 'self-start'}`}
+                >
                   {msg.timestamp}
                 </span>
               </div>
@@ -190,9 +244,28 @@ export function OracleLayer() {
         {isLoading && (
           <div className="self-start flex gap-3 items-center">
             <div className="w-8 h-8 rounded-full bg-white border border-window-border flex items-center justify-center shadow-sm">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="w-4.5 h-4.5 animate-spin">
-                <circle cx="12" cy="12" r="10" stroke="#border-subtle" strokeWidth="2" fill="none" />
-                <path d="M12 2C6.48 2 2 6.48 2 12" stroke="#E06A3F" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="w-4.5 h-4.5 animate-spin"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#border-subtle"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12"
+                  stroke="#E06A3F"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeLinecap="round"
+                />
               </svg>
             </div>
             <div className="p-3 rounded-2xl bg-white border border-window-border/50 text-[10px] font-mono text-text-secondary animate-pulse">
@@ -206,14 +279,15 @@ export function OracleLayer() {
 
       {/* INPUT AREA OPTIMIZED FOR TOUCH */}
       <div className="p-4 border-t border-border-subtle/30 bg-bg-panel/90 backdrop-blur-md absolute bottom-0 inset-x-0 z-50">
-        
         {/* Suggestion Chips */}
         {messages.length === 1 && (
           <div className="flex gap-2 overflow-x-auto pb-3.5 scrollbar-none select-none -mx-2 px-2">
             {suggestions.map((chip, idx) => (
               <button
                 key={idx}
-                onClick={() => handleSend(`Tell me about Suraj's ${chip.toLowerCase()}`)}
+                onClick={() =>
+                  handleSend(`Tell me about Suraj's ${chip.toLowerCase()}`)
+                }
                 className="px-3 py-1.5 rounded-full bg-white border border-window-border/80 text-[10px] text-text-secondary hover:text-accent-cyan hover:border-accent-cyan/35 transition-all flex-shrink-0 cursor-pointer shadow-sm active:scale-95"
               >
                 {chip}
@@ -236,7 +310,7 @@ export function OracleLayer() {
             <Mic className="w-4 h-4" />
           </button>
 
-          <form 
+          <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend(inputValue);
@@ -247,7 +321,11 @@ export function OracleLayer() {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder={isListening ? "Listening... Speak now..." : "Ask about skills, projects..."}
+              placeholder={
+                isListening
+                  ? 'Listening... Speak now...'
+                  : 'Ask about skills, projects...'
+              }
               className="w-full bg-white border border-window-border rounded-xl py-2.5 pl-3.5 pr-10 font-sans text-xs text-text-primary placeholder:text-text-secondary/40 focus:outline-none focus:border-accent-cyan/40 focus:ring-1 focus:ring-accent-cyan/15 shadow-sm"
             />
             <button

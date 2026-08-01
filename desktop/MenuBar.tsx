@@ -65,10 +65,10 @@ export function MenuBar() {
       {/* LEFT: Branding & Logo */}
       <div className="flex items-center gap-4">
         {/* Branding Logo wrapper */}
-        <div 
-          onClick={() => desktopContext?.openWindow('home')} 
-          className="flex items-center gap-2 group cursor-pointer" 
-          tabIndex={0} 
+        <div
+          onClick={() => desktopContext?.openWindow('home')}
+          className="flex items-center gap-2 group cursor-pointer"
+          tabIndex={0}
           aria-label="System Menu Branding"
         >
           <span className="relative flex h-2 w-2">
@@ -81,21 +81,24 @@ export function MenuBar() {
         </div>
 
         {/* Future menu item anchors placeholders */}
-        <nav className="hidden md:flex items-center gap-1" aria-label="Desktop Submenus">
-          <button 
-            onClick={() => desktopContext?.openWindow('settings')} 
+        <nav
+          className="hidden md:flex items-center gap-1"
+          aria-label="Desktop Submenus"
+        >
+          <button
+            onClick={() => desktopContext?.openWindow('settings')}
             className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
           >
             System
           </button>
-          <button 
-            onClick={() => desktopContext?.openWindow('explorer')} 
+          <button
+            onClick={() => desktopContext?.openWindow('explorer')}
             className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
           >
             View
           </button>
-          <button 
-            onClick={() => desktopContext?.openWindow('terminal')} 
+          <button
+            onClick={() => desktopContext?.openWindow('terminal')}
             className="px-2.5 py-1 rounded hover:bg-bg-panel-hover/50 text-text-secondary hover:text-text-primary transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer"
           >
             Terminal
@@ -107,19 +110,27 @@ export function MenuBar() {
       <div className="hidden sm:flex items-center gap-2 text-[10px] text-text-secondary bg-bg-primary/45 px-3 py-1 rounded-full border border-border-subtle/40">
         <Cpu className="w-3.5 h-3.5 text-accent-purple" />
         <span className="tracking-widest uppercase">System Status:</span>
-        <span className="text-success-green font-bold uppercase tracking-wider animate-pulse">Nominal</span>
+        <span className="text-success-green font-bold uppercase tracking-wider animate-pulse">
+          Nominal
+        </span>
       </div>
 
       {/* RIGHT: Clock, Theme Toggle & Controls Placeholders */}
       <div className="flex items-center gap-3.5">
         {/* Network status placeholder */}
-        <div className="h-7 flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help select-none" title="Network Connected: LTE/Gigabit">
+        <div
+          className="h-7 flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help select-none"
+          title="Network Connected: LTE/Gigabit"
+        >
           <Wifi className="w-3.5 h-3.5 text-accent-cyan" />
           <span className="text-[10px] hidden lg:inline font-mono">100 ms</span>
         </div>
 
         {/* Battery status placeholder */}
-        <div className="h-7 flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help select-none" title="Power Source: Battery (Charging)">
+        <div
+          className="h-7 flex items-center gap-1.5 text-text-secondary hover:text-text-primary cursor-help select-none"
+          title="Power Source: Battery (Charging)"
+        >
           <Battery className="w-3.5 h-3.5 text-success-green" />
           <span className="text-[10px] hidden lg:inline font-mono">99%</span>
         </div>
@@ -144,7 +155,7 @@ export function MenuBar() {
         </button>
 
         {/* Live system clock */}
-        <div 
+        <div
           className="h-7 px-2.5 flex items-center justify-center text-text-primary font-bold rounded bg-bg-primary/50 border border-border-subtle/30 font-mono text-[11px]"
           aria-live="polite"
         >

@@ -11,7 +11,10 @@ interface SkillsDashboardProps {
   projectMap: Record<string, string>;
 }
 
-export default function SkillsDashboard({ skills, projectMap }: SkillsDashboardProps) {
+export default function SkillsDashboard({
+  skills,
+  projectMap,
+}: SkillsDashboardProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   const categories = [
@@ -21,12 +24,13 @@ export default function SkillsDashboard({ skills, projectMap }: SkillsDashboardP
     'Database',
     'Cloud',
     'Tools',
-    'Frontend'
+    'Frontend',
   ];
 
-  const filteredSkills = selectedCategory === 'All'
-    ? skills
-    : skills.filter(skill => skill.category === selectedCategory);
+  const filteredSkills =
+    selectedCategory === 'All'
+      ? skills
+      : skills.filter((skill) => skill.category === selectedCategory);
 
   return (
     <div className="flex-grow py-8">
@@ -66,7 +70,7 @@ export default function SkillsDashboard({ skills, projectMap }: SkillsDashboardP
         </div>
 
         {/* Skills Grid */}
-        <motion.div 
+        <motion.div
           layout
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >

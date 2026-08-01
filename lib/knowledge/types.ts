@@ -1,4 +1,11 @@
-import { Project, Skill, GitHubRepository, Experience, Achievement, TimelineMilestone } from '../types';
+import {
+  Project,
+  Skill,
+  GitHubRepository,
+  Experience,
+  Achievement,
+  TimelineMilestone,
+} from '../types';
 
 export type NodeType =
   | 'Project'
@@ -34,7 +41,14 @@ export interface KnowledgeNode {
     institution?: string;
     degree?: string;
     date?: string;
-    originalData?: Project | Skill | GitHubRepository | Experience | Achievement | TimelineMilestone | unknown;
+    originalData?:
+      | Project
+      | Skill
+      | GitHubRepository
+      | Experience
+      | Achievement
+      | TimelineMilestone
+      | unknown;
     [key: string]: unknown;
   };
 }
@@ -53,18 +67,21 @@ export interface KnowledgeRelationship {
 export interface IKnowledgeGraph {
   nodes: Map<string, KnowledgeNode>;
   relationships: KnowledgeRelationship[];
-  
+
   addNode(node: KnowledgeNode): void;
   addRelationship(rel: KnowledgeRelationship): void;
   getNode(id: string): KnowledgeNode | undefined;
   getNodes(): KnowledgeNode[];
   getRelationships(): KnowledgeRelationship[];
-  
-  getNeighbors(id: string, direction?: 'incoming' | 'outgoing' | 'both'): { node: KnowledgeNode; relationship: KnowledgeRelationship }[];
+
+  getNeighbors(
+    id: string,
+    direction?: 'incoming' | 'outgoing' | 'both'
+  ): { node: KnowledgeNode; relationship: KnowledgeRelationship }[];
   getNodesByType(type: NodeType): KnowledgeNode[];
   getRelationshipsByType(type: RelationshipType): KnowledgeRelationship[];
   getRelationshipsForNode(id: string): KnowledgeRelationship[];
-  
+
   findPath(sourceId: string, targetId: string): KnowledgeNode[] | null;
   search(query: string): KnowledgeNode[];
 }

@@ -23,8 +23,9 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none disabled:opacity-50 disabled:pointer-events-none';
-  
+  const baseStyles =
+    'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none disabled:opacity-50 disabled:pointer-events-none';
+
   const sizeStyles = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-5 py-2.5 text-sm',
@@ -32,10 +33,14 @@ export function Button({
   };
 
   const variantStyles = {
-    primary: 'bg-transparent text-accent-cyan border border-accent-cyan/30 hover:border-accent-cyan hover:shadow-[0_0_15px_rgba(0,242,254,0.25)] text-shadow-[0_0_10px_rgba(0,242,254,0.4)]',
-    secondary: 'bg-transparent text-accent-purple border border-accent-purple/30 hover:border-accent-purple hover:shadow-[0_0_15px_rgba(168,85,247,0.25)]',
-    outline: 'border border-border-subtle bg-bg-panel/40 text-text-primary hover:bg-bg-panel/80 hover:border-border-bright',
-    tertiary: 'text-text-secondary hover:text-text-primary bg-transparent border border-transparent',
+    primary:
+      'bg-transparent text-accent-cyan border border-accent-cyan/30 hover:border-accent-cyan hover:shadow-[0_0_15px_rgba(0,242,254,0.25)] text-shadow-[0_0_10px_rgba(0,242,254,0.4)]',
+    secondary:
+      'bg-transparent text-accent-purple border border-accent-purple/30 hover:border-accent-purple hover:shadow-[0_0_15px_rgba(168,85,247,0.25)]',
+    outline:
+      'border border-border-subtle bg-bg-panel/40 text-text-primary hover:bg-bg-panel/80 hover:border-border-bright',
+    tertiary:
+      'text-text-secondary hover:text-text-primary bg-transparent border border-transparent',
   };
 
   const combinedStyles = `${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`;

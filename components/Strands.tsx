@@ -227,29 +227,33 @@ export function Strands({
   dispersion = 1,
   glassSize = 1,
   className = '',
-  style
+  style,
 }: StrandsProps) {
   const propsRef = useRef<any>({});
-  propsRef.current = {
-    colors,
-    count,
-    speed,
-    amplitude,
-    waviness,
-    thickness,
-    glow,
-    taper,
-    spread,
-    hueShift,
-    intensity,
-    saturation,
-    opacity,
-    scale,
-    glass,
-    refraction,
-    dispersion,
-    glassSize
-  };
+
+  // Sync ref values in an effect to comply with React strict rendering rules
+  useEffect(() => {
+    propsRef.current = {
+      colors,
+      count,
+      speed,
+      amplitude,
+      waviness,
+      thickness,
+      glow,
+      taper,
+      spread,
+      hueShift,
+      intensity,
+      saturation,
+      opacity,
+      scale,
+      glass,
+      refraction,
+      dispersion,
+      glassSize,
+    };
+  });
 
   const ctnDom = useRef<HTMLDivElement>(null);
 
@@ -260,7 +264,7 @@ export function Strands({
     const renderer = new Renderer({
       alpha: true,
       premultipliedAlpha: true,
-      antialias: true
+      antialias: true,
     });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -280,7 +284,9 @@ export function Strands({
         uTime: { value: 0 },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uColors: { value: buildPalette(propsRef.current.colors) },
-        uColorCount: { value: Math.min(propsRef.current.colors.length, MAX_COLORS) },
+        uColorCount: {
+          value: Math.min(propsRef.current.colors.length, MAX_COLORS),
+        },
         uStrandCount: { value: Math.min(propsRef.current.count, MAX_STRANDS) },
         uSpeed: { value: speed },
         uAmplitude: { value: amplitude },
@@ -293,15 +299,15 @@ export function Strands({
         uIntensity: { value: intensity },
         uOpacity: { value: opacity },
         uScale: { value: scale },
-        uSaturation: { value: saturation }
-      }
+        uSaturation: { value: saturation },
+      },
     });
 
     const mesh = new Mesh(gl, { geometry, program });
 
     const renderTarget = new RenderTarget(gl, {
       width: ctn.offsetWidth,
-      height: ctn.offsetHeight
+      height: ctn.offsetHeight,
     });
 
     const glassProgram = new Program(gl, {
@@ -312,8 +318,8 @@ export function Strands({
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uRadius: { value: 0.46 * glassSize },
         uRefraction: { value: refraction },
-        uDispersion: { value: dispersion }
-      }
+        uDispersion: { value: dispersion },
+      },
     });
     const glassMesh = new Mesh(gl, { geometry, program: glassProgram });
 
@@ -337,8 +343,14 @@ export function Strands({
       const current = propsRef.current;
       program.uniforms.uTime.value = t * 0.001;
       program.uniforms.uColors.value = buildPalette(current.colors);
-      program.uniforms.uColorCount.value = Math.min(current.colors.length, MAX_COLORS);
-      program.uniforms.uStrandCount.value = Math.min(Math.max(Math.round(current.count), 1), MAX_STRANDS);
+      program.uniforms.uColorCount.value = Math.min(
+        current.colors.length,
+        MAX_COLORS
+      );
+      program.uniforms.uStrandCount.value = Math.min(
+        Math.max(Math.round(current.count), 1),
+        MAX_STRANDS
+      );
       program.uniforms.uSpeed.value = current.speed;
       program.uniforms.uAmplitude.value = current.amplitude;
       program.uniforms.uWaviness.value = current.waviness;
@@ -376,7 +388,13 @@ export function Strands({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={ctnDom} className={`strands-container ${className}`} style={style} />;
+  return (
+    <div
+      ref={ctnDom}
+      className={`strands-container ${className}`}
+      style={style}
+    />
+  );
 }
 
 export default Strands;

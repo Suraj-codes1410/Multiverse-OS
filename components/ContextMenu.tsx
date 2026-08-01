@@ -23,7 +23,7 @@ export function ContextMenu() {
       // Find if we clicked on the desktop background element or a container marked for context menu
       const target = e.target as HTMLElement;
       const isDesktopContext = target.closest('[data-context-menu="desktop"]');
-      
+
       if (!isDesktopContext) {
         // If not desktop, let default context menu slide through or close our custom one
         setVisible(false);
@@ -43,7 +43,7 @@ export function ContextMenu() {
 
     window.addEventListener('contextmenu', handleContextMenu);
     window.addEventListener('mousedown', handleClickOutside);
-    
+
     return () => {
       window.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('mousedown', handleClickOutside);
@@ -63,36 +63,41 @@ export function ContextMenu() {
       shortcut: '⌘K',
       action: () => {
         // Dispatch keydown event for Cmd + K to trigger Spotlight Search
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
-      }
+        window.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'k', metaKey: true })
+        );
+      },
     },
     {
       label: 'Open CLI Terminal',
       icon: Terminal,
       shortcut: 'Ctrl+`',
-      action: toggleCli
+      action: toggleCli,
     },
     {
       label: isAudioMuted ? 'Unmute System Sound' : 'Mute System Sound',
       icon: Volume2,
       shortcut: 'Toggle',
-      action: toggleAudio
+      action: toggleAudio,
     },
     {
       label: 'Refresh Desktop Workspace',
       icon: RefreshCw,
       action: () => {
         window.dispatchEvent(new CustomEvent('launchApp', { detail: 'home' }));
-      }
+      },
     },
     {
       label: 'Clear Session Logs',
       icon: Trash2,
       action: () => {
         sessionStorage.clear();
-        addNotification('Session completed logs flushed from workspace.', 'warning');
-      }
-    }
+        addNotification(
+          'Session completed logs flushed from workspace.',
+          'warning'
+        );
+      },
+    },
   ];
 
   if (!visible) return null;
@@ -100,8 +105,14 @@ export function ContextMenu() {
   // Safeguard coordinates from overflow viewport boundaries
   const menuWidth = 190;
   const menuHeight = 220;
-  const adjustedX = typeof window !== 'undefined' && coords.x + menuWidth > window.innerWidth ? coords.x - menuWidth : coords.x;
-  const adjustedY = typeof window !== 'undefined' && coords.y + menuHeight > window.innerHeight ? coords.y - menuHeight : coords.y;
+  const adjustedX =
+    typeof window !== 'undefined' && coords.x + menuWidth > window.innerWidth
+      ? coords.x - menuWidth
+      : coords.x;
+  const adjustedY =
+    typeof window !== 'undefined' && coords.y + menuHeight > window.innerHeight
+      ? coords.y - menuHeight
+      : coords.y;
 
   return (
     <AnimatePresence>

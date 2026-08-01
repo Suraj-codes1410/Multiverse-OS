@@ -19,7 +19,10 @@ export default function SkillCard({ skill, projectMap }: SkillCardProps) {
   };
 
   return (
-    <Card hoverable={false} className="flex flex-col h-full justify-between p-5">
+    <Card
+      hoverable={false}
+      className="flex flex-col h-full justify-between p-5"
+    >
       <div>
         <div className="flex items-center justify-between gap-4 mb-2">
           <h4 className="text-lg font-semibold text-text-primary">

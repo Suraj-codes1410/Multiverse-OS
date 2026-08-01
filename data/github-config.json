@@ -18,6 +18,12 @@
       "featured": true,
       "portfolioVisible": true,
       "highlighted": false
+    },
+    {
+      "name": "ResumeRank_AI",
+      "featured": true,
+      "portfolioVisible": true,
+      "highlighted": true
     }
   ]
 }

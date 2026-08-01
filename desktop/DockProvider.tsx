@@ -11,11 +11,7 @@ const DockContext = createContext<DockState | null>(null);
 export function DockProvider({ children }: { children: React.ReactNode }) {
   const [state] = useState<DockState>({ isCollapsed: false });
 
-  return (
-    <DockContext.Provider value={state}>
-      {children}
-    </DockContext.Provider>
-  );
+  return <DockContext.Provider value={state}>{children}</DockContext.Provider>;
 }
 
 export const useDock = () => {

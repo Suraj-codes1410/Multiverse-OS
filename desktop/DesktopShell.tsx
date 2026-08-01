@@ -12,7 +12,13 @@ import { MenuBar } from './MenuBar';
 import { Dock } from './Dock';
 import { useDesktop } from './DesktopContext';
 import { usePathname } from 'next/navigation';
-import { onBootPhase, isReturningVisitor, getLandingChoice } from '@/lib/bootPhase';
+import {
+  onBootPhase,
+  isReturningVisitor,
+  getLandingChoice,
+  setLandingChoice,
+} from '@/lib/bootPhase';
+import CliTerminal from '@/components/CliTerminal';
 
 export interface DesktopShellProps {
   children?: React.ReactNode;
@@ -61,52 +67,73 @@ function DesktopShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [pathname, openWindow]);
 
+  const [isTerminalMode, setIsTerminalMode] = React.useState(false);
+
   // Auto-open selected window (Home or CLI Terminal) as the final step of the boot sequence reveal
   React.useEffect(() => {
     return onBootPhase((phase) => {
       if (phase === 'done') {
         const choice = getLandingChoice();
-        // Slight extra delay so the overlay fully dissolves first
-        const delay = isReturningVisitor() ? 100 : 200;
-        setTimeout(() => openWindow(choice), delay);
+        if (choice === 'terminal') {
+          setIsTerminalMode(true);
+        } else {
+          // Slight extra delay so the overlay fully dissolves first
+          const delay = isReturningVisitor() ? 100 : 200;
+          setTimeout(() => openWindow(choice), delay);
+        }
       }
     });
   }, [openWindow]);
 
+  if (isTerminalMode) {
+    return (
+      <CliTerminal
+        isOpen={true}
+        onClose={() => {
+          setLandingChoice('home');
+          setIsTerminalMode(false);
+          openWindow('home');
+        }}
+        isFullscreen={true}
+      />
+    );
+  }
+
   return (
     /* Fullscreen Desktop Main Grid Container */
-    <div data-context-menu="desktop" className="relative w-screen h-screen overflow-hidden select-none bg-bg-primary text-text-primary flex flex-col font-sans">
-      
+    <div
+      data-context-menu="desktop"
+      className="relative w-screen h-screen overflow-hidden select-none bg-bg-primary text-text-primary flex flex-col font-sans"
+    >
       {/* Layer 5: System Menu Bar (Fixed top bar) */}
       <MenuBar />
 
       {/* Layer 0: Fullscreen Wallpaper (radial background meshes + animated canvas particles) */}
       <Wallpaper />
-      
+
       {/* Layer 1: Ambient Widget System stats overlay */}
       <WidgetLayer />
-      
+
       {/* Layer 2: Desktop active workspace grid utilizing safe margin paddings (top offset for MenuBar) */}
       <div className="relative flex-grow w-full h-full flex pt-16 px-6 pb-24 z-10 box-border gap-6 overflow-hidden">
-        
         {/* Workspace center viewport for windows rendering */}
         <main className="flex-grow h-full relative flex flex-col pointer-events-auto">
-          <WindowManager>
-            {children}
-          </WindowManager>
+          <WindowManager>{children}</WindowManager>
         </main>
-        
       </div>
 
       {/* Layer 6: System Application Dock (Fixed bottom bar panel connected to context actions) */}
-      <Dock activeAppId={activeWindowId} openAppIds={openAppIds} onAppClick={openWindow} />
-      
+      <Dock
+        activeAppId={activeWindowId}
+        openAppIds={openAppIds}
+        onAppClick={openWindow}
+      />
+
       {/* Layer 3: Oracle Conversational Chat drawer layer */}
       <OracleLayer />
-      
+
       {/* Layer 4: Background Web Agents highlight scanner layer */}
       <RobotLayer />
-      
     </div>
   );
 }

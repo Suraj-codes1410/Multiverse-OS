@@ -7,3 +7,4 @@ export { LayoutProvider, useLayout } from './LayoutProvider';
 export type { LayoutState } from './LayoutProvider';
 export { ThemeProvider, useTheme } from './ThemeProvider';
 export type { ThemeState } from './ThemeProvider';
+export { ScrollProvider } from './ScrollProvider';

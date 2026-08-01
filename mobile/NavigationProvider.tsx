@@ -13,8 +13,14 @@ export interface NavigationState {
 
 const NavigationContext = createContext<NavigationState | null>(null);
 
-export function NavigationProvider({ children }: { children: React.ReactNode }) {
-  const [activeTab, setActiveTab] = useState<'home' | 'oracle' | 'terminal'>('home');
+export function NavigationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [activeTab, setActiveTab] = useState<'home' | 'oracle' | 'terminal'>(
+    'home'
+  );
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
 
   const openApp = (appId: string) => {
@@ -46,14 +52,14 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <NavigationContext.Provider 
-      value={{ 
-        activeTab, 
-        setActiveTab, 
-        activeAppId, 
-        setActiveAppId, 
-        openApp, 
-        closeApp 
+    <NavigationContext.Provider
+      value={{
+        activeTab,
+        setActiveTab,
+        activeAppId,
+        setActiveAppId,
+        openApp,
+        closeApp,
       }}
     >
       {children}
