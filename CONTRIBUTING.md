@@ -66,7 +66,14 @@ To maintain a clean and reliable codebase, please adhere to the following rules:
 * The Oracle AI Engine uses custom structured console logs (`GEMINI_REQUEST`, `SMART_ROUTE`, etc.) for regression testing and terminal output rendering. Do not remove or modify these tracing logs unless updating the corresponding test framework assertions.
 
 ### Formatting
-* Follow standard styling principles (Tailwind CSS guidelines for utility class ordering).
+* Run Prettier formatting verification before creating a Pull Request to prevent pipeline style errors:
+  ```bash
+  npm run format:check
+  ```
+* If files fail style checks, run Prettier locally to format the files:
+  ```bash
+  npx prettier --write .
+  ```
 
 ---
 
