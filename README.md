@@ -36,6 +36,11 @@ Below are the primary views of the **Multiverse-OS** environment.
 | ![Recruiter Dashboard](public/screenshots/recruiter_dashboard.png) | ![Project Details](docs/screenshots/projects.png) |
 | *Consolidated insights, quick recruiter queries, resume matching, and candidate stats.* | *Interactive visual gallery of technical work with code insight traversal.* |
 
+| **Mobile View Layout** | **CLI Terminal Shell** |
+| :---: | :---: |
+| ![Mobile View Layout](public/screenshots/mobile_layout.png) | ![CLI Terminal Shell](public/screenshots/cli_terminal.png) |
+| *Seamless full-screen sheets layout and responsive gestures for mobile viewports.* | *Sleek retro-style developer CLI terminal for commands execution.* |
+
 ---
 
 ## 💡 Why I Built This
