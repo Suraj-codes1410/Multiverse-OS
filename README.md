@@ -339,6 +339,10 @@ Verify code health and formatting styles before committing changes:
   ```bash
   npx tsc --noEmit
   ```
+* **Integration Tests**: Executes the 37-scenario Oracle validation suite:
+  ```bash
+  npm run test
+  ```
 
 ---
 
