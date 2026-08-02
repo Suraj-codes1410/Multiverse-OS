@@ -33,7 +33,7 @@ Below are the primary views of the **Multiverse-OS** environment.
 
 | **Recruiter Dashboard** | **Project Portfolio** |
 | :---: | :---: |
-| ![Recruiter Dashboard](docs/screenshots/dashboard.png) | ![Project Details](docs/screenshots/projects.png) |
+| ![Recruiter Dashboard](public/screenshots/recruiter_dashboard.png) | ![Project Details](docs/screenshots/projects.png) |
 | *Consolidated insights, quick recruiter queries, resume matching, and candidate stats.* | *Interactive visual gallery of technical work with code insight traversal.* |
 
 ---
