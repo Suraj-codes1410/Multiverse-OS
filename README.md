@@ -87,6 +87,13 @@ Parses achievements, historical roles, work experiences, and academic achievemen
 ### Analytics & Observability
 Engineered via [analyticsService.ts](file:///C:/Users/Suraj/multiverse-os/lib/oracle/analyticsService.ts). Records telemetry like response latencies, model selection pathways, cache utilization, and query counts. Data is logged locally in [oracle-analytics.json](file:///C:/Users/Suraj/multiverse-os/data/oracle-analytics.json) to measure usage and model performance.
 
+### Premium Performance & Motion
+Integrates desktop-grade hardware transitions and micro-interactions:
+* **GPU Drag translations**: Offloads dragging coordinates computations from browser layout calculations to composite GPU textures (`translate3d`), guaranteeing fluid 120 FPS window movement.
+* **Inertial Scrolling**: Orchestrates scrolling speeds inside application panels using the **Lenis** scroll engine, preventing scroll chaining propagation.
+* **Mobile Sheets**: Re-flows mobile viewports using slide-up sheets animations (`rounded-t-3xl`) and accessible 44x44px touch targets.
+* **Reduced Motion**: Automatically scales back coordinate animations to fast fades when browser flags `prefers-reduced-motion`.
+
 ---
 
 ## 📐 System Architecture
