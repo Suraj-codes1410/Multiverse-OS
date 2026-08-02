@@ -28,7 +28,7 @@ Below are the primary views of the **Multiverse-OS** environment.
 
 | **System Console (Home)** | **Oracle AI Assistant** |
 | :---: | :---: |
-| ![Multiverse-OS Home Console](docs/screenshots/home.png) | ![Oracle AI Dialogue](docs/screenshots/oracle.png) |
+| ![Multiverse-OS Home Console](public/screenshots/desktop_shell.png) | ![Oracle AI Dialogue](docs/screenshots/oracle.png) |
 | *Immersive, OS-like terminal interface for exploring directories and system metrics.* | *Semantic search & natural language question-answering with repository grounding.* |
 
 | **Recruiter Dashboard** | **Project Portfolio** |
