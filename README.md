@@ -325,6 +325,21 @@ Fill out the keys in `.env.local`:
 4. **Open the interface**:
    Navigate to [http://localhost:3000](http://localhost:3000) inside your web browser.
 
+### Code Style & Quality Verification
+Verify code health and formatting styles before committing changes:
+* **Style Check**: Runs Prettier style validation rules:
+  ```bash
+  npm run format:check
+  ```
+* **Linting Check**: Runs ESLint code quality checks:
+  ```bash
+  npm run lint
+  ```
+* **TypeScript Compilation**: Checks type safety across components:
+  ```bash
+  npx tsc --noEmit
+  ```
+
 ---
 
 ## 🔄 CI/CD & Deployment Workflow
