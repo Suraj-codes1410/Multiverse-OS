@@ -10,7 +10,7 @@ import { getPortfolio } from '@/lib/data';
 
 export default function ContactPage() {
   const portfolio = getPortfolio();
-  
+
   // Form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,11 +24,11 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
-    
+
     setIsSubmitting(true);
     setIsSuccess(false);
     setErrorMessage(null);
-    
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -54,15 +54,18 @@ export default function ContactPage() {
         setMessage('');
         setHoneypot('');
       } else {
-        setErrorMessage(data.message || 'An error occurred while sending the message.');
+        setErrorMessage(
+          data.message || 'An error occurred while sending the message.'
+        );
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'A network error occurred. Please try again.');
+      setErrorMessage(
+        err.message || 'A network error occurred. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="flex-grow py-8">
@@ -85,7 +88,9 @@ export default function ContactPage() {
                 Establish Connection
               </h2>
               <p className="text-sm text-text-secondary leading-relaxed mb-6 font-light">
-                Feel free to reach out for project collaborations, job opportunities, or system architecture consultations. You can copy the email directly or connect via social networks.
+                Feel free to reach out for project collaborations, job
+                opportunities, or system architecture consultations. You can
+                copy the email directly or connect via social networks.
               </p>
             </div>
 
@@ -108,14 +113,20 @@ export default function ContactPage() {
             </div>
 
             {/* Resume Download Box */}
-            <Card hoverable={false} className="bg-bg-panel/40 border-dashed border-border-bright/50 p-5 mt-6">
+            <Card
+              hoverable={false}
+              className="bg-bg-panel/40 border-dashed border-border-bright/50 p-5 mt-6"
+            >
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <h3 className="text-sm font-semibold text-text-primary mb-1 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-accent-cyan" /> Technical CV / Resume
+                    <FileText className="w-4 h-4 text-accent-cyan" /> Technical
+                    CV / Resume
                   </h3>
                   <p className="text-xs text-text-secondary leading-relaxed mb-2">
-                    Download the latest version of Suraj Samanta&apos;s technical resume containing detailed histories, architectures, and academic credentials.
+                    Download the latest version of Suraj Samanta&apos;s
+                    technical resume containing detailed histories,
+                    architectures, and academic credentials.
                   </p>
                   <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary">
                     <span>LAST_UPDATED: June 21, 2026</span>
@@ -123,7 +134,13 @@ export default function ContactPage() {
                     <span>FILE_SIZE: 625 KB</span>
                   </div>
                 </div>
-                <Button href={portfolio.resume} target="_blank" variant="outline" size="sm" className="whitespace-nowrap flex-shrink-0 w-full sm:w-auto">
+                <Button
+                  href={portfolio.resume}
+                  target="_blank"
+                  variant="outline"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0 w-full sm:w-auto"
+                >
                   <FileText className="w-3.5 h-3.5 mr-1.5" /> Download Resume
                 </Button>
               </div>
@@ -133,13 +150,17 @@ export default function ContactPage() {
           {/* Right Column: Contact Form */}
           <Card hoverable={false} className="p-6 md:p-8">
             <h2 className="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-accent-cyan" /> Secure Message Transmission
+              <Sparkles className="w-4 h-4 text-accent-cyan" /> Secure Message
+              Transmission
             </h2>
-            
+
             <form onSubmit={handleSubmit} className="space-y-5 text-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="form-name" className="block text-xs font-mono text-text-secondary uppercase">
+                  <label
+                    htmlFor="form-name"
+                    className="block text-xs font-mono text-text-secondary uppercase"
+                  >
                     Sender Name *
                   </label>
                   <input
@@ -153,7 +174,10 @@ export default function ContactPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="form-email" className="block text-xs font-mono text-text-secondary uppercase">
+                  <label
+                    htmlFor="form-email"
+                    className="block text-xs font-mono text-text-secondary uppercase"
+                  >
                     Sender Email *
                   </label>
                   <input
@@ -169,7 +193,10 @@ export default function ContactPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="form-subject" className="block text-xs font-mono text-text-secondary uppercase">
+                <label
+                  htmlFor="form-subject"
+                  className="block text-xs font-mono text-text-secondary uppercase"
+                >
                   Subject
                 </label>
                 <input
@@ -183,7 +210,10 @@ export default function ContactPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="form-message" className="block text-xs font-mono text-text-secondary uppercase">
+                <label
+                  htmlFor="form-message"
+                  className="block text-xs font-mono text-text-secondary uppercase"
+                >
                   Message Payload *
                 </label>
                 <textarea
@@ -212,7 +242,10 @@ export default function ContactPage() {
               {isSuccess && (
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-success-green/10 border border-success-green/20 text-success-green font-mono text-xs">
                   <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-                  <span>SUCCESS: Message sent. Thank you, I will get back to you shortly!</span>
+                  <span>
+                    SUCCESS: Message sent. Thank you, I will get back to you
+                    shortly!
+                  </span>
                 </div>
               )}
 
@@ -222,7 +255,6 @@ export default function ContactPage() {
                   <span>{errorMessage}</span>
                 </div>
               )}
-
 
               <Button
                 type="submit"

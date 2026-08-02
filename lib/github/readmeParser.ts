@@ -10,17 +10,47 @@ export interface ExtractedReadmeData {
 
 export class ReadmeParser {
   private static LANGUAGES = [
-    'Go', 'Rust', 'TypeScript', 'JavaScript', 'Python', 'Java', 'HTML', 'CSS', 'C++', 'C', 'Shell', 'SQL'
+    'Go',
+    'Rust',
+    'TypeScript',
+    'JavaScript',
+    'Python',
+    'Java',
+    'HTML',
+    'CSS',
+    'C++',
+    'C',
+    'Shell',
+    'SQL',
   ];
 
   private static FRAMEWORKS = [
-    'Spring Boot', 'FastAPI', 'Django', 'React', 'Next.js', 'Vite', 'TailwindCSS', 
-    'Hibernate', 'Spring Security', 'Express', 'NestJS', 'Angular', 'Vue', 'Leaflet', 
-    'WebSockets', 'gRPC'
+    'Spring Boot',
+    'FastAPI',
+    'Django',
+    'React',
+    'Next.js',
+    'Vite',
+    'TailwindCSS',
+    'Hibernate',
+    'Spring Security',
+    'Express',
+    'NestJS',
+    'Angular',
+    'Vue',
+    'Leaflet',
+    'WebSockets',
+    'gRPC',
   ];
 
   private static DATABASES = [
-    'Pinecone', 'TimescaleDB', 'Redis', 'MySQL', 'PostgreSQL', 'MongoDB', 'Elasticsearch'
+    'Pinecone',
+    'TimescaleDB',
+    'Redis',
+    'MySQL',
+    'PostgreSQL',
+    'MongoDB',
+    'Elasticsearch',
   ];
 
   static parse(readme: string): ExtractedReadmeData {
@@ -33,7 +63,7 @@ export class ReadmeParser {
         frameworks: [],
         databases: [],
         features: [],
-        architectureDescriptions: []
+        architectureDescriptions: [],
       };
     }
 
@@ -42,21 +72,21 @@ export class ReadmeParser {
     const databases: string[] = [];
 
     // Search text for matches - never infer from repo name!
-    this.LANGUAGES.forEach(lang => {
+    this.LANGUAGES.forEach((lang) => {
       const regex = new RegExp(`\\b${lang.replace('+', '\\+')}\\b`, 'i');
       if (regex.test(readme)) {
         languages.push(lang);
       }
     });
 
-    this.FRAMEWORKS.forEach(fw => {
+    this.FRAMEWORKS.forEach((fw) => {
       const regex = new RegExp(`\\b${fw.replace('.', '\\.')}\\b`, 'i');
       if (regex.test(readme)) {
         frameworks.push(fw);
       }
     });
 
-    this.DATABASES.forEach(db => {
+    this.DATABASES.forEach((db) => {
       const regex = new RegExp(`\\b${db}\\b`, 'i');
       if (regex.test(readme)) {
         databases.push(db);
@@ -64,7 +94,9 @@ export class ReadmeParser {
     });
 
     // Flatten for legacy compatibility
-    const technologies = Array.from(new Set([...languages, ...frameworks, ...databases]));
+    const technologies = Array.from(
+      new Set([...languages, ...frameworks, ...databases])
+    );
 
     // 2. Parse features & architecture sections from markdown
     const features: string[] = [];
@@ -77,9 +109,17 @@ export class ReadmeParser {
       const trimmed = line.trim();
       if (trimmed.startsWith('#')) {
         const heading = trimmed.replace(/^#+\s+/, '').toLowerCase();
-        if (heading.includes('feature') || heading.includes('capability') || heading.includes('what it does')) {
+        if (
+          heading.includes('feature') ||
+          heading.includes('capability') ||
+          heading.includes('what it does')
+        ) {
           currentSection = 'features';
-        } else if (heading.includes('architecture') || heading.includes('design') || heading.includes('component')) {
+        } else if (
+          heading.includes('architecture') ||
+          heading.includes('design') ||
+          heading.includes('component')
+        ) {
           currentSection = 'architecture';
         } else {
           currentSection = null;
@@ -87,9 +127,12 @@ export class ReadmeParser {
       } else if (trimmed) {
         if (currentSection === 'features') {
           // Parse bullet points
-          const match = trimmed.match(/^[-*+]\s+(.*)$/) || trimmed.match(/^\d+\.\s+(.*)$/);
+          const match =
+            trimmed.match(/^[-*+]\s+(.*)$/) || trimmed.match(/^\d+\.\s+(.*)$/);
           if (match) {
-            features.push(match[1].replace(/\*\*/g, '').replace(/`/g, '').trim());
+            features.push(
+              match[1].replace(/\*\*/g, '').replace(/`/g, '').trim()
+            );
           }
         } else if (currentSection === 'architecture') {
           architectureDescriptions.push(trimmed);
@@ -104,7 +147,7 @@ export class ReadmeParser {
       frameworks,
       databases,
       features,
-      architectureDescriptions
+      architectureDescriptions,
     };
   }
 }

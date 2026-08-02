@@ -15,17 +15,21 @@ export class CacheManager {
     // Periodically evict expired entries to prevent memory growth
     if (typeof window === 'undefined') {
       if (process.env.VERCEL === '1') {
-        console.log("VERCEL_COMPATIBLE: Serverless environment detected. Skipping background cache eviction loop.");
+        console.log(
+          'VERCEL_COMPATIBLE: Serverless environment detected. Skipping background cache eviction loop.'
+        );
       } else {
         this.cleanupInterval = setInterval(() => this.evictExpired(), 60000);
         // Allow the process to exit even if this timer is active
-        if (this.cleanupInterval && typeof this.cleanupInterval.unref === 'function') {
+        if (
+          this.cleanupInterval &&
+          typeof this.cleanupInterval.unref === 'function'
+        ) {
           this.cleanupInterval.unref();
         }
       }
     }
   }
-
 
   public static getInstance(): CacheManager {
     if (!CacheManager.instance) {
@@ -92,7 +96,7 @@ export class QueryCacheService {
       response,
       createdAt: now,
       expiresAt,
-      source
+      source,
     };
 
     this.cacheManager.set(key, entry);
@@ -112,20 +116,61 @@ export class QueryCacheService {
     const queryLower = query.toLowerCase().trim();
 
     // 1. Repository Questions: 30 minutes (1,800,000 ms)
-    const repositoryKeywords = ['repo', 'repository', 'readme', 'oracle-sync-test', 'sahai', 'orbitair', 'ecom', 'swot', 'satcom', 'microservice', 'orbit-ops', 'bookstore', 'ailearning'];
-    if (repositoryKeywords.some(kw => queryLower.includes(kw))) {
+    const repositoryKeywords = [
+      'repo',
+      'repository',
+      'readme',
+      'oracle-sync-test',
+      'sahai',
+      'orbitair',
+      'ecom',
+      'swot',
+      'satcom',
+      'microservice',
+      'orbit-ops',
+      'bookstore',
+      'ailearning',
+    ];
+    if (repositoryKeywords.some((kw) => queryLower.includes(kw))) {
       return 30 * 60 * 1000;
     }
 
     // 2. GitHub Metadata Queries: 5 minutes (300,000 ms)
-    const metadataKeywords = ['sync', 'metadata', 'timestamp', 'created', 'updated', 'stars', 'forks', 'git', 'last updated', 'time'];
-    if (metadataKeywords.some(kw => queryLower.includes(kw))) {
+    const metadataKeywords = [
+      'sync',
+      'metadata',
+      'timestamp',
+      'created',
+      'updated',
+      'stars',
+      'forks',
+      'git',
+      'last updated',
+      'time',
+    ];
+    if (metadataKeywords.some((kw) => queryLower.includes(kw))) {
       return 5 * 60 * 1000;
     }
 
     // 3. Portfolio Questions: 1 hour (3,600,000 ms)
-    const portfolioKeywords = ['suraj', 'samanta', 'portfolio', 'project', 'skill', 'achievement', 'timeline', 'experience', 'education', 'bio', 'background', 'contact', 'email', 'degree', 'studies'];
-    if (portfolioKeywords.some(kw => queryLower.includes(kw))) {
+    const portfolioKeywords = [
+      'suraj',
+      'samanta',
+      'portfolio',
+      'project',
+      'skill',
+      'achievement',
+      'timeline',
+      'experience',
+      'education',
+      'bio',
+      'background',
+      'contact',
+      'email',
+      'degree',
+      'studies',
+    ];
+    if (portfolioKeywords.some((kw) => queryLower.includes(kw))) {
       return 60 * 60 * 1000;
     }
 

@@ -8,7 +8,8 @@ import { buildKnowledgeGraph } from '@/lib/knowledge/builder';
 export const reposCommand: Command = {
   name: 'repos',
   aliases: ['repositories', 'github-repos'],
-  description: 'Lists public GitHub repositories and allows filtering by intelligence categories or technologies.',
+  description:
+    'Lists public GitHub repositories and allows filtering by intelligence categories or technologies.',
   execute: async (args) => {
     const repos = await getRepositories();
 
@@ -20,11 +21,13 @@ export const reposCommand: Command = {
         'Type "repo <name>" to view detailed metrics and key concepts.',
         'Type "open github" to open the explorer portal.',
         'Type "repos <category/technology>" to filter repositories.',
-        ''
+        '',
       ];
 
       repos.forEach((repo, idx) => {
-        output.push(`${idx + 1}. ${repo.name} [stars: ${repo.starsCount} | forks: ${repo.forksCount}]`);
+        output.push(
+          `${idx + 1}. ${repo.name} [stars: ${repo.starsCount} | forks: ${repo.forksCount}]`
+        );
         if (repo.description) {
           output.push(`   Description: ${repo.description}`);
         }
@@ -40,7 +43,7 @@ export const reposCommand: Command = {
 
       return {
         output,
-        success: true
+        success: true,
       };
     }
 
@@ -49,7 +52,7 @@ export const reposCommand: Command = {
     const graph = await buildKnowledgeGraph();
 
     const matchedRepos: {
-      repo: typeof repos[0];
+      repo: (typeof repos)[0];
       intelligence: ReturnType<typeof generateRepositoryIntelligence>;
       classifications: string[];
     }[] = [];
@@ -71,15 +74,20 @@ export const reposCommand: Command = {
 
       const normQuery = normalize(query);
 
-      const isCategoryMatch = classifications.some(c => normalize(c).includes(normQuery) || normQuery.includes(normalize(c)));
-      const isTechMatch = intelligence.technologies.some(t => normalize(t) === normQuery);
+      const isCategoryMatch = classifications.some(
+        (c) =>
+          normalize(c).includes(normQuery) || normQuery.includes(normalize(c))
+      );
+      const isTechMatch = intelligence.technologies.some(
+        (t) => normalize(t) === normQuery
+      );
       const isNameMatch = normalize(repo.name).includes(normQuery);
 
       if (isCategoryMatch || isTechMatch || isNameMatch) {
         matchedRepos.push({
           repo,
           intelligence,
-          classifications
+          classifications,
         });
       }
     }
@@ -88,23 +96,27 @@ export const reposCommand: Command = {
       return {
         output: [
           `No repositories found matching query: "${query}"`,
-          'Try keywords like "ai", "backend", "distributed-systems", "fastapi", "kafka".'
+          'Try keywords like "ai", "backend", "distributed-systems", "fastapi", "kafka".',
         ],
-        success: true
+        success: true,
       };
     }
 
     const output: string[] = [
       `REPOSITORY INTELLIGENCE QUERY: ${query.toUpperCase()}`,
       '==================================================',
-      ''
+      '',
     ];
 
     matchedRepos.forEach((item, idx) => {
       output.push(`${idx + 1}. Repository Name: ${item.repo.name}`);
       output.push(`   Classification:  ${item.classifications.join(', ')}`);
-      output.push(`   Technology Stack: ${item.intelligence.technologies.join(', ')}`);
-      output.push(`   Complexity:      ${item.intelligence.complexityAnalysis?.overallRating || 'Unknown'}`);
+      output.push(
+        `   Technology Stack: ${item.intelligence.technologies.join(', ')}`
+      );
+      output.push(
+        `   Complexity:      ${item.intelligence.complexityAnalysis?.overallRating || 'Unknown'}`
+      );
       output.push(`   Repository URL:  ${item.repo.htmlUrl}`);
       output.push('');
     });
@@ -116,7 +128,7 @@ export const reposCommand: Command = {
 
     return {
       output,
-      success: true
+      success: true,
     };
-  }
+  },
 };

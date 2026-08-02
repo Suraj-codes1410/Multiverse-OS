@@ -10,11 +10,19 @@ import { Project } from '@/lib/types';
 
 interface ProjectCardProps {
   project: Project;
+  onLearnMore?: (id: string) => void;
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({
+  project,
+  onLearnMore,
+}: ProjectCardProps) {
   return (
-    <Card hoverable glowOnHover className="flex flex-col h-full justify-between">
+    <Card
+      hoverable
+      glowOnHover
+      className="flex flex-col h-full justify-between"
+    >
       <div>
         {/* Header Tags */}
         <div className="flex items-center justify-between gap-2 mb-3">
@@ -50,12 +58,23 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
       {/* Footer Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-border-subtle/50 mt-auto">
-        <Link
-          href={`/project/${project.id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-accent-cyan hover:text-text-primary transition-colors focus:outline-none"
-        >
-          LEARN_MORE <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-        </Link>
+        {onLearnMore ? (
+          <button
+            onClick={() => onLearnMore(project.id)}
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-accent-cyan hover:text-text-primary transition-colors focus:outline-none cursor-pointer bg-transparent border-none p-0"
+          >
+            LEARN_MORE{' '}
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+          </button>
+        ) : (
+          <Link
+            href={`/project/${project.id}`}
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-accent-cyan hover:text-text-primary transition-colors focus:outline-none"
+          >
+            LEARN_MORE{' '}
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        )}
 
         <div className="flex items-center gap-3">
           <a

@@ -5,7 +5,7 @@ import path from 'path';
 const envPath = path.join(__dirname, '../.env.local');
 if (fs.existsSync(envPath)) {
   const envContent = fs.readFileSync(envPath, 'utf8');
-  envContent.split('\n').forEach(line => {
+  envContent.split('\n').forEach((line) => {
     const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
     if (match) {
       const key = match[1];
@@ -26,25 +26,27 @@ if (!process.env.ORACLE_MODEL) {
 }
 
 const queries = [
-  "What is Java?",
-  "What is Kafka?",
-  "2+2",
-  "Compare SAHAI and ORBITAIR",
-  "Why did Suraj use Kafka?"
+  'What is Java?',
+  'What is Kafka?',
+  '2+2',
+  'Compare SAHAI and ORBITAIR',
+  'Why did Suraj use Kafka?',
 ];
 
 async function runValidation() {
-  console.log("====================================================");
-  console.log("STARTING ORACLE ROUTING & EXECUTION VALIDATION");
-  console.log("====================================================");
-  console.log("OPENROUTER KEY EXISTS:", !!process.env.OPENROUTER_API_KEY);
-  console.log("CONFIGURED MODEL:", process.env.ORACLE_MODEL);
-  console.log("ENABLE_GITHUB_SYNC:", process.env.ENABLE_GITHUB_SYNC || 'true');
+  console.log('====================================================');
+  console.log('STARTING ORACLE ROUTING & EXECUTION VALIDATION');
+  console.log('====================================================');
+  console.log('OPENROUTER KEY EXISTS:', !!process.env.OPENROUTER_API_KEY);
+  console.log('CONFIGURED MODEL:', process.env.ORACLE_MODEL);
+  console.log('ENABLE_GITHUB_SYNC:', process.env.ENABLE_GITHUB_SYNC || 'true');
 
   // Dynamic imports to prevent static initialization issues during hoisting
-  const { OpenRouterProvider } = await import('../lib/oracle/openRouterProvider');
+  const { OpenRouterProvider } =
+    await import('../lib/oracle/openRouterProvider');
   const { contextService } = await import('../lib/oracle/service');
-  const { OracleContextSelector } = await import('../lib/oracle/contextSelector');
+  const { OracleContextSelector } =
+    await import('../lib/oracle/contextSelector');
 
   const fullContext = await contextService.getContext();
   const provider = new OpenRouterProvider();
@@ -53,7 +55,7 @@ async function runValidation() {
     const query = queries[i];
     if (i > 0) {
       console.log(`Waiting 8 seconds to avoid rate limits...`);
-      await new Promise(resolve => setTimeout(resolve, 8000));
+      await new Promise((resolve) => setTimeout(resolve, 8000));
     }
     console.log(`\n----------------------------------------------------`);
     console.log(`QUERY: "${query}"`);
@@ -62,9 +64,10 @@ async function runValidation() {
     try {
       // 1. Selection Layer
       const selected = await OracleContextSelector.select(query, fullContext);
-      
+
       // 2. Format / Compression
-      const compressedPromptContext = OracleContextSelector.compressAndFormat(selected);
+      const compressedPromptContext =
+        OracleContextSelector.compressAndFormat(selected);
 
       // 3. System Prompt
       const systemPrompt = `You are the ORACLE, a professional, minimal Knowledge Officer representing Suraj Samanta.
@@ -87,24 +90,24 @@ PORTFOLIO CONTEXT:
 ${compressedPromptContext}
 ---`;
 
-      console.log("ROUTE_OPENROUTER");
+      console.log('ROUTE_OPENROUTER');
       const response = await provider.generate({
         systemPrompt,
-        userPrompt: query.trim()
+        userPrompt: query.trim(),
       });
 
-      console.log("STATUS: SUCCESS");
-      console.log("AI RESPONSE:");
+      console.log('STATUS: SUCCESS');
+      console.log('AI RESPONSE:');
       console.log(response.text.trim());
     } catch (err: any) {
-      console.log("ROUTE_FALLBACK");
-      console.error("STATUS: ERROR / FALLBACK TRIGGERED");
+      console.log('ROUTE_FALLBACK');
+      console.error('STATUS: ERROR / FALLBACK TRIGGERED');
       console.error(err.message || err);
     }
   }
-  console.log("\n====================================================");
-  console.log("VALIDATION RUN COMPLETED");
-  console.log("====================================================");
+  console.log('\n====================================================');
+  console.log('VALIDATION RUN COMPLETED');
+  console.log('====================================================');
 }
 
 runValidation();

@@ -1,4 +1,8 @@
-import { IAIProvider, AIProviderRequest, AIProviderResponse } from './aiProvider';
+import {
+  IAIProvider,
+  AIProviderRequest,
+  AIProviderResponse,
+} from './aiProvider';
 import { analyticsService } from './analyticsService';
 
 export class GeminiProvider implements IAIProvider {
@@ -9,20 +13,20 @@ export class GeminiProvider implements IAIProvider {
   }
 
   async generate(request: AIProviderRequest): Promise<AIProviderResponse> {
-    console.log("GEMINI_REQUEST");
-    
+    console.log('GEMINI_REQUEST');
+
     if (!this.apiKey) {
       throw new Error('GEMINI_API_KEY environment variable is not defined.');
     }
 
     try {
       const result = await this.executeGemini(request);
-      console.log("GEMINI_SUCCESS");
-      
+      console.log('GEMINI_SUCCESS');
+
       analyticsService.recordProviderCall({
         model: 'gemini-2.5-flash',
         success: true,
-        isFailover: false
+        isFailover: false,
       });
 
       return result;
@@ -30,16 +34,19 @@ export class GeminiProvider implements IAIProvider {
       analyticsService.recordProviderCall({
         model: 'gemini-2.5-flash',
         success: false,
-        errorCode: error.status || (error.message?.includes('429') ? 429 : undefined),
+        errorCode:
+          error.status || (error.message?.includes('429') ? 429 : undefined),
         errorMessage: error.message || String(error),
-        isFailover: false
+        isFailover: false,
       });
 
       throw error;
     }
   }
 
-  private async executeGemini(request: AIProviderRequest): Promise<AIProviderResponse> {
+  private async executeGemini(
+    request: AIProviderRequest
+  ): Promise<AIProviderResponse> {
     const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`;
 
@@ -51,29 +58,31 @@ export class GeminiProvider implements IAIProvider {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           contents: [
             {
               role: 'user',
-              parts: [{ text: request.userPrompt }]
-            }
+              parts: [{ text: request.userPrompt }],
+            },
           ],
           systemInstruction: {
-            parts: [{ text: request.systemPrompt }]
+            parts: [{ text: request.systemPrompt }],
           },
           generationConfig: {
             temperature: request.config?.temperature || 0.7,
-            maxOutputTokens: request.config?.maxTokens || 1000
-          }
+            maxOutputTokens: request.config?.maxTokens || 1000,
+          },
         }),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        const err = new Error(`Gemini API returned status ${response.status}: ${errorText}`);
+        const err = new Error(
+          `Gemini API returned status ${response.status}: ${errorText}`
+        );
         (err as any).status = response.status;
         throw err;
       }
@@ -94,12 +103,14 @@ export class GeminiProvider implements IAIProvider {
           promptTokens,
           completionTokens,
           totalTokens,
-          modelUsed: model
-        }
+          modelUsed: model,
+        },
       };
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        const timeoutError = new Error(`Gemini API request timed out after ${timeoutMs}ms.`);
+        const timeoutError = new Error(
+          `Gemini API request timed out after ${timeoutMs}ms.`
+        );
         (timeoutError as any).name = 'AbortError';
         throw timeoutError;
       }

@@ -40,7 +40,7 @@ export default function GithubLoading() {
         {/* Cards Grid Skeletons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {skeletons.map((_, index) => (
-            <div 
+            <div
               key={index}
               className="bg-bg-panel/40 border border-border-subtle rounded-xl p-5 flex flex-col justify-between h-56 animate-pulse"
             >

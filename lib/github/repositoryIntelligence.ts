@@ -27,19 +27,30 @@ export class RepositoryAnalyzer {
     project?: Project
   ): RepositoryProfile {
     const techProfile = extractTechnologyProfile(repo, readme, project);
-    const archAnalysis = analyzeArchitecture(repo, readme, techProfile, project);
-    const complexityAnalysis = analyzeComplexity(repo, readme, techProfile, archAnalysis, project);
+    const archAnalysis = analyzeArchitecture(
+      repo,
+      readme,
+      techProfile,
+      project
+    );
+    const complexityAnalysis = analyzeComplexity(
+      repo,
+      readme,
+      techProfile,
+      archAnalysis,
+      project
+    );
 
     // 1. Gather all technologies (flattened from categories list)
     const techSet = new Set<string>();
-    Object.values(techProfile.categories).forEach(techList => {
-      techList.forEach(t => techSet.add(t));
+    Object.values(techProfile.categories).forEach((techList) => {
+      techList.forEach((t) => techSet.add(t));
     });
-    
+
     // Fallback: add repo primary language or project stack items
     if (repo.language) techSet.add(repo.language);
     if (project?.techStack) {
-      project.techStack.forEach(t => techSet.add(t));
+      project.techStack.forEach((t) => techSet.add(t));
     }
     const technologies = Array.from(techSet);
 
@@ -51,11 +62,22 @@ export class RepositoryAnalyzer {
 
     // Filter to frameworks/libraries
     const knownFrameworks = [
-      'Spring Boot', 'FastAPI', 'Django', 'Express', 'NestJS', 'Flask', 
-      'React', 'Next.js', 'Vue', 'Angular', 'TailwindCSS', 'Hibernate', 'Spring Security'
+      'Spring Boot',
+      'FastAPI',
+      'Django',
+      'Express',
+      'NestJS',
+      'Flask',
+      'React',
+      'Next.js',
+      'Vue',
+      'Angular',
+      'TailwindCSS',
+      'Hibernate',
+      'Spring Security',
     ];
-    
-    [...backendTech, ...frontendTech, ...rpcTech].forEach(t => {
+
+    [...backendTech, ...frontendTech, ...rpcTech].forEach((t) => {
       if (knownFrameworks.includes(t)) {
         frameworksSet.add(t);
       }
@@ -65,16 +87,42 @@ export class RepositoryAnalyzer {
     // 3. Languages
     const languagesSet = new Set<string>();
     if (repo.language) languagesSet.add(repo.language);
-    
+
     // Add languages based on keywords or project details
-    const textContext = `${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
-    if (textContext.includes('python') || repo.language?.toLowerCase() === 'python') languagesSet.add('Python');
-    if (textContext.includes('java ') || textContext.includes('spring') || repo.language?.toLowerCase() === 'java') languagesSet.add('Java');
-    if (textContext.includes('typescript') || textContext.includes('ts ') || repo.language?.toLowerCase() === 'typescript') languagesSet.add('TypeScript');
-    if (textContext.includes('javascript') || textContext.includes('js ') || repo.language?.toLowerCase() === 'javascript') languagesSet.add('JavaScript');
-    if (textContext.includes('golang') || textContext.includes('go ') || repo.language?.toLowerCase() === 'go') languagesSet.add('Go');
-    if (textContext.includes('rust') || repo.language?.toLowerCase() === 'rust') languagesSet.add('Rust');
-    
+    const textContext =
+      `${repo.description || ''} ${repo.topics.join(' ')} ${readme}`.toLowerCase();
+    if (
+      textContext.includes('python') ||
+      repo.language?.toLowerCase() === 'python'
+    )
+      languagesSet.add('Python');
+    if (
+      textContext.includes('java ') ||
+      textContext.includes('spring') ||
+      repo.language?.toLowerCase() === 'java'
+    )
+      languagesSet.add('Java');
+    if (
+      textContext.includes('typescript') ||
+      textContext.includes('ts ') ||
+      repo.language?.toLowerCase() === 'typescript'
+    )
+      languagesSet.add('TypeScript');
+    if (
+      textContext.includes('javascript') ||
+      textContext.includes('js ') ||
+      repo.language?.toLowerCase() === 'javascript'
+    )
+      languagesSet.add('JavaScript');
+    if (
+      textContext.includes('golang') ||
+      textContext.includes('go ') ||
+      repo.language?.toLowerCase() === 'go'
+    )
+      languagesSet.add('Go');
+    if (textContext.includes('rust') || repo.language?.toLowerCase() === 'rust')
+      languagesSet.add('Rust');
+
     const languages = Array.from(languagesSet);
 
     // 4. Architecture Type (Precise project mappings matching targets)
@@ -82,7 +130,10 @@ export class RepositoryAnalyzer {
     const nameLower = repo.name.toLowerCase();
     if (nameLower === 'orbitair') {
       architectureType = 'Data Processing Pipeline';
-    } else if (nameLower === 'patient-management-service' || nameLower === 'patient-management-services') {
+    } else if (
+      nameLower === 'patient-management-service' ||
+      nameLower === 'patient-management-services'
+    ) {
       architectureType = 'Microservices';
     } else if (nameLower === 'sahai') {
       architectureType = 'Full Stack';
@@ -92,18 +143,32 @@ export class RepositoryAnalyzer {
     let projectCategory = 'Backend Engineering';
     if (nameLower === 'orbitair') {
       projectCategory = 'AI + Data Platform';
-    } else if (nameLower === 'patient-management-service' || nameLower === 'patient-management-services') {
+    } else if (
+      nameLower === 'patient-management-service' ||
+      nameLower === 'patient-management-services'
+    ) {
       projectCategory = 'Backend Microservices';
     } else if (nameLower === 'sahai') {
       projectCategory = 'AI + Data Platform'; // SAHAI uses Pinecone-backed RAG
-    } else if (textContext.includes('agent') || textContext.includes('llm') || textContext.includes('rag') || textContext.includes('forecast')) {
+    } else if (
+      textContext.includes('agent') ||
+      textContext.includes('llm') ||
+      textContext.includes('rag') ||
+      textContext.includes('forecast')
+    ) {
       projectCategory = 'AI & Data Engineering';
-    } else if (textContext.includes('distributed') || textContext.includes('raft') || textContext.includes('consensus') || textContext.includes('microservice')) {
+    } else if (
+      textContext.includes('distributed') ||
+      textContext.includes('raft') ||
+      textContext.includes('consensus') ||
+      textContext.includes('microservice')
+    ) {
       projectCategory = 'Distributed Systems';
     }
 
     // 6. Description
-    const repositoryDescription = repo.description || project?.description || 'GitHub Code Repository';
+    const repositoryDescription =
+      repo.description || project?.description || 'GitHub Code Repository';
 
     // 7. Repository Importance Score
     let score = 10;
@@ -115,7 +180,10 @@ export class RepositoryAnalyzer {
     if (readme && readme.length > 1500) score += 10;
     score += technologies.length * 2;
 
-    const repositoryImportanceScore = Math.min(100, Math.max(0, Math.round(score)));
+    const repositoryImportanceScore = Math.min(
+      100,
+      Math.max(0, Math.round(score))
+    );
 
     return {
       repositoryName: repo.name,
@@ -125,7 +193,7 @@ export class RepositoryAnalyzer {
       architectureType,
       projectCategory,
       repositoryDescription,
-      repositoryImportanceScore
+      repositoryImportanceScore,
     };
   }
 }
@@ -137,15 +205,19 @@ export class RepositoryIntelligenceService {
   public async getRepositoryProfiles(): Promise<RepositoryProfile[]> {
     const repos = await getRepositories();
     const projects = await getProjects();
-    
+
     const profiles: RepositoryProfile[] = [];
-    
+
     for (const repo of repos) {
       // Find matching project
-      const project = projects.find(p => 
-        p.id.toLowerCase() === repo.name.toLowerCase() ||
-        (p.githubRepository && p.githubRepository.name.toLowerCase() === repo.name.toLowerCase()) ||
-        (p.githubUrl && p.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
+      const project = projects.find(
+        (p) =>
+          p.id.toLowerCase() === repo.name.toLowerCase() ||
+          (p.githubRepository &&
+            p.githubRepository.name.toLowerCase() ===
+              repo.name.toLowerCase()) ||
+          (p.githubUrl &&
+            p.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
       );
 
       // Fetch README content
@@ -165,15 +237,20 @@ export class RepositoryIntelligenceService {
   /**
    * Retrieves the profile for a single repository.
    */
-  public async getRepositoryProfile(name: string): Promise<RepositoryProfile | null> {
+  public async getRepositoryProfile(
+    name: string
+  ): Promise<RepositoryProfile | null> {
     const repo = await getRepositoryByName(name);
     if (!repo) return null;
 
     const projects = await getProjects();
-    const project = projects.find(p => 
-      p.id.toLowerCase() === repo.name.toLowerCase() ||
-      (p.githubRepository && p.githubRepository.name.toLowerCase() === repo.name.toLowerCase()) ||
-      (p.githubUrl && p.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
+    const project = projects.find(
+      (p) =>
+        p.id.toLowerCase() === repo.name.toLowerCase() ||
+        (p.githubRepository &&
+          p.githubRepository.name.toLowerCase() === repo.name.toLowerCase()) ||
+        (p.githubUrl &&
+          p.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
     );
 
     let readme = '';

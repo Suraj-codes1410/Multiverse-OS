@@ -1,4 +1,7 @@
-import { RepositoryProfile, RepositoryIntelligenceService } from './repositoryIntelligence';
+import {
+  RepositoryProfile,
+  RepositoryIntelligenceService,
+} from './repositoryIntelligence';
 
 export interface RepositoryComparisonResult {
   repoA: {
@@ -36,28 +39,40 @@ export class RepositoryComparisonService {
   private intelligenceService: RepositoryIntelligenceService;
 
   constructor(intelligenceService?: RepositoryIntelligenceService) {
-    this.intelligenceService = intelligenceService || new RepositoryIntelligenceService();
+    this.intelligenceService =
+      intelligenceService || new RepositoryIntelligenceService();
   }
 
   /**
    * Compares two repositories by their names and returns structured comparison data.
    */
-  public async compare(repoNameA: string, repoNameB: string): Promise<RepositoryComparisonResult | null> {
-    const profileA = await this.intelligenceService.getRepositoryProfile(repoNameA);
-    const profileB = await this.intelligenceService.getRepositoryProfile(repoNameB);
+  public async compare(
+    repoNameA: string,
+    repoNameB: string
+  ): Promise<RepositoryComparisonResult | null> {
+    const profileA =
+      await this.intelligenceService.getRepositoryProfile(repoNameA);
+    const profileB =
+      await this.intelligenceService.getRepositoryProfile(repoNameB);
 
     if (!profileA || !profileB) return null;
 
     // 1. Shared Technologies
-    const techSetA = new Set(profileA.technologies.map(t => t.toLowerCase()));
-    const techSetB = new Set(profileB.technologies.map(t => t.toLowerCase()));
-    
+    const techSetA = new Set(profileA.technologies.map((t) => t.toLowerCase()));
+    const techSetB = new Set(profileB.technologies.map((t) => t.toLowerCase()));
+
     // Find original casing for display
-    const sharedTechnologies = profileA.technologies.filter(t => techSetB.has(t.toLowerCase()));
+    const sharedTechnologies = profileA.technologies.filter((t) =>
+      techSetB.has(t.toLowerCase())
+    );
 
     // 2. Differences
-    const repoAOnlyTechnologies = profileA.technologies.filter(t => !techSetB.has(t.toLowerCase()));
-    const repoBOnlyTechnologies = profileB.technologies.filter(t => !techSetA.has(t.toLowerCase()));
+    const repoAOnlyTechnologies = profileA.technologies.filter(
+      (t) => !techSetB.has(t.toLowerCase())
+    );
+    const repoBOnlyTechnologies = profileB.technologies.filter(
+      (t) => !techSetA.has(t.toLowerCase())
+    );
 
     // 3. Generate Strengths deterministically
     const strengthsA = this.deriveStrengths(profileA);
@@ -73,36 +88,36 @@ export class RepositoryComparisonService {
         category: profileA.projectCategory,
         architecture: profileA.architectureType,
         complexityScore: profileA.repositoryImportanceScore,
-        description: profileA.repositoryDescription
+        description: profileA.repositoryDescription,
       },
       repoB: {
         name: profileB.repositoryName,
         category: profileB.projectCategory,
         architecture: profileB.architectureType,
         complexityScore: profileB.repositoryImportanceScore,
-        description: profileB.repositoryDescription
+        description: profileB.repositoryDescription,
       },
       sharedTechnologies,
       differences: {
         architecture: {
           repoA: profileA.architectureType,
-          repoB: profileB.architectureType
+          repoB: profileB.architectureType,
         },
         category: {
           repoA: profileA.projectCategory,
-          repoB: profileB.projectCategory
+          repoB: profileB.projectCategory,
         },
         repoAOnlyTechnologies,
-        repoBOnlyTechnologies
+        repoBOnlyTechnologies,
       },
       strengths: {
         repoA: strengthsA,
-        repoB: strengthsB
+        repoB: strengthsB,
       },
       useCases: {
         repoA: useCaseA,
-        repoB: useCaseB
-      }
+        repoB: useCaseB,
+      },
     };
   }
 
@@ -111,13 +126,15 @@ export class RepositoryComparisonService {
    */
   private deriveStrengths(profile: RepositoryProfile): string[] {
     const strengths: string[] = [];
-    const techsLower = profile.technologies.map(t => t.toLowerCase());
+    const techsLower = profile.technologies.map((t) => t.toLowerCase());
 
     if (techsLower.includes('timescaledb')) {
       strengths.push('High-volume geospatial time-series optimization');
     }
     if (techsLower.includes('pinecone') || techsLower.includes('llm')) {
-      strengths.push('Semantic AI-powered search & RAG (Retrieval-Augmented Generation)');
+      strengths.push(
+        'Semantic AI-powered search & RAG (Retrieval-Augmented Generation)'
+      );
     }
     if (techsLower.includes('kafka') && techsLower.includes('grpc')) {
       strengths.push('Robust multi-protocol microservices streaming topology');
@@ -128,7 +145,9 @@ export class RepositoryComparisonService {
       strengths.push('Bidirectional, sub-millisecond real-time communication');
     }
     if (techsLower.includes('spring security')) {
-      strengths.push('Secure enterprise role-based authorization & authentication');
+      strengths.push(
+        'Secure enterprise role-based authorization & authentication'
+      );
     }
     if (techsLower.includes('docker')) {
       strengths.push('Containerized development & cloud-ready deployments');

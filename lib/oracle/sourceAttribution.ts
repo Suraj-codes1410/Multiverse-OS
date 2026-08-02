@@ -18,16 +18,22 @@ export class EvidenceCollector {
    * Aggregates matched entities from selected context and determines query source attribution.
    */
   public static collect(
-    selected: SelectedContext & { resolvedEntity: string; traversedRelationships: string[] },
+    selected: SelectedContext & {
+      resolvedEntity: string;
+      traversedRelationships: string[];
+    },
     contextSizeChars: number
   ): OracleSources {
-    const projectsUsed = selected.projects.map(p => p.title);
-    const repositoriesUsed = selected.repositories.map(r => r.name);
-    const skillsUsed = selected.skills.map(s => s.name);
-    const achievementsUsed = selected.achievements.map(a => a.title);
-    
+    const projectsUsed = selected.projects.map((p) => p.title);
+    const repositoriesUsed = selected.repositories.map((r) => r.name);
+    const skillsUsed = selected.skills.map((s) => s.name);
+    const achievementsUsed = selected.achievements.map((a) => a.title);
+
     const entitiesUsed: string[] = [];
-    if (selected.resolvedEntity && selected.resolvedEntity !== 'None (General/Fallback Mode)') {
+    if (
+      selected.resolvedEntity &&
+      selected.resolvedEntity !== 'None (General/Fallback Mode)'
+    ) {
       entitiesUsed.push(selected.resolvedEntity);
     }
 
@@ -38,10 +44,13 @@ export class EvidenceCollector {
     let confidence = 0.75; // Baseline Indirect inference
     let confidenceLevel: 'High' | 'Medium' | 'Low' = 'Low';
 
-    if (selected.resolvedEntity && selected.resolvedEntity !== 'None (General/Fallback Mode)') {
+    if (
+      selected.resolvedEntity &&
+      selected.resolvedEntity !== 'None (General/Fallback Mode)'
+    ) {
       if (selected.traversedRelationships.length > 0) {
         // Traversed relationships in the graph (80-95%)
-        confidence = 0.90;
+        confidence = 0.9;
         confidenceLevel = 'Medium';
       } else {
         // Direct entity match (95-100%)
@@ -70,7 +79,7 @@ export class EvidenceCollector {
       confidenceLevel,
       resolvedEntity: selected.resolvedEntity,
       traversedRelationships: selected.traversedRelationships,
-      contextSizeTokens
+      contextSizeTokens,
     };
   }
 }
@@ -80,7 +89,10 @@ export class SourceAttributionService {
    * Returns source attribution evidence and confidence metadata.
    */
   public getSources(
-    selected: SelectedContext & { resolvedEntity: string; traversedRelationships: string[] },
+    selected: SelectedContext & {
+      resolvedEntity: string;
+      traversedRelationships: string[];
+    },
     contextSizeChars: number
   ): OracleSources {
     return EvidenceCollector.collect(selected, contextSizeChars);

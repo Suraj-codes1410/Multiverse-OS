@@ -4,7 +4,8 @@ import { registry } from './registry';
 export const helpCommand: Command = {
   name: 'help',
   aliases: ['h', '?', 'man'],
-  description: 'Displays a list of available commands or help for a specific command.',
+  description:
+    'Displays a list of available commands or help for a specific command.',
   execute: (args) => {
     if (args.length > 0) {
       const targetName = args[0];
@@ -16,14 +17,15 @@ export const helpCommand: Command = {
         };
       }
 
-      const aliasesInfo = command.aliases.length > 0 
-        ? ` (Aliases: ${command.aliases.join(', ')})` 
-        : '';
-        
+      const aliasesInfo =
+        command.aliases.length > 0
+          ? ` (Aliases: ${command.aliases.join(', ')})`
+          : '';
+
       return {
         output: [
           `Command: ${command.name}${aliasesInfo}`,
-          `Description: ${command.description}`
+          `Description: ${command.description}`,
         ],
         success: true,
       };
@@ -36,13 +38,16 @@ export const helpCommand: Command = {
     ];
 
     allCommands.forEach((cmd) => {
-      const aliasStr = cmd.aliases.length > 0 ? ` [${cmd.aliases.join(', ')}]` : '';
+      const aliasStr =
+        cmd.aliases.length > 0 ? ` [${cmd.aliases.join(', ')}]` : '';
       const commandCol = `${cmd.name}${aliasStr}`.padEnd(20);
       output.push(`${commandCol} - ${cmd.description}`);
     });
 
     output.push('--------------------------------------------------');
-    output.push('Type "help <command>" for detailed information on a specific command.');
+    output.push(
+      'Type "help <command>" for detailed information on a specific command.'
+    );
 
     return {
       output,

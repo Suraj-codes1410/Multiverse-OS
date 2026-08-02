@@ -5,7 +5,8 @@ import { getProjects } from '@/lib/data';
 
 export const metadata = {
   title: 'Projects Showcase | Suraj Samanta',
-  description: 'Explore the portfolio of Suraj Samanta, featuring distributed vector search engines, autonomous AI agent orchestrators, and real-time log ingestion systems.',
+  description:
+    'Explore the portfolio of Suraj Samanta, featuring distributed vector search engines, autonomous AI agent orchestrators, and real-time log ingestion systems.',
 };
 
 export default async function ProjectsPage() {

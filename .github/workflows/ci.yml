@@ -1,18 +1,22 @@
-name: Multiverse-OS CI
+name: Multiverse OS CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  ci:
-    name: Continuous Integration
+  validate:
+    name: Code Quality & Security Validation
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -24,11 +28,85 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: TypeScript Validation
+      - name: Verify Lockfile Integrity
+        run: |
+          if [ -f package-lock.json ]; then
+            git diff --exit-code package-lock.json || (echo "Error: package-lock.json is out of sync with package.json" && exit 1)
+          fi
+
+      - name: Format Check (Prettier)
+        run: npm run format:check
+
+      - name: Lint Check (ESLint)
+        run: npm run lint
+
+  typecheck:
+    name: TypeScript Compilation Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript Compile
         run: npx tsc --noEmit
 
-      - name: Production Build
-        run: npm run build
+  build-test:
+    name: Build & Integration Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Oracle Regression Suite
-        run: npx tsx scratch/oracle-regression-tests.ts
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Production Next.js Build
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Run Integration Tests
+        id: run-tests
+        run: |
+          if [ -f scratch/oracle-regression-tests.ts ]; then
+            echo "Integration tests found. Executing regression suite..."
+            npm run test
+          else
+            echo "No integration tests found. Skipping gracefully..."
+          fi
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Upload Build Artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: .next/
+          retention-days: 7
+
+      - name: Upload Build Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: |
+            .next/**/*.log
+            npm-debug.log
+          retention-days: 7

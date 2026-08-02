@@ -5,7 +5,8 @@ import { getRepositories } from '@/lib/github/github';
 
 export const metadata = {
   title: 'GitHub Explorer | Suraj Samanta',
-  description: "Browse Suraj Samanta's public GitHub repositories, containing distributed databases, event brokers, and AI-powered systems.",
+  description:
+    "Browse Suraj Samanta's public GitHub repositories, containing distributed databases, event brokers, and AI-powered systems.",
 };
 
 export default async function GithubPage() {

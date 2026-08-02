@@ -13,5 +13,15 @@
     "title": "Smart Delhi Ideathon — Top 5 & Civic Prize",
     "year": "2025",
     "description": "Awarded ₹7,000 and ranked in the top 5 for developing civic tech solutions resolving local municipal challenges."
+  },
+  {
+    "title": "Paytm × NerdsRoom Hackathon — Winner",
+    "year": "2026",
+    "description": "Won first place, developing high-performance fintech applications utilizing transaction processing services."
+  },
+  {
+    "title": "Elastic × Google Cloud Hackathon — Winner",
+    "year": "2026",
+    "description": "Won first place, designing scalable search and intelligence solutions utilizing Elasticsearch and Google Cloud Platform."
   }
 ]

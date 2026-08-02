@@ -34,31 +34,44 @@ export class ContextualEntityTracker {
     const textLower = text.toLowerCase().trim();
 
     // 1. Repositories and Projects from classifier
-    const classification = QueryIntentClassifier.classify(text, repositories, projects);
+    const classification = QueryIntentClassifier.classify(
+      text,
+      repositories,
+      projects
+    );
     const matchedReposAndProjs = classification.extractedEntities.repositories;
 
     const referencedProjects = matchedReposAndProjs
-      .filter(name => projects.some(p => p.id.toLowerCase() === name.toLowerCase()))
-      .map(name => {
-        const proj = projects.find(p => p.id.toLowerCase() === name.toLowerCase());
+      .filter((name) =>
+        projects.some((p) => p.id.toLowerCase() === name.toLowerCase())
+      )
+      .map((name) => {
+        const proj = projects.find(
+          (p) => p.id.toLowerCase() === name.toLowerCase()
+        );
         return proj ? proj.id : name;
       });
 
     const referencedRepositories = matchedReposAndProjs
-      .filter(name => repositories.some(r => r.name.toLowerCase() === name.toLowerCase()))
-      .map(name => {
-        const repo = repositories.find(r => r.name.toLowerCase() === name.toLowerCase());
+      .filter((name) =>
+        repositories.some((r) => r.name.toLowerCase() === name.toLowerCase())
+      )
+      .map((name) => {
+        const repo = repositories.find(
+          (r) => r.name.toLowerCase() === name.toLowerCase()
+        );
         return repo ? repo.name : name;
       });
 
     // 2. Technologies
-    const referencedTechnologies = classification.extractedEntities.technologies;
+    const referencedTechnologies =
+      classification.extractedEntities.technologies;
 
     // 3. Skills
     const referencedSkills: string[] = [];
     try {
       const skills = getSkills();
-      skills.forEach(s => {
+      skills.forEach((s) => {
         const escaped = s.name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         const regex = new RegExp(`\\b${escaped}\\b`, 'i');
         if (regex.test(textLower)) {
@@ -66,14 +79,14 @@ export class ContextualEntityTracker {
         }
       });
     } catch (e) {
-      console.error("Failed to load skills for entity tracker:", e);
+      console.error('Failed to load skills for entity tracker:', e);
     }
 
     return {
       repositories: Array.from(new Set(referencedRepositories)),
       projects: Array.from(new Set(referencedProjects)),
       technologies: Array.from(new Set(referencedTechnologies)),
-      skills: Array.from(new Set(referencedSkills))
+      skills: Array.from(new Set(referencedSkills)),
     };
   }
 }
@@ -92,7 +105,9 @@ export class FollowUpResolver {
     // Follow-up phrase detection patterns
     const hasIt = /\b(it)\b/i.test(queryLower);
     const hasThis = /\b(this)\b/i.test(queryLower);
-    const hasThat = /\b(that)\b/i.test(queryLower) && !/\b(that project|that repository)\b/i.test(queryLower);
+    const hasThat =
+      /\b(that)\b/i.test(queryLower) &&
+      !/\b(that project|that repository)\b/i.test(queryLower);
     const hasThatProject = /\b(that project)\b/i.test(queryLower);
     const hasThatRepository = /\b(that repository)\b/i.test(queryLower);
     const hasThisProject = /\b(this project)\b/i.test(queryLower);
@@ -104,11 +119,20 @@ export class FollowUpResolver {
     const hasEither = /\b(either)\b/i.test(queryLower);
     const hasWhy = /^\s*why\s*\??\s*$/i.test(queryLower);
 
-    const isFollowUp = (
-      hasIt || hasThis || hasThat || hasThatProject || hasThatRepository ||
-      hasThisProject || hasThisRepository || hasThisOne || hasWhichOne ||
-      hasTheOtherOne || hasBoth || hasEither || hasWhy
-    );
+    const isFollowUp =
+      hasIt ||
+      hasThis ||
+      hasThat ||
+      hasThatProject ||
+      hasThatRepository ||
+      hasThisProject ||
+      hasThisRepository ||
+      hasThisOne ||
+      hasWhichOne ||
+      hasTheOtherOne ||
+      hasBoth ||
+      hasEither ||
+      hasWhy;
 
     if (!isFollowUp || interactions.length === 0) {
       return { resolvedQuery: query, hit: false, resolvedEntities: [] };
@@ -128,10 +152,14 @@ export class FollowUpResolver {
     // Case 1: Standalone "Why?" follow-up query
     if (hasWhy) {
       const lastQuery = lastInteraction.query;
-      const resolved = lastInteraction.referencedProjects[0] || lastInteraction.referencedRepositories[0];
+      const resolved =
+        lastInteraction.referencedProjects[0] ||
+        lastInteraction.referencedRepositories[0];
       if (resolved) {
         const formatted = formatEntity(resolved);
-        const match = lastQuery.match(/which project (?:best )?demonstrates (.*)/i);
+        const match = lastQuery.match(
+          /which project (?:best )?demonstrates (.*)/i
+        );
         if (match) {
           resolvedQuery = `Why does ${formatted} best demonstrate ${match[1]}?`;
         } else {
@@ -141,10 +169,16 @@ export class FollowUpResolver {
       }
     }
     // Case 2: Comparison queries ("which one", "both", "either", etc.)
-    else if (hasWhichOne || hasThisOne || hasTheOtherOne || hasBoth || hasEither) {
+    else if (
+      hasWhichOne ||
+      hasThisOne ||
+      hasTheOtherOne ||
+      hasBoth ||
+      hasEither
+    ) {
       const prevEntities = [
         ...lastInteraction.referencedProjects,
-        ...lastInteraction.referencedRepositories
+        ...lastInteraction.referencedRepositories,
       ].map(formatEntity);
 
       const uniquePrev = Array.from(new Set(prevEntities));
@@ -155,13 +189,22 @@ export class FollowUpResolver {
         const joinedOr = resolvedEntities.join(' or ');
 
         if (hasWhichOne) {
-          resolvedQuery = resolvedQuery.replace(/\bwhich one\b/i, `which of ${joinedAnd}`);
+          resolvedQuery = resolvedQuery.replace(
+            /\bwhich one\b/i,
+            `which of ${joinedAnd}`
+          );
         }
         if (hasThisOne) {
-          resolvedQuery = resolvedQuery.replace(/\bthis one\b/i, `${resolvedEntities[0]}`);
+          resolvedQuery = resolvedQuery.replace(
+            /\bthis one\b/i,
+            `${resolvedEntities[0]}`
+          );
         }
         if (hasTheOtherOne) {
-          resolvedQuery = resolvedQuery.replace(/\bthe other one\b/i, `${resolvedEntities[1]}`);
+          resolvedQuery = resolvedQuery.replace(
+            /\bthe other one\b/i,
+            `${resolvedEntities[1]}`
+          );
         }
         if (hasBoth) {
           resolvedQuery = resolvedQuery.replace(/\bboth\b/i, joinedAnd);
@@ -172,7 +215,10 @@ export class FollowUpResolver {
       } else if (uniquePrev.length === 1) {
         resolvedEntities = uniquePrev;
         const formatted = uniquePrev[0];
-        resolvedQuery = resolvedQuery.replace(/\b(which one|this one|the other one|both|either)\b/i, formatted);
+        resolvedQuery = resolvedQuery.replace(
+          /\b(which one|this one|the other one|both|either)\b/i,
+          formatted
+        );
       }
     }
     // Case 3: Singular pronoun replacement (it, this, that, that project, etc.)
@@ -225,10 +271,16 @@ export class FollowUpResolver {
           resolvedQuery = resolvedQuery.replace(/\bthis project\b/i, formatted);
         }
         if (hasThatRepository) {
-          resolvedQuery = resolvedQuery.replace(/\bthat repository\b/i, formatted);
+          resolvedQuery = resolvedQuery.replace(
+            /\bthat repository\b/i,
+            formatted
+          );
         }
         if (hasThisRepository) {
-          resolvedQuery = resolvedQuery.replace(/\bthis repository\b/i, formatted);
+          resolvedQuery = resolvedQuery.replace(
+            /\bthis repository\b/i,
+            formatted
+          );
         }
         if (hasIt) {
           resolvedQuery = resolvedQuery.replace(/\bit\b/i, formatted);
@@ -245,11 +297,11 @@ export class FollowUpResolver {
     const hit = resolvedEntities.length > 0;
 
     if (hit) {
-      console.log("\nFOLLOWUP_DETECTED");
+      console.log('\nFOLLOWUP_DETECTED');
       console.log(`Original:\n${query}\n`);
-      console.log("ENTITY_RESOLVED\n");
-      resolvedEntities.forEach(e => console.log(e));
-      console.log("\nMEMORY_CONTEXT_USED");
+      console.log('ENTITY_RESOLVED\n');
+      resolvedEntities.forEach((e) => console.log(e));
+      console.log('\nMEMORY_CONTEXT_USED');
       console.log(`Resolved Query:\n${resolvedQuery}\n`);
     }
 
@@ -288,13 +340,29 @@ export class ConversationalMemoryService {
     const repositories = await getRepositories();
     const projects = await getProjects();
 
-    const queryEntities = await ContextualEntityTracker.extractEntities(query, repositories, projects);
-    const responseEntities = await ContextualEntityTracker.extractEntities(response, repositories, projects);
+    const queryEntities = await ContextualEntityTracker.extractEntities(
+      query,
+      repositories,
+      projects
+    );
+    const responseEntities = await ContextualEntityTracker.extractEntities(
+      response,
+      repositories,
+      projects
+    );
 
-    const referencedProjects = Array.from(new Set([...queryEntities.projects, ...responseEntities.projects]));
-    const referencedRepositories = Array.from(new Set([...queryEntities.repositories, ...responseEntities.repositories]));
-    const referencedTechnologies = Array.from(new Set([...queryEntities.technologies, ...responseEntities.technologies]));
-    const referencedSkills = Array.from(new Set([...queryEntities.skills, ...responseEntities.skills]));
+    const referencedProjects = Array.from(
+      new Set([...queryEntities.projects, ...responseEntities.projects])
+    );
+    const referencedRepositories = Array.from(
+      new Set([...queryEntities.repositories, ...responseEntities.repositories])
+    );
+    const referencedTechnologies = Array.from(
+      new Set([...queryEntities.technologies, ...responseEntities.technologies])
+    );
+    const referencedSkills = Array.from(
+      new Set([...queryEntities.skills, ...responseEntities.skills])
+    );
 
     const session = this.getSession(sessionId);
     const interaction: Interaction = {
@@ -304,7 +372,7 @@ export class ConversationalMemoryService {
       referencedProjects,
       referencedTechnologies,
       referencedSkills,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     session.interactions.push(interaction);
@@ -314,11 +382,17 @@ export class ConversationalMemoryService {
       session.interactions.shift();
     }
 
-    console.log("MEMORY_STORE");
+    console.log('MEMORY_STORE');
     console.log(`Query: ${query}`);
-    console.log(`Referenced Repositories: ${referencedRepositories.join(', ') || 'none'}`);
-    console.log(`Referenced Projects: ${referencedProjects.join(', ') || 'none'}`);
-    console.log(`Referenced Technologies: ${referencedTechnologies.join(', ') || 'none'}`);
+    console.log(
+      `Referenced Repositories: ${referencedRepositories.join(', ') || 'none'}`
+    );
+    console.log(
+      `Referenced Projects: ${referencedProjects.join(', ') || 'none'}`
+    );
+    console.log(
+      `Referenced Technologies: ${referencedTechnologies.join(', ') || 'none'}`
+    );
     console.log(`Referenced Skills: ${referencedSkills.join(', ') || 'none'}`);
   }
 
@@ -338,4 +412,5 @@ export class ConversationalMemoryService {
   }
 }
 
-export const conversationalMemoryService = ConversationalMemoryService.getInstance();
+export const conversationalMemoryService =
+  ConversationalMemoryService.getInstance();

@@ -20,15 +20,18 @@ export default function Badge({
     },
     purple: {
       solid: 'bg-accent-purple/15 text-accent-purple border border-transparent',
-      outline: 'border border-accent-purple/30 text-accent-purple bg-accent-purple/5',
+      outline:
+        'border border-accent-purple/30 text-accent-purple bg-accent-purple/5',
     },
     green: {
       solid: 'bg-success-green/15 text-success-green border border-transparent',
-      outline: 'border border-success-green/30 text-success-green bg-success-green/5',
+      outline:
+        'border border-success-green/30 text-success-green bg-success-green/5',
     },
     amber: {
       solid: 'bg-warning-amber/15 text-warning-amber border border-transparent',
-      outline: 'border border-warning-amber/30 text-warning-amber bg-warning-amber/5',
+      outline:
+        'border border-warning-amber/30 text-warning-amber bg-warning-amber/5',
     },
     default: {
       solid: 'bg-border-subtle text-text-secondary border border-transparent',
@@ -37,7 +40,9 @@ export default function Badge({
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-mono tracking-wide ${colorStyles[color][variant]} ${className}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-mono tracking-wide ${colorStyles[color][variant]} ${className}`}
+    >
       {children}
     </span>
   );

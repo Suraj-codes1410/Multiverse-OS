@@ -7,7 +7,7 @@ export const contactCommand: Command = {
   description: 'Displays contact and social media information.',
   execute: () => {
     const portfolio = getPortfolio();
-    
+
     const output = [
       'CONTACT INFORMATION',
       '==================================================',
@@ -18,7 +18,7 @@ export const contactCommand: Command = {
       'Social Links:',
       `  GitHub:   ${portfolio.github}`,
       `  LinkedIn: ${portfolio.linkedin}`,
-      '=================================================='
+      '==================================================',
     ];
 
     return {

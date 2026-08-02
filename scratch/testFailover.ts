@@ -5,7 +5,7 @@ import path from 'path';
 const envPath = path.join(__dirname, '../.env.local');
 if (fs.existsSync(envPath)) {
   const envContent = fs.readFileSync(envPath, 'utf8');
-  envContent.split('\n').forEach(line => {
+  envContent.split('\n').forEach((line) => {
     const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
     if (match) {
       const key = match[1];
@@ -27,29 +27,31 @@ process.env.FALLBACK_MODEL_2 = 'meta-llama/llama-3.3-70b-instruct:free'; // Rate
 process.env.FALLBACK_MODEL_3 = 'google/gemini-2.5-flash'; // Paid model -> will succeed!
 
 async function testFailover() {
-  console.log("====================================================");
-  console.log("STARTING MULTI-MODEL FAILOVER TEST");
-  console.log("====================================================");
-  
-  const { OpenRouterProvider } = await import('../lib/oracle/openRouterProvider');
+  console.log('====================================================');
+  console.log('STARTING MULTI-MODEL FAILOVER TEST');
+  console.log('====================================================');
+
+  const { OpenRouterProvider } =
+    await import('../lib/oracle/openRouterProvider');
   const provider = new OpenRouterProvider();
 
   try {
     const response = await provider.generate({
-      systemPrompt: "You are a professional assistant. Say hello and state your model name.",
-      userPrompt: "Hello, who are you?"
+      systemPrompt:
+        'You are a professional assistant. Say hello and state your model name.',
+      userPrompt: 'Hello, who are you?',
     });
 
-    console.log("\n----------------------------------------------------");
-    console.log("TEST SUCCESSFUL!");
-    console.log("AI RESPONSE:");
+    console.log('\n----------------------------------------------------');
+    console.log('TEST SUCCESSFUL!');
+    console.log('AI RESPONSE:');
     console.log(response.text.trim());
-    console.log("----------------------------------------------------");
+    console.log('----------------------------------------------------');
   } catch (err: any) {
-    console.error("\n----------------------------------------------------");
-    console.error("TEST FAILED!");
+    console.error('\n----------------------------------------------------');
+    console.error('TEST FAILED!');
     console.error(err.message || err);
-    console.error("----------------------------------------------------");
+    console.error('----------------------------------------------------');
   }
 }
 

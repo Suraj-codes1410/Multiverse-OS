@@ -13,5 +13,8 @@ export interface Command {
   name: string;
   aliases: string[];
   description: string;
-  execute(args: string[], context: CommandContext): Promise<CommandResult> | CommandResult;
+  execute(
+    args: string[],
+    context: CommandContext
+  ): Promise<CommandResult> | CommandResult;
 }

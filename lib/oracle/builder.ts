@@ -1,14 +1,24 @@
-import { 
-  getPortfolio, 
-  getSkills, 
-  getAchievements, 
-  getProjects, 
+import {
+  getPortfolio,
+  getSkills,
+  getAchievements,
+  getProjects,
   getTimeline,
-  buildKnowledgeGraph 
+  buildKnowledgeGraph,
 } from '../data';
 import { getRepositories } from '../github/github';
 import { getReadmeContent } from '../github/readme';
-import { OracleContext, CandidateProfile, TechnicalSkillContext, ProjectContext, RepositoryContext, AchievementContext, TimelineContext, TechnologyRelationshipContext, RepositoryRelationshipContext } from './types';
+import {
+  OracleContext,
+  CandidateProfile,
+  TechnicalSkillContext,
+  ProjectContext,
+  RepositoryContext,
+  AchievementContext,
+  TimelineContext,
+  TechnologyRelationshipContext,
+  RepositoryRelationshipContext,
+} from './types';
 
 export class OracleContextBuilder {
   /**
@@ -40,22 +50,25 @@ export class OracleContextBuilder {
         institution: portfolio.education.institution,
         location: portfolio.education.location,
         cgpa: portfolio.education.cgpa,
-        expectedGraduation: portfolio.education.expectedGraduation
+        expectedGraduation: portfolio.education.expectedGraduation,
       },
       interests: portfolio.interests || [],
-      futureGoals: portfolio.futureGoals || []
+      futureGoals: portfolio.futureGoals || [],
     };
 
     // 3. Build Technical Skills Context
-    const skillContexts: TechnicalSkillContext[] = skills.map(skill => {
+    const skillContexts: TechnicalSkillContext[] = skills.map((skill) => {
       const associatedProjects: string[] = [];
       const associatedRepositories: string[] = [];
 
       // Query Knowledge Graph neighbors for associations
-      const skillNodeId = `skill:${skill.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
+      const skillNodeId = `skill:${skill.name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')}`;
       const neighbors = graph.getNeighbors(skillNodeId);
-      
-      neighbors.forEach(n => {
+
+      neighbors.forEach((n) => {
         if (n.node.type === 'Project') {
           associatedProjects.push(n.node.label);
         } else if (n.node.type === 'Repository') {
@@ -65,8 +78,10 @@ export class OracleContextBuilder {
 
       // Fallback: match using local lists if graph traversal is empty
       if (associatedProjects.length === 0 && skill.relatedProjects) {
-        skill.relatedProjects.forEach(pid => {
-          const proj = projects.find(p => p.id.toLowerCase() === pid.toLowerCase());
+        skill.relatedProjects.forEach((pid) => {
+          const proj = projects.find(
+            (p) => p.id.toLowerCase() === pid.toLowerCase()
+          );
           if (proj) associatedProjects.push(proj.title);
         });
       }
@@ -77,12 +92,12 @@ export class OracleContextBuilder {
         level: skill.level,
         description: skill.description,
         associatedProjects: Array.from(new Set(associatedProjects)),
-        associatedRepositories: Array.from(new Set(associatedRepositories))
+        associatedRepositories: Array.from(new Set(associatedRepositories)),
       };
     });
 
     // 4. Build Projects Context
-    const projectContexts: ProjectContext[] = projects.map(proj => {
+    const projectContexts: ProjectContext[] = projects.map((proj) => {
       let associatedRepositoryName: string | undefined = undefined;
       if (proj.githubRepository) {
         associatedRepositoryName = proj.githubRepository.name;
@@ -108,82 +123,101 @@ export class OracleContextBuilder {
         githubUrl: proj.githubUrl,
         liveUrl: proj.liveUrl,
         year: proj.year,
-        associatedRepositoryName
+        associatedRepositoryName,
       };
     });
 
     // 5. Build Repositories Context (linking intelligence metrics)
-    const repositoryContexts: RepositoryContext[] = await Promise.all(repositories.map(async repo => {
-      const proj = projects.find(p => 
-        p.id.toLowerCase() === repo.name.toLowerCase() ||
-        p.id.toLowerCase() === repo.name.toLowerCase() + 's' ||
-        repo.name.toLowerCase() === p.id.toLowerCase() + 's' ||
-        (p.githubUrl && p.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
-      );
+    const repositoryContexts: RepositoryContext[] = await Promise.all(
+      repositories.map(async (repo) => {
+        const proj = projects.find(
+          (p) =>
+            p.id.toLowerCase() === repo.name.toLowerCase() ||
+            p.id.toLowerCase() === repo.name.toLowerCase() + 's' ||
+            repo.name.toLowerCase() === p.id.toLowerCase() + 's' ||
+            (p.githubUrl &&
+              p.githubUrl.toLowerCase().endsWith('/' + repo.name.toLowerCase()))
+        );
 
-      const classifications = proj?.githubRepository?.classifications || [];
-      const intelligence = proj?.intelligence;
-      
-      let readmeExcerpt = proj?.readme ? proj.readme.slice(0, 1200) : undefined;
-      if (!readmeExcerpt) {
-        const rawReadme = await getReadmeContent(repo.name);
-        if (rawReadme && rawReadme !== 'No README content available.') {
-          readmeExcerpt = rawReadme.slice(0, 1200);
+        const classifications = proj?.githubRepository?.classifications || [];
+        const intelligence = proj?.intelligence;
+
+        let readmeExcerpt = proj?.readme
+          ? proj.readme.slice(0, 1200)
+          : undefined;
+        if (!readmeExcerpt) {
+          const rawReadme = await getReadmeContent(repo.name);
+          if (rawReadme && rawReadme !== 'No README content available.') {
+            readmeExcerpt = rawReadme.slice(0, 1200);
+          }
         }
-      }
 
-      const simplifiedIntelligence = intelligence ? {
-        projectType: intelligence.projectType,
-        projectCategory: intelligence.projectCategory,
-        technologies: intelligence.technologies,
-        keyConcepts: intelligence.keyConcepts,
-        complexityRating: intelligence.complexityAnalysis?.overallRating || 'Beginner',
-        architecturePattern: intelligence.architectureAnalysis?.architecturePattern || 'Monolith'
-      } : undefined;
+        const simplifiedIntelligence = intelligence
+          ? {
+              projectType: intelligence.projectType,
+              projectCategory: intelligence.projectCategory,
+              technologies: intelligence.technologies,
+              keyConcepts: intelligence.keyConcepts,
+              complexityRating:
+                intelligence.complexityAnalysis?.overallRating || 'Beginner',
+              architecturePattern:
+                intelligence.architectureAnalysis?.architecturePattern ||
+                'Monolith',
+            }
+          : undefined;
 
-      // Retrieve repositorySummary from graph node properties
-      const repoNodeId = `repository:${repo.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
-      const repoNode = graph.getNode(repoNodeId);
-      const repositorySummary = repoNode?.properties.repositorySummary as any;
+        // Retrieve repositorySummary from graph node properties
+        const repoNodeId = `repository:${repo.name
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, '-')}`;
+        const repoNode = graph.getNode(repoNodeId);
+        const repositorySummary = repoNode?.properties.repositorySummary as any;
 
-      return {
-        name: repo.name,
-        fullName: repo.fullName,
-        description: repo.description,
-        url: repo.htmlUrl,
-        homepage: repo.homepage,
-        starsCount: repo.starsCount,
-        forksCount: repo.forksCount,
-        language: repo.language,
-        topics: repo.topics || [],
-        createdAt: repo.createdAt,
-        updatedAt: repo.updatedAt,
-        classifications,
-        intelligence: simplifiedIntelligence,
-        readmeExcerpt,
-        repositorySummary
-      };
-    }));
+        return {
+          name: repo.name,
+          fullName: repo.fullName,
+          description: repo.description,
+          url: repo.htmlUrl,
+          homepage: repo.homepage,
+          starsCount: repo.starsCount,
+          forksCount: repo.forksCount,
+          language: repo.language,
+          topics: repo.topics || [],
+          createdAt: repo.createdAt,
+          updatedAt: repo.updatedAt,
+          classifications,
+          intelligence: simplifiedIntelligence,
+          readmeExcerpt,
+          repositorySummary,
+        };
+      })
+    );
 
     // 6. Build Achievements Context
-    const achievementContexts: AchievementContext[] = achievements.map(ach => {
-      const associatedProjects: string[] = [];
-      const achNodeId = `achievement:${ach.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')}`;
-      
-      const neighbors = graph.getNeighbors(achNodeId);
-      neighbors.forEach(n => {
-        if (n.node.type === 'Project') {
-          associatedProjects.push(n.node.label);
-        }
-      });
+    const achievementContexts: AchievementContext[] = achievements.map(
+      (ach) => {
+        const associatedProjects: string[] = [];
+        const achNodeId = `achievement:${ach.title
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, '-')}`;
 
-      return {
-        title: ach.title,
-        year: ach.year,
-        description: ach.description,
-        associatedProjects: Array.from(new Set(associatedProjects))
-      };
-    });
+        const neighbors = graph.getNeighbors(achNodeId);
+        neighbors.forEach((n) => {
+          if (n.node.type === 'Project') {
+            associatedProjects.push(n.node.label);
+          }
+        });
+
+        return {
+          title: ach.title,
+          year: ach.year,
+          description: ach.description,
+          associatedProjects: Array.from(new Set(associatedProjects)),
+        };
+      }
+    );
 
     // 7. Build Chronological Timeline Context
     const timelineMap: {
@@ -196,7 +230,7 @@ export class OracleContextBuilder {
         relatedLink?: string;
       }[];
     } = {};
-    timeline.forEach(event => {
+    timeline.forEach((event) => {
       if (!timelineMap[event.year]) {
         timelineMap[event.year] = [];
       }
@@ -206,27 +240,27 @@ export class OracleContextBuilder {
         date: event.date,
         type: event.type,
         description: event.description,
-        relatedLink: event.relatedLink
+        relatedLink: event.relatedLink,
       });
     });
 
     const timelineContexts: TimelineContext[] = Object.entries(timelineMap)
       .map(([year, milestones]) => ({
         year,
-        milestones: milestones.sort((a, b) => a.title.localeCompare(b.title))
+        milestones: milestones.sort((a, b) => a.title.localeCompare(b.title)),
       }))
       .sort((a, b) => parseInt(b.year) - parseInt(a.year));
 
     // 8. Build Technology Relationships Context
     const technologyRelationships: TechnologyRelationshipContext[] = graph
       .getNodesByType('Skill')
-      .map(skillNode => {
+      .map((skillNode) => {
         const relatedTechnologies: string[] = [];
         const usedInProjects: string[] = [];
         const usedInRepositories: string[] = [];
 
         const neighbors = graph.getNeighbors(skillNode.id);
-        neighbors.forEach(n => {
+        neighbors.forEach((n) => {
           if (n.node.type === 'Skill') {
             relatedTechnologies.push(n.node.label);
           } else if (n.node.type === 'Project') {
@@ -241,20 +275,20 @@ export class OracleContextBuilder {
           category: (skillNode.properties.category as string) || 'Tools',
           relatedTechnologies: Array.from(new Set(relatedTechnologies)),
           usedInProjects: Array.from(new Set(usedInProjects)),
-          usedInRepositories: Array.from(new Set(usedInRepositories))
+          usedInRepositories: Array.from(new Set(usedInRepositories)),
         };
       });
 
     // 9. Build Repository Relationships Context
     const repositoryRelationships: RepositoryRelationshipContext[] = graph
       .getNodesByType('Repository')
-      .map(repoNode => {
+      .map((repoNode) => {
         const repositoryName = repoNode.label;
         let associatedProject: string | undefined = undefined;
         const skillsRequired: string[] = [];
 
         const neighbors = graph.getNeighbors(repoNode.id);
-        neighbors.forEach(n => {
+        neighbors.forEach((n) => {
           if (n.node.type === 'Project') {
             associatedProject = n.node.label;
           } else if (n.node.type === 'Skill') {
@@ -263,14 +297,20 @@ export class OracleContextBuilder {
         });
 
         const starsCount = (repoNode.properties.starsCount as number) || 0;
-        
-        const proj = projects.find(p => 
-          p.id.toLowerCase() === repositoryName.toLowerCase() ||
-          (p.githubRepository && p.githubRepository.name.toLowerCase() === repositoryName.toLowerCase())
+
+        const proj = projects.find(
+          (p) =>
+            p.id.toLowerCase() === repositoryName.toLowerCase() ||
+            (p.githubRepository &&
+              p.githubRepository.name.toLowerCase() ===
+                repositoryName.toLowerCase())
         );
 
-        const complexity = proj?.intelligence?.complexityAnalysis?.overallRating || 'Beginner';
-        const architecturePattern = proj?.intelligence?.architectureAnalysis?.architecturePattern || 'Monolith';
+        const complexity =
+          proj?.intelligence?.complexityAnalysis?.overallRating || 'Beginner';
+        const architecturePattern =
+          proj?.intelligence?.architectureAnalysis?.architecturePattern ||
+          'Monolith';
 
         return {
           repositoryName,
@@ -278,7 +318,7 @@ export class OracleContextBuilder {
           skillsRequired: Array.from(new Set(skillsRequired)),
           starsCount,
           complexity,
-          architecturePattern
+          architecturePattern,
         };
       });
 
@@ -291,7 +331,7 @@ export class OracleContextBuilder {
       timeline: timelineContexts,
       technologyRelationships,
       repositoryRelationships,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
   }
 }

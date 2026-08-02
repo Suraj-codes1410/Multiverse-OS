@@ -9,12 +9,12 @@ export const homeCommand: Command = {
       context.navigate('/');
       return {
         output: 'Navigating to home page...',
-        success: true
+        success: true,
       };
     }
     return {
       output: 'Navigation is not available in this environment.',
-      success: false
+      success: false,
     };
-  }
+  },
 };

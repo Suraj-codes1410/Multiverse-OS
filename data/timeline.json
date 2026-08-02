@@ -50,6 +50,26 @@
     "icon": "award"
   },
   {
+    "id": "hackathon-paytm",
+    "title": "Paytm × NerdsRoom Hackathon Winner",
+    "date": "June 2026",
+    "year": "2026",
+    "type": "hackathon",
+    "description": "Won the Paytm × NerdsRoom Hackathon, developing high-performance transactional/fintech applications.",
+    "relatedLink": "",
+    "icon": "award"
+  },
+  {
+    "id": "hackathon-elastic-gcp",
+    "title": "Elastic × Google Cloud Hackathon Winner",
+    "date": "July 2026",
+    "year": "2026",
+    "type": "hackathon",
+    "description": "Won the Elastic × Google Cloud Hackathon, designing scalable search and intelligence solutions utilizing Elasticsearch and Google Cloud Platform.",
+    "relatedLink": "",
+    "icon": "award"
+  },
+  {
     "id": "edu-graduation",
     "title": "Expected B.Tech Graduation",
     "date": "May 2028",

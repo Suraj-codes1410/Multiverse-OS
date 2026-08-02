@@ -8,7 +8,7 @@ export const educationCommand: Command = {
   execute: () => {
     const portfolio = getPortfolio();
     const edu = portfolio.education;
-    
+
     const output = [
       'EDUCATION BACKGROUND',
       '==================================================',
@@ -18,7 +18,7 @@ export const educationCommand: Command = {
       `Current Year:        ${edu.currentYear}`,
       `CGPA:                ${edu.cgpa}`,
       `Expected Graduation: ${edu.expectedGraduation}`,
-      '=================================================='
+      '==================================================',
     ];
 
     return {

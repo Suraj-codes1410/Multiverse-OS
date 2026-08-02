@@ -1,4 +1,7 @@
-import { RepositoryProfile, RepositoryIntelligenceService } from './repositoryIntelligence';
+import {
+  RepositoryProfile,
+  RepositoryIntelligenceService,
+} from './repositoryIntelligence';
 
 export interface TechnologyIndexEntry {
   technology: string;
@@ -13,8 +16,8 @@ export class TechnologyIndex {
   }
 
   private build(profiles: RepositoryProfile[]): void {
-    profiles.forEach(profile => {
-      profile.technologies.forEach(tech => {
+    profiles.forEach((profile) => {
+      profile.technologies.forEach((tech) => {
         const normalizedTech = tech.toLowerCase().trim();
         if (!this.index.has(normalizedTech)) {
           this.index.set(normalizedTech, []);
@@ -34,7 +37,11 @@ export class TechnologyIndex {
     const normalized = technologyName.toLowerCase().trim();
     // Support simple lookup matching
     for (const key of this.index.keys()) {
-      if (key === normalized || key.includes(normalized) || normalized.includes(key)) {
+      if (
+        key === normalized ||
+        key.includes(normalized) ||
+        normalized.includes(key)
+      ) {
         return this.index.get(key) || [];
       }
     }
@@ -47,7 +54,7 @@ export class TechnologyIndex {
   public getAllEntries(): TechnologyIndexEntry[] {
     return Array.from(this.index.entries()).map(([tech, repos]) => ({
       technology: tech,
-      repositoryNames: repos
+      repositoryNames: repos,
     }));
   }
 }
@@ -57,7 +64,8 @@ export class TechnologyLookupService {
   private index: TechnologyIndex | null = null;
 
   constructor(intelligenceService?: RepositoryIntelligenceService) {
-    this.intelligenceService = intelligenceService || new RepositoryIntelligenceService();
+    this.intelligenceService =
+      intelligenceService || new RepositoryIntelligenceService();
   }
 
   /**
@@ -81,7 +89,9 @@ export class TechnologyLookupService {
 
     // Scan all technology terms registered in our index
     const entries = this.index.getAllEntries();
-    const sortedTechs = entries.map(e => e.technology).sort((a, b) => b.length - a.length);
+    const sortedTechs = entries
+      .map((e) => e.technology)
+      .sort((a, b) => b.length - a.length);
 
     for (const tech of sortedTechs) {
       if (queryLower.includes(tech.toLowerCase())) {

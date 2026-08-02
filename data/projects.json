@@ -82,5 +82,33 @@
     "liveUrl": "",
     "status": "Award Winner",
     "year": "2025"
+  },
+  {
+    "id": "resumerank-ai",
+    "title": "ResumeRank AI",
+    "subtitle": "LLM-Driven Candidate Extraction & Ranking Platform",
+    "description": "Built an enterprise-grade multi-service recruitment platform that parses candidate resumes (PDFs/DOCXs), extracts structured fields using LLMs, grades profiles against targeted job postings, and ranks candidates on a secure dashboard.",
+    "featured": true,
+    "source": "manual",
+    "problem": "High-volume recruitment requires manually scanning hundreds of resumes, which is highly time-consuming, prone to human error, and subjective.",
+    "solution": "Developed an asynchronous, multi-service platform using Next.js, Spring Boot, and FastAPI. Resumes are parsed, LLM-extracted into structured fields, compared to target jobs for skill alignment/seniority, and ranked on a unified dashboard.",
+    "architecture": "Next.js Web App -> Spring Boot API (Auth & Core logic) -> Cloudinary (Storage) / Resend (Emails) | FastAPI Service (Python Doc Extraction & LLM Orchestration) -> PostgreSQL.",
+    "techStack": ["Next.js", "Spring Boot", "FastAPI", "PostgreSQL", "Docker", "Flyway", "Testcontainers"],
+    "challenges": [
+      "Handling background document extraction and structured JSON LLM outputs without causing UI lag or memory leakages.",
+      "Preventing XSS vulnerabilities in JWT delivery and managing secure signature verification for Cloudinary uploads."
+    ],
+    "results": [
+      "Completed production-ready recruitment workflow supporting sub-second RAG-based resume parsing and suitability summaries.",
+      "Achieved high security and test reliability using Testcontainers for PostgreSQL integration testing and HttpOnly JWT cookies."
+    ],
+    "lessons": [
+      "Client-side signed Cloudinary uploads drastically reduce core server bandwidth requirements.",
+      "Flyway-controlled migrations are critical for robust database synchronization during integration test runs."
+    ],
+    "githubUrl": "https://github.com/Suraj-codes1410/ResumeRank_AI",
+    "liveUrl": "https://resume-rank-ai-iota.vercel.app/",
+    "status": "Completed",
+    "year": "2025"
   }
 ]
