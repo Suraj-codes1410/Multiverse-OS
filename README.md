@@ -26,20 +26,20 @@ By integrating a custom semantic routing system, query caching, multi-model resi
 Below are the primary views of the **Multiverse-OS** environment. 
 *(If you are running the project locally, you can capture screenshots and place them in the `docs/screenshots/` directory).*
 
-| **System Console (Home)** | **Oracle AI Assistant** |
+| **Boot Loading Screen** | **System Console (Home)** |
 | :---: | :---: |
-| ![Multiverse-OS Home Console](public/screenshots/desktop_shell.png) | ![Oracle AI Dialogue](public/screenshots/oracle_layer.png) |
-| *Immersive, OS-like terminal interface for exploring directories and system metrics.* | *Semantic search & natural language question-answering with repository grounding.* |
+| ![Boot Loading Screen](public/screenshots/loading_page.png) | ![System Console (Home)](public/screenshots/desktop_shell.png) |
+| *Tactile, animated boot reveal sequence with OS mode selection landing choice.* | *Immersive, OS-like terminal interface for exploring directories and system metrics.* |
 
-| **Recruiter Dashboard** | **Project Portfolio** |
+| **Oracle AI Assistant** | **CLI Terminal Shell** |
 | :---: | :---: |
-| ![Recruiter Dashboard](public/screenshots/recruiter_dashboard.png) | ![Project Details](docs/screenshots/projects.png) |
-| *Consolidated insights, quick recruiter queries, resume matching, and candidate stats.* | *Interactive visual gallery of technical work with code insight traversal.* |
+| ![Oracle AI Assistant](public/screenshots/oracle_layer.png) | ![CLI Terminal Shell](public/screenshots/cli_terminal.png) |
+| *Semantic search & natural language question-answering with repository grounding.* | *Sleek retro-style developer CLI terminal for commands execution.* |
 
-| **Mobile View Layout** | **CLI Terminal Shell** |
+| **Recruiter Dashboard** | **Mobile View Layout** |
 | :---: | :---: |
-| ![Mobile View Layout](public/screenshots/mobile_layout.png) | ![CLI Terminal Shell](public/screenshots/cli_terminal.png) |
-| *Seamless full-screen sheets layout and responsive gestures for mobile viewports.* | *Sleek retro-style developer CLI terminal for commands execution.* |
+| ![Recruiter Dashboard](public/screenshots/recruiter_dashboard.png) | ![Mobile View Layout](public/screenshots/mobile_layout.png) |
+| *Consolidated insights, quick recruiter queries, resume matching, and candidate stats.* | *Seamless full-screen sheets layout and responsive gestures for mobile viewports.* |
 
 ---
 
@@ -134,7 +134,7 @@ graph TD
     
     subgraph Resilient AI Dispatch Layer
         ProviderFactory -->|Primary Choice: OpenRouter| OpenRouter[OpenRouter AI Provider]
-        ProviderFactory -->|API Fallback (Offline/Timeout)| Gemini[Gemini AI Provider]
+        ProviderFactory -->|API Fallback - Offline or Timeout| Gemini[Gemini AI Provider]
         
         %% Model-level failover queues
         OpenRouter -->|Model Failover Queue| ORQueue[DeepSeek R1 -> Llama 3.3 -> Qwen 3 -> Nemotron]
