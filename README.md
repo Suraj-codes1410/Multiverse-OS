@@ -324,16 +324,23 @@ Fill out the keys in `.env.local`:
 
 ## 🔄 CI/CD & Deployment Workflow
 
-### GitHub Actions CI
-The platform employs GitHub Actions to validate code quality and runtime behavior on every push or pull request to the `main` branch. The CI workflow ([ci.yml](file:///C:/Users/Suraj/multiverse-os/.github/workflows/ci.yml)) performs:
-1. **Code Checkout**: Fetches the code repository.
-2. **Runtime Isolation**: Configures Node.js v22 with npm caching.
-3. **TypeScript Compilation**: Checks syntax safety using `npx tsc --noEmit`.
-4. **Production Build Compilation**: Validates pages and routes using `npm run build`.
-5. **Integration Regression Tests**: Executes 29 integration scenarios via `npx tsx scratch/oracle-regression-tests.ts` to confirm query routing, classification confidence, recovery triggers, and cache normalizations.
+### GitHub Actions CI/CD Pipeline
+The platform utilizes a production-ready, parallelized GitHub Actions workflow ([ci.yml](file:///C:/Users/Suraj/multiverse-os/.github/workflows/ci.yml)) to validate every push, pull request, or manual trigger:
+
+* **Validate Job**: Runs Prettier style checking (`npm run format:check`), ESLint parsing (`npm run lint`), and lockfile synchronization checks in parallel.
+* **Typecheck Job**: Performs full TypeScript type safety verification (`npx tsc --noEmit`).
+* **Build & Test Job**: Executes Next.js production builds and runs the 37-scenario Oracle Integration Suite.
 
 ```
-[CI Workflow Runs] -> [Type Safety Check] -> [Build Check] -> [29 Integration Tests Passed] -> [Deploy Ready]
+                          ┌── Push / PR ──┐
+                          ▼               ▼
+                    ┌───────────┐   ┌───────────┐
+                    │ Validate  │   │ Typecheck │
+                    └─────┬─────┘   └─────┬─────┘
+                          ▼               ▼
+                    ┌───────────────────────────┐
+                    │       Build & Test        │
+                    └───────────────────────────┘
 ```
 
 ### Continuous Deployment
