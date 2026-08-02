@@ -84,6 +84,11 @@ An integrated form using the Resend API to securely route messages from recruite
 ### Resume Intelligence
 Parses achievements, historical roles, work experiences, and academic achievements from local data sources to answer precise background questions immediately without parsing a static PDF.
 
+### Secure API Proxy Routing
+Protects client-side code from raw filesystem or rate-limited API calls:
+* **Route Proxies**: Exposed endpoints `/api/projects` and `/api/repositories` serve aggregated project metadata and synchronized GitHub repository statistics.
+* **Internal Routing**: Client components query these local routes, executing dynamic filesystem fetches strictly on the Vercel/Next.js server layer to prevent CORS locks and token leakage.
+
 ### Analytics & Observability
 Engineered via [analyticsService.ts](file:///C:/Users/Suraj/multiverse-os/lib/oracle/analyticsService.ts). Records telemetry like response latencies, model selection pathways, cache utilization, and query counts. Data is logged locally in [oracle-analytics.json](file:///C:/Users/Suraj/multiverse-os/data/oracle-analytics.json) to measure usage and model performance.
 
