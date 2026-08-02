@@ -103,47 +103,102 @@ Integrates desktop-grade hardware transitions and micro-interactions:
 
 ## 📐 System Architecture
 
-The following diagram illustrates the lifecycle of a query from the user interface down through classification, routing, context grounding, provider selection, and model-level failovers:
+### System Overview
+Multiverse-OS is an interactive developer portfolio engineered as a virtual desktop operating system environment on the frontend, powered by a semantic search routing, context grounding, and multi-provider resilient AI dispatch layer on the backend. The platform functions as an autonomous technical representative capable of parsing natural language queries, retrieving grounded repository context, and displaying diagnostics through a retro-futuristic workspace.
+
+### High-Level Architecture
+The platform is structured into three primary layers:
+1. **Desktop/Mobile OS Runtime (Frontend)**: Standardizes window operations (drag, focus, minimize, maximize) on desktop viewports and slides up bottom sheet overlays on mobile viewports.
+2. **Oracle AI Cognitive Engine (Backend Services)**: Manages intent classification, dialogue memory mapping, context filtering, and provider resilience.
+3. **Synchronization & Cache Layer**: Periodically aggregates readmes and GitHub metadata to service requests locally without constant upstream network costs.
+
+### Mermaid Implementation Diagram
+The following diagram illustrates the exact lifecycle of an incoming user query through the system components. All nodes correspond directly to active code files and modules:
 
 ```mermaid
 graph TD
-    User([User / Recruiter]) -->|Natural Language Query| OracleInterface[Oracle Web Interface / CLI]
-    OracleInterface -->|Query Payload| CacheCheck{Query Cache Hit?}
+    User([User / Recruiter]) -->|Natural Language Query| UI[Client UI: OracleWindow / CliTerminal / MobileHome]
+    UI -->|JSON POST Payload| API[API Route: /api/oracle]
+    API -->|Session ID & Raw Query| Memory[Memory Service: conversationalMemoryService]
+    Memory -->|Resolve Pronouns & History| API
     
-    %% Cache hits route directly back
-    CacheCheck -->|Yes: Return Response| OracleInterface
+    API -->|Normalized Query Key| Cache{Cache Service: queryCacheService}
+    Cache -->|Cache Hit: Return Text| API
     
-    %% Cache miss route to classifier
-    CacheCheck -->|No: Cache Miss| Router[Smart Routing Engine]
+    Cache -->|Cache Miss| Engines{Engine Evaluator}
     
-    subgraph Intent & Context Resolution
-        Router -->|Intent & Entity Analysis| EntityResolver[Entity Resolver & Context Selector]
-        EntityResolver -->|Resolve Entities| ContextDB[(System Context DB: portfolio.json / repos / readme-cache)]
+    subgraph Direct Evaluation Layer
+        Engines -->|Narrative Intent| Narrative[Narrative Engine: PortfolioNarrativeEngine]
+        Engines -->|CLI Command Intent| Copilot[Copilot Engine: PortfolioCopilotEngine]
+        Engines -->|Static Intent: Resume/Contact/List| SmartRouter[Smart Router Engine: SmartRouter]
     end
     
-    subgraph Core Query Processing Engines
-        EntityResolver -->|Grounding Payload| Engines{Engine Evaluator}
-        Engines -->|Repository Context| RepoEngine[Repository Intelligence Engine]
-        Engines -->|Recruiter Context| RecruiterEngine[Recruiter Intelligence Engine]
-        Engines -->|Narrative Generation| NarrativeEngine[Narrative Synthesis Engine]
-        Engines -->|CLI Command Execution| CopilotEngine[Portfolio Copilot Engine]
+    Narrative & Copilot & SmartRouter -->|Direct Answer Available: Store & Return| Cache
+    
+    subgraph Context Grounding Layer
+        Engines -->|Dynamic RAG Intent| ContextService[Context Service: contextService]
+        ContextService -->|Query Nodes| DB[(System Context DB: portfolio.json / repos / readme-cache)]
+        ContextService -->|Aggregate Datasets| Selector[Context Selector: OracleContextSelector]
+        Selector -->|Filter Relevant Entities| Comp[Context Compressor & Prompt Builder]
+        Comp -->|Include Rankings & Timestamps| Prompt[Curated Prompt Context]
     end
-
-    %% Providers selection
-    RepoEngine & RecruiterEngine & NarrativeEngine & CopilotEngine -->|Assembled Prompt| ProviderFactory[Resilient Provider Factory]
+    
+    Prompt -->|Assembled Prompt Payload| Factory[Provider Factory: ProviderFactory]
     
     subgraph Resilient AI Dispatch Layer
-        ProviderFactory -->|Primary Choice: OpenRouter| OpenRouter[OpenRouter AI Provider]
-        ProviderFactory -->|API Fallback - Offline or Timeout| Gemini[Gemini AI Provider]
+        Factory -->|Generate Response| ResilientProvider[Resilient AI Provider: ResilientAIProvider]
+        ResilientProvider -->|Primary Choice: OpenRouter| OpenRouter[OpenRouter AI Provider]
+        ResilientProvider -->|API Fallback - Offline or Timeout| Gemini[Gemini AI Provider]
         
-        %% Model-level failover queues
         OpenRouter -->|Model Failover Queue| ORQueue[DeepSeek R1 -> Llama 3.3 -> Qwen 3 -> Nemotron]
         Gemini -->|Model Failover Queue| GemQueue[Gemini 1.5 Flash -> Gemini 1.5 Pro]
     end
-
-    ORQueue & GemQueue -->|Successful Generation| CacheStore[Cache Manager: Store Query]
-    CacheStore -->|Return Final Response| OracleInterface
+    
+    ORQueue & GemQueue -->|Successful AI Output| Cache
 ```
+
+### Oracle Request Lifecycle (Step-by-Step Flow)
+1. **Submission**: User submits a natural language query via [OracleWindow.tsx](file:///C:/Users/Suraj/multiverse-os/components/OracleWindow.tsx), [CliTerminal.tsx](file:///C:/Users/Suraj/multiverse-os/components/CliTerminal.tsx), or mobile layout.
+2. **Post Dispatch**: The client sends a POST request with `query`, `repositoryName`, `sessionId`, and `eventType` to the main backend endpoint [app/api/oracle/route.ts](file:///C:/Users/Suraj/multiverse-os/app/api/oracle/route.ts).
+3. **Conversational Memory Resolution**: The query passes through [conversationalMemoryService](file:///C:/Users/Suraj/multiverse-os/lib/oracle/memory.ts) to resolve pronoun dependencies based on previous turns (e.g. converting "how was it built?" into "how was SAHAI built?").
+4. **Caching Check**: The query is normalized (lowercase, whitespaces trimmed, punctuation stripped) and checked against [queryCacheService](file:///C:/Users/Suraj/multiverse-os/lib/oracle/queryCache.ts). If a hit occurs, the cached response returns immediately.
+5. **Direct Engine Bypasses**:
+   * **Narrative Engine**: [PortfolioNarrativeEngine](file:///C:/Users/Suraj/multiverse-os/lib/oracle/narrativeEngine.ts) intercepts milestone, timeline, or university experience queries to generate immediate direct responses without LLM costs.
+   * **Copilot Engine**: [PortfolioCopilotEngine](file:///C:/Users/Suraj/multiverse-os/lib/oracle/copilotEngine.ts) intercepts shell commands and career consulting questions to return direct instructions.
+   * **Smart Router**: [SmartRouter](file:///C:/Users/Suraj/multiverse-os/lib/oracle/smartRouter.ts) maps static commands (e.g. resume downloads, contact details, project links) to direct returns.
+6. **Dynamic RAG Grounding**:
+   * [contextService](file:///C:/Users/Suraj/multiverse-os/lib/oracle/service.ts) loads candidate profiling details, project schemas, local readmes, and repository metrics.
+   * [OracleContextSelector](file:///C:/Users/Suraj/multiverse-os/lib/oracle/contextSelector.ts) runs a text search on the aggregated context to filter only items matching query entities.
+   * If a recruiter intent is detected, [RecruiterInsightEngine](file:///C:/Users/Suraj/multiverse-os/lib/github/recruiterInsightEngine.ts) invokes [ProjectRankingService](file:///C:/Users/Suraj/multiverse-os/lib/github/projectRankingService.ts) to compute ranked project evidence scores.
+7. **Prompt Assembly**: Formats the selected context into a structured markdown document, appends repository timestamps, and attaches it to the system instructions defining response behaviors (PORTFOLIO, GENERAL KNOWLEDGE, or HYBRID mode).
+8. **Resilient LLM Invocation**:
+   * [ProviderFactory](file:///C:/Users/Suraj/multiverse-os/lib/oracle/providerFactory.ts) constructs a `ResilientAIProvider` wrapper.
+   * The wrapper tries the primary provider [OpenRouterProvider](file:///C:/Users/Suraj/multiverse-os/lib/oracle/openRouterProvider.ts). If rate limits (429) or timeouts occur, it shifts down the model failover queue (DeepSeek R1 -> Llama 3.3 -> Qwen 3 -> Nemotron).
+   * If OpenRouter fails completely or API key configurations are missing, it executes an immediate fallback switch to [GeminiProvider](file:///C:/Users/Suraj/multiverse-os/lib/oracle/geminiProvider.ts).
+9. **Finalization**: The response is saved to the local cache and memory, latency metrics are recorded in [oracle-analytics.json](file:///C:/Users/Suraj/multiverse-os/data/oracle-analytics.json) by [analyticsService.ts](file:///C:/Users/Suraj/multiverse-os/lib/oracle/analyticsService.ts), and the completion is sent back to the frontend.
+
+### Directory Responsibilities
+* [lib/oracle/](file:///C:/Users/Suraj/multiverse-os/lib/oracle/): Core cognitive pipeline (cache, memory, providers, selectors, routers, startup self-healing).
+* [lib/github/](file:///C:/Users/Suraj/multiverse-os/lib/github/): GitHub repository syncing, analysis tools (complexity, architecture), and recruiter insight estimators.
+* [desktop/](file:///C:/Users/Suraj/multiverse-os/desktop/): Virtual OS windowing shell, wallpaper renderers, dock managers, and panel menus.
+* [mobile/](file:///C:/Users/Suraj/multiverse-os/mobile/): Mobile re-flow overlays, status panels, gestures tracking, and bottom sheets controls.
+* [app/api/](file:///C:/Users/Suraj/multiverse-os/app/api/): Next.js Serverless endpoint routers (oracle assistant, secure proxies, health, contact forms).
+* [components/](file:///C:/Users/Suraj/multiverse-os/components/): Interactive frontend widgets (terminal CLI, visual strands, ferrofluid graphics, watercolor canvases).
+* [shared/](file:///C:/Users/Suraj/multiverse-os/shared/): Reusable UI primitives (buttons, tooltips, cards, window headers, glass panels).
+* [data/](file:///C:/Users/Suraj/multiverse-os/data/): Local static knowledge databases (portfolio profiles, hackathons timeline, static sync configurations).
+
+### Frontend Runtime Architecture
+* **Window Drag system**: Desktop app window dragging is offloaded from browser layout flows to composite GPU textures using `translate3d(x, y, 0)` offsets.
+* **Scroll Chaining Prevention**: Inside scrollable windows, [ScrollProvider.tsx](file:///C:/Users/Suraj/multiverse-os/providers/ScrollProvider.tsx) intercepts mouse wheel events and suspends global Lenis smooth scrolling inside panels having active overflow layouts.
+* **Theme customizer**: Workspace appearances are managed on the root document level by swapping high-level color variable mappings (`styles/theme.css`) to dynamically apply Obsidian Dark, Matrix, Cyberpunk, or High Contrast layouts.
+
+### State Management Structure
+The frontend operates with a decentralized React Context architecture (no Redux/Zustand overhead):
+* `LayoutProvider`: Tracks active window focus stack and Desktop/Mobile layout toggles.
+* `ThemeProvider`: Manages active theme styles and canvas visualizers.
+* `DockProvider`: Resolves application state registers (minimized, maximized, closed).
+* `ShellProvider`: Stores developer terminal commands logs and system directory trees.
+* `GestureProvider`: Maps mobile swipe and slide overlay coordinates.
 
 ---
 
