@@ -28,10 +28,16 @@
   --font-mono: var(--font-jetbrains-mono), monospace;
 }
 
+html {
+  font-size: 17.5px;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.65;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

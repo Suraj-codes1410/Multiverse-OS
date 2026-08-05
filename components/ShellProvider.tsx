@@ -91,6 +91,9 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         if (!AudioContextClass) return;
 
         const ctx = new AudioContextClass();
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);

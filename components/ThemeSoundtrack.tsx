@@ -96,9 +96,23 @@ export function ThemeSoundtrack() {
       clearInterval(intervalRef.current);
     }
 
+    // Resume suspended AudioContext on first user interaction
+    const unlockAudioContext = () => {
+      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume();
+      }
+    };
+
+    window.addEventListener('pointerdown', unlockAudioContext);
+    window.addEventListener('keydown', unlockAudioContext);
+    window.addEventListener('touchstart', unlockAudioContext);
+
     stepRef.current = 0;
 
     const playThemeSoundtrack = () => {
+      // Ensure audio context is resumed
+      unlockAudioContext();
+
       const step = stepRef.current;
 
       // 1. DEFAULT/LIGHT: Soothing Ambient (Warm, relaxing major chords with soft sine waves)
@@ -111,8 +125,8 @@ export function ThemeSoundtrack() {
         const activeChord = chords[step % chords.length];
 
         activeChord.forEach((freq, idx) => {
-          // Play with very slow, soothing attack and long decay
-          playTone(ctx, freq, 5.2, 'sine', 0.006, 0.4, idx * 0.22);
+          // Play with soothing attack and audible warm gain
+          playTone(ctx, freq, 5.2, 'sine', 0.025, 0.4, idx * 0.22);
         });
 
         stepRef.current++;
@@ -123,10 +137,10 @@ export function ThemeSoundtrack() {
         const droneFreqs = [164.81, 196.0, 246.94]; // E3, G3, B3 audible space frequencies
         const freq = droneFreqs[step % droneFreqs.length];
 
-        // Low deep pad with very slow attack and long 6-second sustain
-        playTone(ctx, freq, 6.2, 'triangle', 0.01, 0.6, 0);
+        // Low deep pad with slow attack and 6-second sustain
+        playTone(ctx, freq, 6.2, 'triangle', 0.035, 0.6, 0);
         // Play perfect fifth upper harmonic softly
-        playTone(ctx, freq * 1.5, 6.0, 'sine', 0.0035, 0.8, 0.3);
+        playTone(ctx, freq * 1.5, 6.0, 'sine', 0.018, 0.8, 0.3);
 
         stepRef.current++;
       }
@@ -143,8 +157,7 @@ export function ThemeSoundtrack() {
 
         // Schedule 4 fast consecutive plucky notes (synthwave tempo rhythm)
         currentPattern.forEach((freq, idx) => {
-          // Use triangle wave with zero attack time for sharp, punchy game-focused bass plucks
-          playTone(ctx, freq, 0.45, 'triangle', 0.009, 0.01, idx * 0.25);
+          playTone(ctx, freq, 0.45, 'triangle', 0.03, 0.01, idx * 0.25);
         });
 
         stepRef.current++;
@@ -157,42 +170,44 @@ export function ThemeSoundtrack() {
           587.33, 698.46, 783.99, 880.0, 1046.5, 1174.66, 1396.91,
         ]; // D5, F5, G5, A5, C6, D6, F6
 
-        // Play 4 quick, robotic, glitchy square wave plucks with short decay
+        // Play 4 quick, robotic, glitchy square wave plucks
         for (let r = 0; r < 4; r++) {
           const randFreq = scales[Math.floor(Math.random() * scales.length)];
-          // Square wave sounds like digital chip / retro command data transmission
-          playTone(ctx, randFreq, 0.18, 'square', 0.0018, 0.002, r * 0.16);
+          playTone(ctx, randFreq, 0.18, 'square', 0.02, 0.002, r * 0.16);
         }
       }
 
       // 5. HIGH CONTRAST: Industrial Clock (Rhythmic gravity clicks and mechanical pulses)
       else if (themeName === 'high-contrast') {
         // Sub-bass heavy heartbeat pulse
-        playTone(ctx, 55.0, 0.4, 'sine', 0.015, 0.02, 0); // Bass beat
+        playTone(ctx, 55.0, 0.4, 'sine', 0.04, 0.02, 0); // Bass beat
 
         // Slow mechanical clockwork tick on the beat
-        playTone(ctx, 3500, 0.05, 'sine', 0.004, 0.002, 0); // Tick
+        playTone(ctx, 3500, 0.05, 'sine', 0.02, 0.002, 0); // Tick
         // Tock offset
-        playTone(ctx, 3000, 0.05, 'sine', 0.0035, 0.002, 0.5); // Tock
+        playTone(ctx, 3000, 0.05, 'sine', 0.015, 0.002, 0.5); // Tock
       }
     };
 
     // Initial play trigger
     playThemeSoundtrack();
 
-    // Determine scheduler timing lengths (Cyberpunk arpeggios loop faster than ambient pads)
+    // Determine scheduler timing lengths
     const getIntervalTime = () => {
-      if (themeName === 'cyberpunk') return 1000; // Pumping 120BPM arpeggiator cycle
-      if (themeName === 'matrix') return 700; // Rapid digital hacking drops
-      if (themeName === 'high-contrast') return 1000; // Constant tick-tock rhythm
-      if (themeName === 'dark') return 7000; // Long, slow space pads
-      return 6000; // Soothing light theme ambient chords
+      if (themeName === 'cyberpunk') return 1000;
+      if (themeName === 'matrix') return 700;
+      if (themeName === 'high-contrast') return 1000;
+      if (themeName === 'dark') return 7000;
+      return 6000;
     };
 
     intervalRef.current = setInterval(playThemeSoundtrack, getIntervalTime());
 
     return () => {
       stopAllActiveNodes();
+      window.removeEventListener('pointerdown', unlockAudioContext);
+      window.removeEventListener('keydown', unlockAudioContext);
+      window.removeEventListener('touchstart', unlockAudioContext);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
