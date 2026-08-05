@@ -725,7 +725,7 @@ async function runRegressionSuite() {
     process.cwd(),
     'public',
     'resume',
-    'SurajSamantaResumeltst.pdf'
+    'SurajLatest.pdf'
   );
   if (!fs.existsSync(diskResumePath)) {
     throw new Error(
@@ -754,7 +754,7 @@ async function runRegressionSuite() {
             'Resume Intelligence direct response indicator not found in logs'
           );
         }
-        if (!data.text || !data.text.includes('SurajSamantaResumeltst.pdf')) {
+        if (!data.text || !data.text.includes('SurajLatest.pdf')) {
           throw new Error('Response did not contain the correct resume URL');
         }
       },
