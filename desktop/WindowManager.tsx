@@ -19,6 +19,15 @@ import ProjectCard from '@/components/ProjectCard';
 import Card from '@/components/Card';
 import ContactCard from '@/components/ContactCard';
 
+// Game & Arcade Components
+import ArcadeHub from '@/components/games/ArcadeHub';
+import TechStack2048Game from '@/components/games/TechStack2048Game';
+import CyberBreachGame from '@/components/games/CyberBreachGame';
+import OraclePongGame from '@/components/games/OraclePongGame';
+import OrbitDefenseGame from '@/components/games/OrbitDefenseGame';
+import NeonTetrisGame from '@/components/games/NeonTetrisGame';
+import StackGame from '@/components/games/StackGame';
+
 // Lucide Icons
 import {
   BookOpen,
@@ -56,7 +65,7 @@ export interface WindowManagerProps {
 import { AnimatePresence } from 'framer-motion';
 
 export function WindowManager({ children }: WindowManagerProps) {
-  const { windows, closeWindow } = useDesktop();
+  const { windows, closeWindow, openWindow } = useDesktop();
 
   const openWindows = Object.values(windows).filter((win) => win.isOpen);
 
@@ -140,6 +149,27 @@ export function WindowManager({ children }: WindowManagerProps) {
 
       case 'snake':
         return <SnakeAppContent />;
+
+      case 'arcade':
+        return <ArcadeHub onLaunch={openWindow} />;
+
+      case 'stack-2048':
+        return <TechStack2048Game />;
+
+      case 'cyber-breach':
+        return <CyberBreachGame />;
+
+      case 'pong':
+        return <OraclePongGame />;
+
+      case 'orbit-defense':
+        return <OrbitDefenseGame />;
+
+      case 'tetris':
+        return <NeonTetrisGame />;
+
+      case 'stack':
+        return <StackGame />;
 
       default:
         return (
