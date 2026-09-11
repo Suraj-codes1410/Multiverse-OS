@@ -78,6 +78,48 @@ export const windowRegistry: Record<string, WindowMetadata> = {
     defaultWidth: 500,
     defaultHeight: 520,
   },
+  arcade: {
+    id: 'arcade',
+    title: 'Arcade Center',
+    defaultWidth: 680,
+    defaultHeight: 580,
+  },
+  'stack-2048': {
+    id: 'stack-2048',
+    title: 'Tech Stack 2048',
+    defaultWidth: 480,
+    defaultHeight: 560,
+  },
+  'cyber-breach': {
+    id: 'cyber-breach',
+    title: 'Cyber Breach',
+    defaultWidth: 520,
+    defaultHeight: 500,
+  },
+  pong: {
+    id: 'pong',
+    title: 'Oracle Pong',
+    defaultWidth: 540,
+    defaultHeight: 500,
+  },
+  'orbit-defense': {
+    id: 'orbit-defense',
+    title: 'Orbit Defense',
+    defaultWidth: 520,
+    defaultHeight: 600,
+  },
+  tetris: {
+    id: 'tetris',
+    title: 'Neon Tetris',
+    defaultWidth: 500,
+    defaultHeight: 600,
+  },
+  stack: {
+    id: 'stack',
+    title: 'Stack Tower',
+    defaultWidth: 400,
+    defaultHeight: 600,
+  },
   'sample-1': {
     id: 'sample-1',
     title: 'Sample Node Monitor',
