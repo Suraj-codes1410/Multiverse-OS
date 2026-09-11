@@ -12,6 +12,7 @@ import {
   Settings,
   Folder,
   ArrowRight,
+  Gamepad2,
 } from 'lucide-react';
 import { useNavigation } from './NavigationProvider';
 import Card from '@/components/Card';
@@ -107,6 +108,12 @@ export function MobileHome() {
       label: 'Settings',
       icon: Settings,
       color: 'text-text-secondary bg-bg-panel-hover/40',
+    },
+    {
+      id: 'arcade',
+      label: 'Retro Arcade',
+      icon: Gamepad2,
+      color: 'text-accent-cyan bg-accent-cyan/8',
     },
   ];
 
