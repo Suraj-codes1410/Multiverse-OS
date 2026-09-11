@@ -64,7 +64,7 @@ export function Dock({
     { id: 'contact', label: 'Get in Touch', icon: Mail },
     { id: 'explorer', label: 'File Manager', icon: Folder },
     { id: 'settings', label: 'Control Center', icon: Settings },
-    { id: 'snake', label: 'Retro Snake Game', icon: Gamepad2 },
+    { id: 'arcade', label: 'Retro Arcade Center', icon: Gamepad2 },
   ];
 
   return (
