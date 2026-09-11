@@ -13,7 +13,15 @@ import {
   ExplorerAppContent,
   SettingsAppContent,
   DashboardAppContent,
+  SnakeAppContent,
 } from '@/desktop/WindowManager';
+import ArcadeHub from '@/components/games/ArcadeHub';
+import TechStack2048Game from '@/components/games/TechStack2048Game';
+import CyberBreachGame from '@/components/games/CyberBreachGame';
+import OraclePongGame from '@/components/games/OraclePongGame';
+import OrbitDefenseGame from '@/components/games/OrbitDefenseGame';
+import NeonTetrisGame from '@/components/games/NeonTetrisGame';
+import StackGame from '@/components/games/StackGame';
 import CliTerminal from '@/components/CliTerminal';
 import { ChevronLeft } from 'lucide-react';
 import { Project } from '@/lib/types';
@@ -21,7 +29,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion } from '@/animations';
 
 export function HomeLayout() {
-  const { activeTab, setActiveTab, activeAppId, closeApp } = useNavigation();
+  const { activeTab, setActiveTab, activeAppId, closeApp, openApp } =
+    useNavigation();
 
   // Dynamic stats telemetry states
   const [projects, setProjects] = useState<Project[]>([]);
@@ -124,6 +133,25 @@ export function HomeLayout() {
           'File System Explorer',
           <ExplorerAppContent repos={repos} loading={loading} />
         );
+      case 'arcade':
+        return renderAppWrapper(
+          'Retro Arcade Center',
+          <ArcadeHub onLaunch={(gameId) => openApp(gameId)} />
+        );
+      case 'stack-2048':
+        return renderAppWrapper('Tech Stack 2048', <TechStack2048Game />);
+      case 'cyber-breach':
+        return renderAppWrapper('Cyber Breach', <CyberBreachGame />);
+      case 'pong':
+        return renderAppWrapper('Oracle Pong', <OraclePongGame />);
+      case 'orbit-defense':
+        return renderAppWrapper('Orbit Defense', <OrbitDefenseGame />);
+      case 'tetris':
+        return renderAppWrapper('Neon Tetris', <NeonTetrisGame />);
+      case 'snake':
+        return renderAppWrapper('Retro Snake', <SnakeAppContent />);
+      case 'stack':
+        return renderAppWrapper('Stack Tower', <StackGame />);
       default:
         return (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 text-text-secondary select-none font-mono">
