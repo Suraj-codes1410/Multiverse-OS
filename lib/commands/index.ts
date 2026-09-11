@@ -30,6 +30,9 @@ import { aiExperienceCommand } from './aiExperience';
 import { distributedSystemsCommand } from './distributedSystems';
 import { bestProjectsCommand } from './bestProjects';
 import { exitCommand } from './exit';
+import { arcadeCommand } from './arcade';
+import { gamesCommand } from './games';
+import { playCommand } from './play';
 
 // Register core commands on module load
 registry.register(helpCommand);
@@ -63,6 +66,9 @@ registry.register(backendExperienceCommand);
 registry.register(aiExperienceCommand);
 registry.register(distributedSystemsCommand);
 registry.register(bestProjectsCommand);
+registry.register(arcadeCommand);
+registry.register(gamesCommand);
+registry.register(playCommand);
 
 export * from './types';
 export * from './registry';
@@ -100,4 +106,7 @@ export {
   distributedSystemsCommand,
   bestProjectsCommand,
   exitCommand,
+  arcadeCommand,
+  gamesCommand,
+  playCommand,
 };
