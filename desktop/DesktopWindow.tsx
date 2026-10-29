@@ -91,9 +91,9 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         Math.min(window.innerWidth - 150, initialX + dx)
       );
       const newY = Math.max(
-        40,
+        44,
         Math.min(window.innerHeight - 100, initialY + dy)
-      ); // 40px MenuBar offset
+      ); // 44px MenuBar offset
 
       updateWindowPosition(id, newX, newY);
     };
@@ -166,7 +166,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         left: 0,
         top: 0,
         width: '100vw',
-        height: 'calc(100vh - 40px)',
+        height: 'calc(100vh - 44px)',
         zIndex: windowInst.zIndex,
       }
     : {
@@ -183,13 +183,13 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       opacity: 0,
       scale: shouldReduceMotion ? 1 : 0.95,
       x: windowInst.isMaximized ? 0 : windowInst.x,
-      y: windowInst.isMaximized ? 40 : windowInst.y,
+      y: windowInst.isMaximized ? 44 : windowInst.y,
     },
     open: {
       opacity: 1,
       scale: 1,
       x: windowInst.isMaximized ? 0 : windowInst.x,
-      y: windowInst.isMaximized ? 40 : windowInst.y,
+      y: windowInst.isMaximized ? 44 : windowInst.y,
       transition: {
         x: { duration: 0 },
         y: { duration: 0 },
@@ -320,23 +320,23 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         </div>
 
         {/* Window Title */}
-        <span className="font-sans font-medium text-text-primary tracking-tight truncate max-w-[50%] select-none text-xs">
+        <span className="font-sans font-semibold text-text-primary tracking-normal truncate max-w-[50%] select-none text-sm">
           {windowInst.title}
         </span>
 
         {/* Dynamic Telemetry Info Node Placeholder */}
-        <div className="w-16 text-right text-[9px] text-text-secondary/70 uppercase tracking-widest hidden md:block font-mono">
+        <div className="w-20 text-right text-xs text-text-secondary/80 uppercase tracking-wider hidden md:block font-mono font-medium">
           {isActive ? 'Active' : 'Muted'}
         </div>
       </div>
 
       {/* WINDOW TOOLBAR PLACEHOLDER */}
       {toolbar ? (
-        <div className="h-8 border-b border-window-border/40 bg-bg-panel/30 flex items-center px-3 gap-2">
+        <div className="h-9 border-b border-window-border/40 bg-bg-panel/30 flex items-center px-3 gap-2 text-xs">
           {toolbar}
         </div>
       ) : (
-        <div className="h-9 border-b border-window-border/30 bg-bg-panel/15 flex items-center justify-between px-4 text-[10px] text-text-secondary/80 font-mono select-none">
+        <div className="h-9 border-b border-window-border/30 bg-bg-panel/15 flex items-center justify-between px-4 text-xs text-text-secondary/90 font-mono select-none">
           <div className="flex items-center gap-4">
             <span className="cursor-pointer hover:text-text-primary transition-colors">
               File
@@ -348,7 +348,9 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
               Telemetry
             </span>
           </div>
-          <div className="text-[9px] text-accent-cyan/80">WS_READY //</div>
+          <div className="text-xs font-semibold text-accent-cyan/90">
+            WS_READY //
+          </div>
         </div>
       )}
 

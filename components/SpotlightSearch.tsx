@@ -279,9 +279,9 @@ export function SpotlightSearch() {
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Search apps, projects, skills..."
-                className="flex-grow bg-transparent border-none text-text-primary placeholder:text-text-secondary/40 text-xs focus:outline-none font-sans"
+                className="flex-grow bg-transparent border-none text-text-primary placeholder:text-text-secondary/50 text-sm sm:text-base focus:outline-none font-sans"
               />
-              <span className="text-[8px] font-mono bg-bg-panel-hover border border-border-subtle/50 px-2 py-0.5 rounded text-text-secondary/60">
+              <span className="text-xs font-mono bg-bg-panel-hover border border-border-subtle/60 px-2 py-0.5 rounded text-text-secondary font-medium">
                 ESC CLOSE
               </span>
             </div>
@@ -306,21 +306,21 @@ export function SpotlightSearch() {
                     >
                       <div className="flex items-center gap-3 truncate">
                         <div
-                          className={`p-1.5 rounded-lg border flex items-center justify-center flex-shrink-0 ${
+                          className={`p-2 rounded-lg border flex items-center justify-center flex-shrink-0 ${
                             isActive
                               ? 'bg-accent-cyan/10 border-accent-cyan/20'
                               : 'bg-bg-panel/30 border-border-subtle/50'
                           }`}
                         >
-                          <Icon className="w-3.5 h-3.5" />
+                          <Icon className="w-4 h-4" />
                         </div>
                         <div className="flex flex-col truncate leading-tight">
                           <span
-                            className={`text-xs font-sans font-medium ${isActive ? 'text-accent-cyan' : 'text-text-primary'}`}
+                            className={`text-sm font-sans font-semibold ${isActive ? 'text-accent-cyan' : 'text-text-primary'}`}
                           >
                             {item.title}
                           </span>
-                          <span className="text-[9px] font-mono opacity-65 truncate mt-0.5">
+                          <span className="text-xs font-mono opacity-75 truncate mt-0.5">
                             {item.subtitle}
                           </span>
                         </div>
@@ -328,7 +328,7 @@ export function SpotlightSearch() {
 
                       {/* Right selection badge indicator */}
                       {isActive && (
-                        <span className="text-[8px] font-mono bg-accent-cyan/15 border border-accent-cyan/20 px-1.5 py-0.5 rounded uppercase font-semibold flex-shrink-0 tracking-wider">
+                        <span className="text-xs font-mono bg-accent-cyan/15 border border-accent-cyan/20 px-2 py-0.5 rounded uppercase font-semibold flex-shrink-0 tracking-wider">
                           Execute ↵
                         </span>
                       )}
@@ -336,14 +336,14 @@ export function SpotlightSearch() {
                   );
                 })
               ) : (
-                <div className="py-12 text-center font-mono text-[10px] text-text-secondary select-none">
+                <div className="py-12 text-center font-mono text-xs text-text-secondary select-none">
                   NO_RECORDS_FOUND // CLASSIFIED
                 </div>
               )}
             </div>
 
             {/* Bottom Keyboard Guide */}
-            <footer className="px-4 py-2 border-t border-border-subtle/20 bg-bg-panel/10 flex justify-between items-center text-[8px] font-mono text-text-secondary/50 select-none">
+            <footer className="px-4 py-2 border-t border-border-subtle/20 bg-bg-panel/10 flex justify-between items-center text-xs font-mono text-text-secondary select-none">
               <span>↑↓ NAVIGATE</span>
               <span>ENTER SELECT</span>
             </footer>

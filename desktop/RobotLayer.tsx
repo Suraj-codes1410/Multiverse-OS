@@ -305,9 +305,9 @@ export function RobotLayer() {
           {bubbleText && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, x: -10, y: -20 }}
-              animate={{ opacity: 1, scale: 1, x: 0, y: -38 }}
+              animate={{ opacity: 1, scale: 1, x: 0, y: -42 }}
               exit={{ opacity: 0, scale: 0.8, y: -20 }}
-              className="absolute left-0 px-2 py-1 rounded bg-[#0a0c16]/95 border border-accent-cyan/20 text-white text-[7px] font-mono whitespace-nowrap shadow-md pointer-events-none tracking-tight"
+              className="absolute left-0 px-3 py-1.5 rounded-md bg-[#0a0c16]/95 border border-accent-cyan/30 text-white text-xs font-mono whitespace-nowrap shadow-md pointer-events-none tracking-normal"
             >
               {bubbleText}
               <span className="absolute bottom-[-4px] left-4 border-4 border-transparent border-t-[#0a0c16]" />
@@ -316,10 +316,10 @@ export function RobotLayer() {
         </AnimatePresence>
 
         <div className="flex flex-col select-none leading-none">
-          <span className="text-[8px] font-mono text-text-secondary/70 uppercase tracking-wider">
+          <span className="text-xs font-mono text-text-secondary uppercase tracking-wider">
             Telemetry Companion
           </span>
-          <span className="text-text-primary font-semibold text-[10px] mt-0.5 flex items-center gap-1">
+          <span className="text-text-primary font-bold text-xs mt-1 flex items-center gap-1.5">
             OS Helper{' '}
             <span
               className={`animate-pulse ${
@@ -340,10 +340,10 @@ export function RobotLayer() {
         <button
           title="Toggle companion scanner"
           onClick={() => setIsScanning(!isScanning)}
-          className="pointer-events-auto cursor-pointer hover:text-text-primary text-text-secondary transition-colors focus:outline-none flex items-center justify-center p-0.5 rounded"
+          className="pointer-events-auto cursor-pointer hover:text-text-primary text-text-secondary transition-colors focus:outline-none flex items-center justify-center p-1 rounded"
         >
           <RefreshCw
-            className={`w-3 h-3 ${isScanning ? 'animate-spin-slow' : 'opacity-50'}`}
+            className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin-slow' : 'opacity-50'}`}
           />
         </button>
       </div>

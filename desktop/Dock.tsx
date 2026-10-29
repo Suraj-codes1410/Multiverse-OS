@@ -102,7 +102,7 @@ export function Dock({
                   animate={{ opacity: 1, y: -45, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-50 px-2.5 py-1 rounded bg-bg-panel border border-border-subtle text-[10px] text-text-primary font-mono whitespace-nowrap shadow-lg pointer-events-none"
+                  className="absolute z-50 px-3 py-1.5 rounded-lg bg-bg-panel border border-border-subtle text-xs text-text-primary font-mono font-medium whitespace-nowrap shadow-lg pointer-events-none"
                 >
                   {app.label}
                   <span className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 border-4 border-transparent border-t-bg-panel" />
@@ -136,7 +136,7 @@ export function Dock({
 
               {/* IMMERSION: Notification Badges */}
               {app.id === 'oracle' && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent-purple text-white text-[8px] font-mono font-bold rounded-full flex items-center justify-center border border-white shadow-sm scale-90 animate-pulse">
+                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-accent-purple text-white text-xs font-mono font-bold rounded-full flex items-center justify-center border border-white shadow-sm scale-90 animate-pulse">
                   1
                 </span>
               )}

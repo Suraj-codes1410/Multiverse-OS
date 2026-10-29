@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Terminal, Sparkles, ShieldAlert, Cpu } from 'lucide-react';
+import { Terminal, Sparkles } from 'lucide-react';
 import { useShell } from './ShellProvider';
 import Card from './Card';
-import Button from './Button';
 
 export default function HomeConsoleWidgets() {
   const { toggleOracle, toggleCli } = useShell();
@@ -20,21 +19,21 @@ export default function HomeConsoleWidgets() {
         <div className="absolute top-0 right-0 w-32 h-32 bg-accent-purple/5 rounded-full blur-3xl group-hover:bg-accent-purple/10 transition-all duration-300" />
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-accent-purple/30 bg-accent-purple/5 text-accent-purple font-mono text-[9px] uppercase tracking-wider mb-4">
-          <Sparkles className="w-2.5 h-2.5 animate-pulse" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent-purple/30 bg-accent-purple/10 text-accent-purple font-mono text-xs font-medium uppercase tracking-wider mb-4">
+          <Sparkles className="w-3.5 h-3.5 animate-pulse" />
           AI Intelligence
         </div>
 
-        <h3 className="text-xl font-bold text-text-primary group-hover:text-accent-purple transition-colors mb-2">
+        <h3 className="text-2xl font-bold text-text-primary group-hover:text-accent-purple transition-colors mb-2.5">
           Oracle AI Assistant
         </h3>
 
-        <p className="text-sm text-text-secondary leading-relaxed mb-6">
+        <p className="text-base text-text-secondary leading-relaxed mb-6 font-normal">
           Query Suraj's qualifications, compare projects (SAHAI & ORBITAIR), and
           run recruiter evaluations via local smart routing.
         </p>
 
-        <div className="mt-auto flex items-center justify-between w-full font-mono text-[10px]">
+        <div className="mt-auto flex items-center justify-between w-full font-mono text-xs font-medium pt-3 border-t border-border-subtle/30">
           <span className="text-text-secondary">Shortcut: Alt + O</span>
           <span className="text-accent-purple group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
             Launch Oracle ➔
@@ -51,21 +50,21 @@ export default function HomeConsoleWidgets() {
         <div className="absolute top-0 right-0 w-32 h-32 bg-accent-cyan/5 rounded-full blur-3xl group-hover:bg-accent-cyan/10 transition-all duration-300" />
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 text-accent-cyan font-mono text-[9px] uppercase tracking-wider mb-4">
-          <Terminal className="w-2.5 h-2.5" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent-cyan/30 bg-accent-cyan/10 text-accent-cyan font-mono text-xs font-medium uppercase tracking-wider mb-4">
+          <Terminal className="w-3.5 h-3.5" />
           Terminal Shell
         </div>
 
-        <h3 className="text-xl font-bold text-text-primary group-hover:text-accent-cyan transition-colors mb-2">
+        <h3 className="text-2xl font-bold text-text-primary group-hover:text-accent-cyan transition-colors mb-2.5">
           Interactive CLI Terminal
         </h3>
 
-        <p className="text-sm text-text-secondary leading-relaxed mb-6">
+        <p className="text-base text-text-secondary leading-relaxed mb-6 font-normal">
           Navigate and query the portfolio using terminal commands. Built for
           developers and technical recruiters who appreciate the terminal.
         </p>
 
-        <div className="mt-auto flex items-center justify-between w-full font-mono text-[10px]">
+        <div className="mt-auto flex items-center justify-between w-full font-mono text-xs font-medium pt-3 border-t border-border-subtle/30">
           <span className="text-text-secondary">Shortcut: Ctrl + `</span>
           <span className="text-accent-cyan group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
             Open Terminal ➔

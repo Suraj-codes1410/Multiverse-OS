@@ -128,9 +128,9 @@ export function ContextMenu() {
           top: adjustedY,
           zIndex: 9996,
         }}
-        className="w-48 bg-window-bg border border-window-border rounded-xl shadow-2xl p-1.5 flex flex-col gap-0.5 pointer-events-auto select-none"
+        className="w-56 bg-window-bg border border-window-border rounded-xl shadow-2xl p-2 flex flex-col gap-0.5 pointer-events-auto select-none"
       >
-        <div className="text-[7px] font-mono text-text-secondary/50 uppercase tracking-widest px-2.5 py-1 select-none border-b border-border-subtle/20 mb-1">
+        <div className="text-xs font-mono font-medium text-text-secondary uppercase tracking-wider px-2.5 py-1.5 select-none border-b border-border-subtle/30 mb-1">
           Suraj.OS Options
         </div>
 
@@ -140,14 +140,14 @@ export function ContextMenu() {
             <button
               key={idx}
               onClick={() => handleAction(item.action, item.label)}
-              className="w-full flex items-center justify-between text-left px-2.5 py-2 rounded-lg text-text-secondary hover:text-accent-cyan hover:bg-accent-cyan/10 transition-all cursor-pointer font-sans text-xs active:scale-95"
+              className="w-full flex items-center justify-between text-left px-2.5 py-2 rounded-lg text-text-secondary hover:text-accent-cyan hover:bg-accent-cyan/10 transition-all cursor-pointer font-sans text-sm active:scale-95"
             >
-              <div className="flex items-center gap-2 truncate">
-                <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+              <div className="flex items-center gap-2.5 truncate">
+                <Icon className="w-4 h-4 flex-shrink-0" />
                 <span className="truncate">{item.label}</span>
               </div>
               {item.shortcut && (
-                <span className="text-[8px] font-mono opacity-50 px-1 py-0.5 rounded bg-bg-panel flex-shrink-0">
+                <span className="text-xs font-mono opacity-70 px-1.5 py-0.5 rounded bg-bg-panel/80 border border-border-subtle/50 flex-shrink-0">
                   {item.shortcut}
                 </span>
               )}

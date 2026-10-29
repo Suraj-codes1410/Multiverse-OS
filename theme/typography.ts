@@ -5,15 +5,15 @@ export const typography = {
     mono: 'var(--font-jetbrains-mono), monospace', // JetBrains Mono for terminals and code listings
   },
   fontSize: {
-    xs: '12px', // Extra small (0.75rem) - captions & metadata labels
-    sm: '14px', // Small (0.875rem) - dashboard panels & small copy text
-    base: '16px', // Base (1rem) - body copy reading text size
-    lg: '18px', // Large (1.125rem) - small card headers
-    xl: '20px', // Extra large (1.25rem) - section headers
-    xxl: '24px', // XXL (1.5rem) - card and widgets headlines
-    xxxl: '32px', // XXXL (2rem) - major module headers
-    display: '48px', // Display (3rem) - page banners headlines
-    hero: '64px', // Hero (4rem) - landing centerpiece title text
+    xs: '13px', // Extra small - captions & metadata labels
+    sm: '15px', // Small - dashboard panels & secondary text
+    base: '17px', // Base - body copy reading text size
+    lg: '19px', // Large - small card headers
+    xl: '22px', // Extra large - section headers
+    xxl: '26px', // XXL - card and widgets headlines
+    xxxl: '34px', // XXXL - major module headers
+    display: '50px', // Display - page banners headlines
+    hero: '68px', // Hero - landing centerpiece title text
   },
   fontWeight: {
     light: '300', // Light font weight for body narrative

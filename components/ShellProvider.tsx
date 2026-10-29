@@ -353,29 +353,29 @@ export default function ShellProvider({ children }: ShellProviderProps) {
       {/* Utility Region Slot */}
       <div
         id="shell-utility-region"
-        className="fixed bottom-4 right-4 pointer-events-none z-[9980] flex flex-col items-end gap-2 font-mono text-[10px]"
+        className="fixed bottom-4 right-4 pointer-events-none z-[9980] flex flex-col items-end gap-2.5 font-mono text-xs"
       >
         {/* Floating Oracle Action Button */}
         <button
           onClick={toggleOracle}
-          className="pointer-events-auto flex items-center justify-center w-10 h-10 rounded-full border border-accent-purple/35 bg-[#0a0c16]/90 text-accent-purple hover:bg-accent-purple/15 hover:border-accent-purple hover:shadow-[0_0_12px_rgba(168,85,247,0.35)] transition-all duration-300 cursor-pointer animate-bounce-slow"
+          className="pointer-events-auto flex items-center justify-center w-11 h-11 rounded-full border border-accent-purple/35 bg-[#0a0c16]/90 text-accent-purple hover:bg-accent-purple/15 hover:border-accent-purple hover:shadow-[0_0_12px_rgba(168,85,247,0.35)] transition-all duration-300 cursor-pointer animate-bounce-slow"
           title="Toggle Oracle (Alt + O)"
           aria-label="Toggle Oracle"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-4.5 h-4.5" />
         </button>
 
         {/* Floating Terminal Action Button */}
         <button
           onClick={toggleCli}
-          className="pointer-events-auto flex items-center justify-center w-10 h-10 rounded-full border border-accent-cyan/35 bg-[#0a0c16]/90 text-accent-cyan hover:bg-accent-cyan/15 hover:border-accent-cyan hover:shadow-[0_0_12px_rgba(0,242,254,0.35)] transition-all duration-300 cursor-pointer"
+          className="pointer-events-auto flex items-center justify-center w-11 h-11 rounded-full border border-accent-cyan/35 bg-[#0a0c16]/90 text-accent-cyan hover:bg-accent-cyan/15 hover:border-accent-cyan hover:shadow-[0_0_12px_rgba(0,242,254,0.35)] transition-all duration-300 cursor-pointer"
           title="Toggle Terminal CLI (Ctrl + `)"
           aria-label="Toggle Terminal CLI"
         >
-          <Terminal className="w-4 h-4" />
+          <Terminal className="w-4.5 h-4.5" />
         </button>
 
-        <div className="pointer-events-auto bg-bg-panel/85 border border-border-subtle hover:border-accent-cyan/25 px-3 py-1.5 rounded-md text-text-secondary flex items-center gap-3 shadow-md backdrop-blur-sm transition-all duration-300">
+        <div className="pointer-events-auto bg-bg-panel/90 border border-border-subtle hover:border-accent-cyan/25 px-3.5 py-2 rounded-lg text-text-secondary flex items-center gap-3 shadow-md backdrop-blur-sm transition-all duration-300 text-xs font-medium">
           <span className="flex h-1.5 w-1.5 relative">
             <span
               className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
