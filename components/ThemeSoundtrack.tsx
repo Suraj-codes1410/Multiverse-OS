@@ -47,7 +47,7 @@ export function ThemeSoundtrack() {
     freq: number,
     duration: number,
     type: OscillatorType = 'sine',
-    gainVal = 0.025,
+    gainVal = 0.005,
     attackTime = 0.1,
     delay = 0
   ) => {
@@ -126,7 +126,7 @@ export function ThemeSoundtrack() {
 
         activeChord.forEach((freq, idx) => {
           // Play with soothing attack and audible warm gain
-          playTone(ctx, freq, 5.2, 'sine', 0.065, 0.4, idx * 0.22);
+          playTone(ctx, freq, 5.2, 'sine', 0.025, 0.4, idx * 0.22);
         });
 
         stepRef.current++;
@@ -138,9 +138,9 @@ export function ThemeSoundtrack() {
         const freq = droneFreqs[step % droneFreqs.length];
 
         // Low deep pad with slow attack and 6-second sustain
-        playTone(ctx, freq, 6.2, 'triangle', 0.075, 0.6, 0);
+        playTone(ctx, freq, 6.2, 'triangle', 0.035, 0.6, 0);
         // Play perfect fifth upper harmonic softly
-        playTone(ctx, freq * 1.5, 6.0, 'sine', 0.045, 0.8, 0.3);
+        playTone(ctx, freq * 1.5, 6.0, 'sine', 0.018, 0.8, 0.3);
 
         stepRef.current++;
       }
@@ -157,7 +157,7 @@ export function ThemeSoundtrack() {
 
         // Schedule 4 fast consecutive plucky notes (synthwave tempo rhythm)
         currentPattern.forEach((freq, idx) => {
-          playTone(ctx, freq, 0.45, 'triangle', 0.07, 0.01, idx * 0.25);
+          playTone(ctx, freq, 0.45, 'triangle', 0.03, 0.01, idx * 0.25);
         });
 
         stepRef.current++;
@@ -173,19 +173,19 @@ export function ThemeSoundtrack() {
         // Play 4 quick, robotic, glitchy square wave plucks
         for (let r = 0; r < 4; r++) {
           const randFreq = scales[Math.floor(Math.random() * scales.length)];
-          playTone(ctx, randFreq, 0.18, 'square', 0.05, 0.002, r * 0.16);
+          playTone(ctx, randFreq, 0.18, 'square', 0.02, 0.002, r * 0.16);
         }
       }
 
       // 5. HIGH CONTRAST: Industrial Clock (Rhythmic gravity clicks and mechanical pulses)
       else if (themeName === 'high-contrast') {
         // Sub-bass heavy heartbeat pulse
-        playTone(ctx, 55.0, 0.4, 'sine', 0.08, 0.02, 0); // Bass beat
+        playTone(ctx, 55.0, 0.4, 'sine', 0.04, 0.02, 0); // Bass beat
 
         // Slow mechanical clockwork tick on the beat
-        playTone(ctx, 3500, 0.05, 'sine', 0.04, 0.002, 0); // Tick
+        playTone(ctx, 3500, 0.05, 'sine', 0.02, 0.002, 0); // Tick
         // Tock offset
-        playTone(ctx, 3000, 0.05, 'sine', 0.03, 0.002, 0.5); // Tock
+        playTone(ctx, 3000, 0.05, 'sine', 0.015, 0.002, 0.5); // Tock
       }
     };
 
