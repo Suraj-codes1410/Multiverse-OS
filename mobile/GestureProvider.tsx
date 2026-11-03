@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { useNavigation } from './NavigationProvider';
+import { haptic } from '@/lib/haptics';
+import { playClickSound } from '@/lib/useOsAudio';
 
 export interface GestureState {
   swipeDirection: 'left' | 'right' | 'none';
@@ -10,7 +12,8 @@ export interface GestureState {
 const GestureContext = createContext<GestureState>({ swipeDirection: 'none' });
 
 export function GestureProvider({ children }: { children: React.ReactNode }) {
-  const { activeAppId, closeApp } = useNavigation();
+  const { activeAppId, closeApp, toggleControlCenter, isControlCenterOpen } =
+    useNavigation();
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
 
@@ -28,6 +31,19 @@ export function GestureProvider({ children }: { children: React.ReactNode }) {
     // Detect left-edge swipe back gesture (Swipe right from the left edge < 50px)
     if (activeAppId && startX < 50 && diffX > 80 && Math.abs(diffY) < 45) {
       closeApp();
+    }
+
+    // Swipe down from top (< 70px) to reveal Cyber Control Center
+    if (
+      !activeAppId &&
+      !isControlCenterOpen &&
+      startY < 70 &&
+      diffY > 60 &&
+      Math.abs(diffX) < 90
+    ) {
+      playClickSound();
+      haptic.impact();
+      toggleControlCenter();
     }
   };
 

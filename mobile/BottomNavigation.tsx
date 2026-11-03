@@ -4,6 +4,8 @@ import React from 'react';
 import { Home, Sparkles, Terminal } from 'lucide-react';
 import { useNavigation } from './NavigationProvider';
 import { motion } from 'framer-motion';
+import { haptic } from '@/lib/haptics';
+import { playClickSound } from '@/lib/useOsAudio';
 
 /**
  * BottomNavigation displays touch-optimized navigation controls for small screens
@@ -27,12 +29,14 @@ export function BottomNavigation() {
           <button
             key={item.id}
             onClick={() => {
+              playClickSound();
+              haptic.tap();
               setActiveTab(item.id);
               if (item.id === 'home') {
                 closeApp();
               }
             }}
-            className="flex flex-col items-center justify-center flex-1 h-full relative focus:outline-none cursor-pointer group py-1"
+            className="flex flex-col items-center justify-center flex-1 h-full relative focus:outline-none cursor-pointer group py-1 active:scale-95 transition-transform"
             aria-label={`${item.label} screen`}
           >
             {/* Active background pill tracker */}

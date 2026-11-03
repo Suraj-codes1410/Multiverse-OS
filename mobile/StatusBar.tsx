@@ -1,8 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Wifi, Battery, Volume2, VolumeX } from 'lucide-react';
+import {
+  Wifi,
+  Battery,
+  Volume2,
+  VolumeX,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { useShell } from '@/components/ShellProvider';
+import { useNavigation } from './NavigationProvider';
+import { haptic } from '@/lib/haptics';
+import { playClickSound } from '@/lib/useOsAudio';
 
 /**
  * StatusBar simulates phone status indicators with interactive audio controls & telemetry.
@@ -10,6 +19,13 @@ import { useShell } from '@/components/ShellProvider';
 export function StatusBar() {
   const [time, setTime] = useState<string>('');
   const { isAudioMuted, toggleAudio, systemStatus } = useShell();
+  const { toggleControlCenter } = useNavigation();
+
+  const handleOpenControlCenter = () => {
+    playClickSound();
+    haptic.impact();
+    toggleControlCenter();
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -28,9 +44,14 @@ export function StatusBar() {
   }, []);
 
   return (
-    <div className="w-full bg-bg-panel/90 border-b border-border-subtle/30 backdrop-blur-md px-4 flex justify-between items-center text-xs font-sans font-medium text-text-secondary select-none z-[100] h-9">
-      {/* Left: Clock + Live System Status */}
-      <div className="flex items-center gap-2.5">
+    <div className="w-full bg-bg-panel/90 border-b border-border-subtle/30 backdrop-blur-md px-3.5 flex justify-between items-center text-xs font-sans font-medium text-text-secondary select-none z-[100] h-9">
+      {/* Left: Clock + Live System Status (Tap to Open Control Center) */}
+      <button
+        onClick={handleOpenControlCenter}
+        className="flex items-center gap-2 cursor-pointer hover:opacity-80 active:scale-95 transition-all text-left"
+        title="Tap to open Cyber Control Center"
+        aria-label="Open Cyber Control Center"
+      >
         <span className="font-semibold text-text-primary tracking-tight">
           {time}
         </span>
@@ -55,18 +76,29 @@ export function StatusBar() {
             {systemStatus === 'nominal' ? 'ONLINE' : systemStatus}
           </span>
         </span>
-      </div>
+      </button>
 
-      {/* Center: System Branding */}
-      <span className="text-[10px] uppercase tracking-wider font-mono text-text-secondary/60 hidden xs:inline">
-        Suraj.OS
-      </span>
+      {/* Center: System Branding & Quick Pull Pill */}
+      <button
+        onClick={handleOpenControlCenter}
+        className="px-2.5 py-0.5 rounded-full bg-bg-panel/60 border border-border-subtle/40 hover:border-accent-cyan/30 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 group shadow-2xs"
+        title="Open Cyber Control Center"
+        aria-label="Open Cyber Control Center"
+      >
+        <span className="text-[10px] uppercase tracking-wider font-mono text-text-secondary group-hover:text-accent-cyan transition-colors">
+          Suraj.OS
+        </span>
+        <SlidersHorizontal className="w-2.5 h-2.5 text-accent-cyan/70 group-hover:text-accent-cyan transition-colors" />
+      </button>
 
       {/* Right: Audio Toggle & Hardware Telemetry */}
       <div className="flex items-center gap-2.5">
         <button
-          onClick={toggleAudio}
-          className="p-1 -my-1 rounded-md hover:bg-bg-panel-hover/50 text-text-secondary hover:text-accent-cyan transition-colors cursor-pointer flex items-center justify-center focus:outline-none"
+          onClick={() => {
+            haptic.toggle();
+            toggleAudio();
+          }}
+          className="p-1 -my-1 rounded-md hover:bg-bg-panel-hover/50 text-text-secondary hover:text-accent-cyan transition-colors cursor-pointer flex items-center justify-center focus:outline-none active:scale-90"
           title={
             isAudioMuted
               ? 'Audio Muted — Tap to Unmute'

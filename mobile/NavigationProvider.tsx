@@ -9,6 +9,9 @@ export interface NavigationState {
   setActiveAppId: (appId: string | null) => void;
   openApp: (appId: string) => void;
   closeApp: () => void;
+  isControlCenterOpen: boolean;
+  setControlCenterOpen: (open: boolean) => void;
+  toggleControlCenter: () => void;
 }
 
 const NavigationContext = createContext<NavigationState | null>(null);
@@ -22,6 +25,11 @@ export function NavigationProvider({
     'home'
   );
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
+  const [isControlCenterOpen, setControlCenterOpen] = useState<boolean>(false);
+
+  const toggleControlCenter = () => {
+    setControlCenterOpen((prev) => !prev);
+  };
 
   const openApp = (appId: string) => {
     setActiveAppId(appId);
@@ -60,6 +68,9 @@ export function NavigationProvider({
         setActiveAppId,
         openApp,
         closeApp,
+        isControlCenterOpen,
+        setControlCenterOpen,
+        toggleControlCenter,
       }}
     >
       {children}

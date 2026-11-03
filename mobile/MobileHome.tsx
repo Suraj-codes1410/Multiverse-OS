@@ -17,6 +17,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useNavigation } from './NavigationProvider';
+import { haptic } from '@/lib/haptics';
+import { playClickSound, playOpenSound } from '@/lib/useOsAudio';
 
 export function MobileHome() {
   const { openApp, setActiveTab } = useNavigation();
@@ -175,8 +177,12 @@ export function MobileHome() {
 
       {/* 2. DYNAMIC ISLAND ORACLE PROMPT CAPSULE (Slim, interactive, high-value) */}
       <button
-        onClick={() => setActiveTab('oracle')}
-        className="w-full p-3 rounded-2xl bg-bg-panel/60 border border-border-subtle/50 backdrop-blur-md shadow-xs flex items-center justify-between gap-3 cursor-pointer hover:border-accent-cyan/40 hover:bg-bg-panel/80 active:scale-98 transition-all select-none text-left"
+        onClick={() => {
+          playOpenSound();
+          haptic.launch();
+          setActiveTab('oracle');
+        }}
+        className="w-full p-3 rounded-2xl bg-bg-panel/60 border border-border-subtle/50 backdrop-blur-md shadow-xs flex items-center justify-between gap-3 cursor-pointer hover:border-accent-cyan/40 hover:bg-bg-panel/80 active:scale-97 transition-all select-none text-left"
         aria-label="Open Oracle AI conversation"
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -214,8 +220,12 @@ export function MobileHome() {
             return (
               <button
                 key={app.id}
-                onClick={app.action}
-                className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group active:scale-95 transition-transform p-1 rounded-xl"
+                onClick={() => {
+                  playOpenSound();
+                  haptic.launch();
+                  app.action();
+                }}
+                className="flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer group active:scale-90 active:rotate-[-1deg] transition-all duration-150 p-1 rounded-xl"
                 aria-label={`Launch ${app.label}`}
               >
                 <div
@@ -247,6 +257,8 @@ export function MobileHome() {
             <button
               key={i}
               onClick={() => {
+                playClickSound();
+                haptic.tap();
                 setActiveTab('oracle');
                 if (typeof window !== 'undefined') {
                   const event = new CustomEvent('oracleQuery', {

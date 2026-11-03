@@ -7,6 +7,7 @@ import { StatusBar } from './StatusBar';
 import { BottomNavigation } from './BottomNavigation';
 import { HomeLayout } from './HomeLayout';
 import { OracleLayer } from './OracleLayer';
+import { ControlCenter } from './ControlCenter';
 import { Wallpaper } from '@/desktop/Wallpaper';
 
 export function MobileShell() {
@@ -19,6 +20,9 @@ export function MobileShell() {
 
           {/* Layer 1: Phone Top Status Bar */}
           <StatusBar />
+
+          {/* Layer 1.5: Cybernetic Pull-Down Control Center */}
+          <ControlCenter />
 
           {/* Layer 2: Main Application Screen Switcher Viewport */}
           <HomeLayout />

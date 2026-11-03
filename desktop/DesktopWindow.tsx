@@ -23,6 +23,11 @@ export interface DesktopWindowProps {
  */
 export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
   const [controlsHovered, setControlsHovered] = useState<boolean>(false);
+  const [aerodynamics, setAerodynamics] = useState<{
+    tiltX: number;
+    tiltY: number;
+    isDragging: boolean;
+  }>({ tiltX: 0, tiltY: 0, isDragging: false });
   const {
     windows,
     activeWindowId,
@@ -81,7 +86,28 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
     const initialX = windowInst.x;
     const initialY = windowInst.y;
 
+    let lastX = startX;
+    let lastY = startY;
+    let lastTime = performance.now();
+
     const handleMouseMove = (moveEvent: MouseEvent) => {
+      const now = performance.now();
+      const dt = Math.max(8, now - lastTime);
+      const vx = (moveEvent.clientX - lastX) / dt;
+      const vy = (moveEvent.clientY - lastY) / dt;
+
+      lastX = moveEvent.clientX;
+      lastY = moveEvent.clientY;
+      lastTime = now;
+
+      if (!shouldReduceMotion) {
+        // Roll around Y-axis when moving left/right (up to ±10 deg)
+        const tiltY = Math.max(-10, Math.min(10, vx * 6.5));
+        // Pitch around X-axis when moving up/down (up to ±8 deg)
+        const tiltX = Math.max(-8, Math.min(8, -vy * 5.5));
+        setAerodynamics({ tiltX, tiltY, isDragging: true });
+      }
+
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
 
@@ -101,6 +127,9 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      if (!shouldReduceMotion) {
+        setAerodynamics({ tiltX: 0, tiltY: 0, isDragging: false });
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -252,111 +281,132 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         }
       }}
       tabIndex={0}
-      className={`flex flex-col rounded-2xl overflow-hidden bg-window-bg border border-window-border backdrop-blur-md transition-shadow duration-300 select-text shadow-lg focus:outline-none ${
-        isActive
-          ? 'shadow-xl ring-1 ring-accent-cyan/15 z-[80]'
-          : 'opacity-[0.99] z-[70] brightness-[0.96] saturate-[0.98]'
-      }`}
+      className={`focus:outline-none ${isActive ? 'z-[80]' : 'z-[70]'}`}
       role="dialog"
       aria-label={windowInst.title}
     >
-      {/* WINDOW HEADER */}
+      {/* 3D Aerodynamic Physics Card Shell */}
       <div
-        onMouseDown={handleHeaderMouseDown}
-        className={`h-11 px-4 flex items-center justify-between cursor-move select-none border-b transition-colors duration-200 ${
-          isActive
-            ? 'bg-bg-panel-hover/50 text-window-title border-window-border/50 font-medium'
-            : 'bg-bg-panel/30 text-text-secondary/70 border-window-border/30'
+        style={{
+          transform: aerodynamics.isDragging
+            ? `perspective(1000px) rotateX(${aerodynamics.tiltX}deg) rotateY(${aerodynamics.tiltY}deg) scale(1.015)`
+            : 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+          transition: aerodynamics.isDragging
+            ? 'transform 0.08s ease-out, box-shadow 0.15s ease-out'
+            : 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease-out',
+          transformStyle: 'preserve-3d',
+        }}
+        className={`w-full h-full flex flex-col rounded-2xl overflow-hidden bg-window-bg border transition-shadow duration-300 select-text relative ${
+          aerodynamics.isDragging
+            ? 'shadow-[0_25px_60px_rgba(0,0,0,0.5),0_0_30px_rgba(0,242,254,0.3)] ring-1.5 ring-accent-cyan/50 border-accent-cyan/50'
+            : isActive
+              ? 'shadow-xl ring-1 ring-accent-cyan/15 border-window-border'
+              : 'opacity-[0.99] brightness-[0.96] saturate-[0.98] border-window-border/70 shadow-md'
         }`}
       >
-        {/* Traffic Lights Controls (macOS style red/yellow/green) */}
+        {/* Aerodynamic Speed Glint Light Sheen (Active while dragging) */}
+        {aerodynamics.isDragging && (
+          <div className="absolute inset-0 pointer-events-none rounded-2xl bg-gradient-to-tr from-accent-cyan/10 via-accent-purple/10 to-transparent opacity-90 z-50 animate-pulse border border-accent-cyan/40" />
+        )}
+
+        {/* WINDOW HEADER */}
         <div
-          className="flex items-center gap-1.5 w-16"
-          onMouseEnter={() => setControlsHovered(true)}
-          onMouseLeave={() => setControlsHovered(false)}
+          onMouseDown={handleHeaderMouseDown}
+          className={`h-11 px-4 flex items-center justify-between cursor-move select-none border-b transition-colors duration-200 ${
+            isActive
+              ? 'bg-bg-panel-hover/50 text-window-title border-window-border/50 font-medium'
+              : 'bg-bg-panel/30 text-text-secondary/70 border-window-border/30'
+          }`}
         >
-          {/* Close */}
-          {id !== 'home' ? (
+          {/* Traffic Lights Controls (macOS style red/yellow/green) */}
+          <div
+            className="flex items-center gap-1.5 w-16"
+            onMouseEnter={() => setControlsHovered(true)}
+            onMouseLeave={() => setControlsHovered(false)}
+          >
+            {/* Close */}
+            {id !== 'home' ? (
+              <button
+                onClick={() => {
+                  playCloseSound();
+                  closeWindow(id);
+                }}
+                className="window-action-btn w-3 h-3 rounded-full bg-[#ff5f56] active:bg-[#bf4941] flex items-center justify-center text-[7px] font-bold text-[#4c0002] transition-colors focus:outline-none cursor-pointer"
+                aria-label="Close Window"
+              >
+                {controlsHovered && '×'}
+              </button>
+            ) : (
+              <div
+                className="w-3 h-3 rounded-full bg-border-subtle/40 cursor-not-allowed"
+                title="Home workspace cannot be closed"
+              />
+            )}
+
+            {/* Minimize */}
             <button
               onClick={() => {
-                playCloseSound();
-                closeWindow(id);
+                playMinimizeSound();
+                minimizeWindow(id);
               }}
-              className="window-action-btn w-3 h-3 rounded-full bg-[#ff5f56] active:bg-[#bf4941] flex items-center justify-center text-[7px] font-bold text-[#4c0002] transition-colors focus:outline-none cursor-pointer"
-              aria-label="Close Window"
+              className="window-action-btn w-3 h-3 rounded-full bg-[#ffbd2e] active:bg-[#beb222] flex items-center justify-center text-[7px] font-bold text-[#5c3e00] transition-colors focus:outline-none cursor-pointer"
+              aria-label="Minimize Window"
             >
-              {controlsHovered && '×'}
+              {controlsHovered && '–'}
             </button>
-          ) : (
-            <div
-              className="w-3 h-3 rounded-full bg-border-subtle/40 cursor-not-allowed"
-              title="Home workspace cannot be closed"
-            />
-          )}
 
-          {/* Minimize */}
-          <button
-            onClick={() => {
-              playMinimizeSound();
-              minimizeWindow(id);
-            }}
-            className="window-action-btn w-3 h-3 rounded-full bg-[#ffbd2e] active:bg-[#beb222] flex items-center justify-center text-[7px] font-bold text-[#5c3e00] transition-colors focus:outline-none cursor-pointer"
-            aria-label="Minimize Window"
-          >
-            {controlsHovered && '–'}
-          </button>
-
-          {/* Maximize */}
-          <button
-            onClick={() => {
-              playMaximizeSound();
-              maximizeWindow(id);
-            }}
-            className="window-action-btn w-3 h-3 rounded-full bg-[#27c93f] active:bg-[#1a9c2b] flex items-center justify-center text-[6px] font-bold text-[#006504] transition-colors focus:outline-none cursor-pointer"
-            aria-label="Maximize Window"
-          >
-            {controlsHovered && '+'}
-          </button>
-        </div>
-
-        {/* Window Title */}
-        <span className="font-sans font-semibold text-text-primary tracking-normal truncate max-w-[50%] select-none text-sm">
-          {windowInst.title}
-        </span>
-
-        {/* Dynamic Telemetry Info Node Placeholder */}
-        <div className="w-20 text-right text-xs text-text-secondary/80 uppercase tracking-wider hidden md:block font-mono font-medium">
-          {isActive ? 'Active' : 'Muted'}
-        </div>
-      </div>
-
-      {/* WINDOW TOOLBAR PLACEHOLDER */}
-      {toolbar ? (
-        <div className="h-9 border-b border-window-border/40 bg-bg-panel/30 flex items-center px-3 gap-2 text-xs">
-          {toolbar}
-        </div>
-      ) : (
-        <div className="h-9 border-b border-window-border/30 bg-bg-panel/15 flex items-center justify-between px-4 text-xs text-text-secondary/90 font-mono select-none">
-          <div className="flex items-center gap-4">
-            <span className="cursor-pointer hover:text-text-primary transition-colors">
-              File
-            </span>
-            <span className="cursor-pointer hover:text-text-primary transition-colors">
-              Edit
-            </span>
-            <span className="cursor-pointer hover:text-text-primary transition-colors">
-              Telemetry
-            </span>
+            {/* Maximize */}
+            <button
+              onClick={() => {
+                playMaximizeSound();
+                maximizeWindow(id);
+              }}
+              className="window-action-btn w-3 h-3 rounded-full bg-[#27c93f] active:bg-[#1a9c2b] flex items-center justify-center text-[6px] font-bold text-[#006504] transition-colors focus:outline-none cursor-pointer"
+              aria-label="Maximize Window"
+            >
+              {controlsHovered && '+'}
+            </button>
           </div>
-          <div className="text-xs font-semibold text-accent-cyan/90">
-            WS_READY //
+
+          {/* Window Title */}
+          <span className="font-sans font-semibold text-text-primary tracking-normal truncate max-w-[50%] select-none text-sm">
+            {windowInst.title}
+          </span>
+
+          {/* Dynamic Telemetry Info Node Placeholder */}
+          <div className="w-20 text-right text-xs text-text-secondary/80 uppercase tracking-wider hidden md:block font-mono font-medium">
+            {isActive ? 'Active' : 'Muted'}
           </div>
         </div>
-      )}
 
-      {/* WINDOW BODY */}
-      <div className="flex-grow w-full overflow-hidden relative bg-window-bg flex flex-col p-5">
-        {children}
+        {/* WINDOW TOOLBAR PLACEHOLDER */}
+        {toolbar ? (
+          <div className="h-9 border-b border-window-border/40 bg-bg-panel/30 flex items-center px-3 gap-2 text-xs">
+            {toolbar}
+          </div>
+        ) : (
+          <div className="h-9 border-b border-window-border/30 bg-bg-panel/15 flex items-center justify-between px-4 text-xs text-text-secondary/90 font-mono select-none">
+            <div className="flex items-center gap-4">
+              <span className="cursor-pointer hover:text-text-primary transition-colors">
+                File
+              </span>
+              <span className="cursor-pointer hover:text-text-primary transition-colors">
+                Edit
+              </span>
+              <span className="cursor-pointer hover:text-text-primary transition-colors">
+                Telemetry
+              </span>
+            </div>
+            <div className="text-xs font-semibold text-accent-cyan/90">
+              WS_READY //
+            </div>
+          </div>
+        )}
+
+        {/* WINDOW BODY */}
+        <div className="flex-grow w-full overflow-hidden relative bg-window-bg flex flex-col p-5">
+          {children}
+        </div>
       </div>
 
       {/* WINDOW RESIZE HANDLES — 8 directions */}

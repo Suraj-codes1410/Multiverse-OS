@@ -27,6 +27,8 @@ import { ChevronLeft } from 'lucide-react';
 import { Project } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion } from '@/animations';
+import { haptic } from '@/lib/haptics';
+import { playCloseSound } from '@/lib/useOsAudio';
 
 export function HomeLayout() {
   const { activeTab, setActiveTab, activeAppId, closeApp, openApp } =
@@ -66,6 +68,12 @@ export function HomeLayout() {
 
   const shouldReduceMotion = useReducedMotion();
 
+  const handleDismissApp = () => {
+    playCloseSound();
+    haptic.dismiss();
+    closeApp();
+  };
+
   // Back Button Header Wrapper for App Screen with native bottom-sheet slide animation
   const renderAppWrapper = (title: string, content: React.ReactNode) => {
     return (
@@ -84,7 +92,7 @@ export function HomeLayout() {
         <header className="h-12 border-b border-border-subtle/30 px-3 flex items-center justify-between select-none flex-shrink-0 bg-bg-panel/95 backdrop-blur-md">
           <div className="flex items-center gap-2 min-w-0">
             <button
-              onClick={closeApp}
+              onClick={handleDismissApp}
               className="w-8 h-8 rounded-full bg-border-subtle/20 border border-border-subtle/40 text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover active:scale-95 transition-all flex items-center justify-center cursor-pointer flex-shrink-0"
               aria-label="Go back to Home Screen"
             >
@@ -95,7 +103,7 @@ export function HomeLayout() {
             </span>
           </div>
           <button
-            onClick={closeApp}
+            onClick={handleDismissApp}
             className="px-2.5 py-1 text-[11px] font-sans font-medium text-accent-cyan/90 bg-accent-cyan/10 hover:bg-accent-cyan/20 border border-accent-cyan/20 rounded-full active:scale-95 transition-all cursor-pointer flex-shrink-0"
             aria-label="Close sheet"
           >
