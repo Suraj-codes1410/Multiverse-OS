@@ -53,9 +53,9 @@ export function BottomNavigation() {
                 }`}
               />
               <span
-                className={`text-[9px] font-sans font-medium transition-colors duration-300 ${
+                className={`text-[10px] font-sans font-medium tracking-tight transition-colors duration-300 ${
                   isActive
-                    ? 'text-accent-cyan'
+                    ? 'text-accent-cyan font-semibold'
                     : 'text-text-secondary group-hover:text-text-primary'
                 }`}
               >

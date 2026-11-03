@@ -486,12 +486,12 @@ export function ProjectsAppContent({ projects }: { projects: Project[] }) {
     <div className="flex-grow flex flex-col overflow-hidden font-sans">
       {/* Search & Filters */}
       <div className="p-2 border-b border-border-subtle/40 bg-bg-panel/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none sm:flex-wrap sm:pb-0">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1.5 text-[10px] font-mono rounded-lg transition-all focus:outline-none border cursor-pointer ${
+              className={`px-3 py-1.5 text-[10px] font-mono rounded-lg transition-all focus:outline-none border cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 filterCategory === cat
                   ? 'text-accent-cyan bg-accent-cyan/10 border-accent-cyan/20 shadow-[0_0_8px_rgba(0,242,254,0.1)]'
                   : 'text-text-secondary border-transparent hover:text-text-primary hover:bg-bg-panel/30'

@@ -81,17 +81,26 @@ export function HomeLayout() {
         className="absolute inset-x-0 bottom-0 top-0 bg-bg-panel flex flex-col z-40 overflow-hidden rounded-t-3xl border-t border-border-subtle/20 shadow-2xl"
       >
         {/* App Top Header Bar */}
-        <header className="h-12 border-b border-border-subtle/30 px-4 flex items-center gap-2 select-none flex-shrink-0 bg-bg-panel/95 backdrop-blur-md">
+        <header className="h-12 border-b border-border-subtle/30 px-3 flex items-center justify-between select-none flex-shrink-0 bg-bg-panel/95 backdrop-blur-md">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={closeApp}
+              className="w-8 h-8 rounded-full bg-border-subtle/20 border border-border-subtle/40 text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover active:scale-95 transition-all flex items-center justify-center cursor-pointer flex-shrink-0"
+              aria-label="Go back to Home Screen"
+            >
+              <ChevronLeft className="w-4 h-4 text-accent-cyan" />
+            </button>
+            <span className="text-xs font-sans font-semibold tracking-tight text-text-primary truncate">
+              {title}
+            </span>
+          </div>
           <button
             onClick={closeApp}
-            className="w-11 h-11 -ml-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors flex items-center justify-center cursor-pointer"
-            aria-label="Go back to Home Screen"
+            className="px-2.5 py-1 text-[11px] font-sans font-medium text-accent-cyan/90 bg-accent-cyan/10 hover:bg-accent-cyan/20 border border-accent-cyan/20 rounded-full active:scale-95 transition-all cursor-pointer flex-shrink-0"
+            aria-label="Close sheet"
           >
-            <ChevronLeft className="w-5 h-5 text-accent-cyan" />
+            Done
           </button>
-          <span className="text-xs font-sans font-semibold tracking-tight text-text-primary">
-            {title}
-          </span>
         </header>
 
         {/* App Content Body */}

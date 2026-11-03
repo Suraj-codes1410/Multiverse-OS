@@ -350,10 +350,10 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         </AnimatePresence>
       </div>
 
-      {/* Utility Region Slot */}
+      {/* Utility Region Slot — Desktop only (suppressed on mobile to prevent blocking touch controls) */}
       <div
         id="shell-utility-region"
-        className="fixed bottom-4 right-4 pointer-events-none z-[9980] flex flex-col items-end gap-2.5 font-mono text-xs"
+        className="hidden lg:flex fixed bottom-4 right-4 pointer-events-none z-[9980] flex-col items-end gap-2.5 font-mono text-xs"
       >
         {/* Floating Oracle Action Button */}
         <button
