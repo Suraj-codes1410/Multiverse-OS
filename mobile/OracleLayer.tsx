@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from './NavigationProvider';
-import { Send, Sparkles, Mic, User } from 'lucide-react';
+import { Send, Sparkles, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Message {
@@ -29,7 +29,6 @@ export function OracleLayer() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSend = async (text: string) => {
@@ -118,14 +117,6 @@ export function OracleLayer() {
     window.addEventListener('oracleQuery', handleHomeQuery);
     return () => window.removeEventListener('oracleQuery', handleHomeQuery);
   }, [messages]);
-
-  const handleVoiceTap = () => {
-    setIsListening(true);
-    setTimeout(() => {
-      setIsListening(false);
-      handleSend("What are Suraj's core microservice technologies?");
-    }, 2500);
-  };
 
   const suggestions = [
     'Core Technologies',
@@ -297,19 +288,6 @@ export function OracleLayer() {
         )}
 
         <div className="flex items-center gap-3">
-          {/* Micro Pulsing Indicator on Voice Listening Mode */}
-          <button
-            onClick={handleVoiceTap}
-            className={`p-3 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
-              isListening
-                ? 'bg-accent-cyan text-white border-transparent animate-pulse shadow-[0_0_12px_rgba(224,106,63,0.35)]'
-                : 'bg-white text-text-secondary border-window-border/80 hover:text-accent-cyan active:scale-95'
-            }`}
-            aria-label="Activate voice search placeholder"
-          >
-            <Mic className="w-4 h-4" />
-          </button>
-
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -321,11 +299,7 @@ export function OracleLayer() {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder={
-                isListening
-                  ? 'Listening... Speak now...'
-                  : 'Ask about skills, projects...'
-              }
+              placeholder="Ask about skills, projects, experience..."
               className="w-full bg-white border border-window-border rounded-xl py-2.5 pl-3.5 pr-10 font-sans text-xs text-text-primary placeholder:text-text-secondary/40 focus:outline-none focus:border-accent-cyan/40 focus:ring-1 focus:ring-accent-cyan/15 shadow-sm"
             />
             <button

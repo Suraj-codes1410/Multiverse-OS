@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useDesktop } from './DesktopContext';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
+import { useDesktop, DesktopContext } from './DesktopContext';
 import { DesktopWindow } from './DesktopWindow';
 import { HomeWindowContent } from './HomeWindowContent';
 import { useTheme } from '@/providers';
@@ -36,7 +36,11 @@ import {
   Sparkles,
   Settings,
   Cpu,
+  Volume2,
+  VolumeX,
+  Music,
 } from 'lucide-react';
+import { useShell } from '@/components/ShellProvider';
 
 // Static Data Types & JSON
 import {
@@ -910,11 +914,17 @@ export function ExplorerAppContent({
    APP COMPONENT: CONTROL PANEL SETTINGS
    ========================================================================== */
 export function SettingsAppContent() {
-  const { windows, activeWindowId } = useDesktop();
+  const desktopContext = useContext(DesktopContext);
   const { themeName, setThemeName } = useTheme();
+  const { isAudioMuted, toggleAudio, playSound } = useShell();
 
-  const totalWindows = Object.keys(windows).length;
-  const openWindows = Object.values(windows).filter((w) => w.isOpen).length;
+  const totalWindows = desktopContext
+    ? Object.keys(desktopContext.windows).length
+    : 12;
+  const openWindows = desktopContext
+    ? Object.values(desktopContext.windows).filter((w) => w.isOpen).length
+    : 1;
+  const activeWindowId = desktopContext?.activeWindowId || 'MOBILE_HOMESCREEN';
 
   return (
     <div className="flex-grow overflow-y-auto p-4 select-none font-sans text-xs text-text-secondary scrollbar-thin">
@@ -960,6 +970,60 @@ export function SettingsAppContent() {
                 </span>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Section: Audio & Ambient Soundtrack */}
+        <div className="space-y-3 mt-1">
+          <h4 className="font-mono text-[9px] uppercase text-text-secondary/70 tracking-wider">
+            Audio & Ambient Soundtrack
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              onClick={toggleAudio}
+              className={`p-3 rounded-lg border flex items-center justify-between transition-all cursor-pointer ${
+                !isAudioMuted
+                  ? 'border-accent-cyan/60 bg-accent-cyan/10 text-accent-cyan'
+                  : 'border-border-subtle/55 bg-bg-panel/20 text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                {!isAudioMuted ? (
+                  <Volume2 className="w-4 h-4 text-accent-cyan" />
+                ) : (
+                  <VolumeX className="w-4 h-4 text-text-secondary/60" />
+                )}
+                <div className="text-left">
+                  <div className="font-semibold text-xs">
+                    {!isAudioMuted ? 'Ambient Audio Active' : 'Audio Muted'}
+                  </div>
+                  <div className="text-[8px] font-mono opacity-70">
+                    Tap to toggle generative soundtrack
+                  </div>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-bg-panel/60 border border-border-subtle/40">
+                {!isAudioMuted ? 'ACTIVE' : 'MUTED'}
+              </span>
+            </button>
+
+            <button
+              onClick={() => playSound('startup')}
+              className="p-3 rounded-lg border border-border-subtle/55 bg-bg-panel/20 hover:bg-bg-panel/45 text-text-secondary hover:text-text-primary flex items-center justify-between transition-all cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Music className="w-4 h-4 text-accent-purple" />
+                <div className="text-left">
+                  <div className="font-semibold text-xs">Test Audio Chime</div>
+                  <div className="text-[8px] font-mono opacity-70">
+                    Play Web Audio synthesizer arpeggio
+                  </div>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-accent-purple font-bold">
+                TEST ▶
+              </span>
+            </button>
           </div>
         </div>
 

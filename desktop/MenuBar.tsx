@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import { Wifi, Battery, Sun, Moon, Cpu, ShieldAlert } from 'lucide-react';
+import { Wifi, Battery, Sun, Moon, Cpu, ShieldAlert, Volume2, VolumeX } from 'lucide-react';
 import { useTheme } from '@/providers';
+import { useShell } from '@/components/ShellProvider';
 import { DesktopContext } from './DesktopContext';
 import { onBootPhase, getBootPhase, isReturningVisitor } from '@/lib/bootPhase';
 
 export function MenuBar() {
   const [time, setTime] = useState<string>('');
   const { themeName, setThemeName } = useTheme();
+  const { isAudioMuted, toggleAudio } = useShell();
   const desktopContext = useContext(DesktopContext);
   // Boot reveal state — starts hidden, fades in when 'reveal' phase fires
   const [revealed, setRevealed] = useState(() => getBootPhase() === 'done');
@@ -136,6 +138,23 @@ export function MenuBar() {
           <Battery className="w-4 h-4 text-success-green" />
           <span className="text-xs hidden lg:inline font-mono">99%</span>
         </div>
+
+        {/* Ambient Audio Soundtrack Toggler */}
+        <button
+          onClick={toggleAudio}
+          className="h-8 px-2 flex items-center gap-1.5 rounded hover:bg-bg-panel-hover/60 text-text-secondary hover:text-accent-cyan transition-all focus:outline-none focus:ring-1 focus:ring-accent-cyan cursor-pointer text-xs font-mono"
+          title={isAudioMuted ? 'Unmute Ambient Sound' : 'Mute Ambient Sound'}
+          aria-label={isAudioMuted ? 'Unmute Ambient Sound' : 'Mute Ambient Sound'}
+        >
+          {isAudioMuted ? (
+            <VolumeX className="w-4 h-4 text-text-secondary/60" />
+          ) : (
+            <Volume2 className="w-4 h-4 text-accent-cyan animate-pulse" />
+          )}
+          <span className="hidden xl:inline text-[11px]">
+            {isAudioMuted ? 'Muted' : 'Sound ON'}
+          </span>
+        </button>
 
         {/* Theme toggler */}
         <button
