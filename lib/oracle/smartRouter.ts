@@ -227,13 +227,21 @@ export class QueryIntentClassifier {
       'strongest technical skills',
       'hired for',
       'why should suraj be hired',
+      'experience',
+      'background',
+      'work history',
+      'career',
+      'qualifications',
     ];
     const isRecruiterQuery =
       recruitKeywords.some((kw) => queryLower.includes(kw)) ||
       (queryLower.includes('project') && queryLower.includes('demonstrates')) ||
       (queryLower.includes('strongest') && queryLower.includes('skills')) ||
       (queryLower.includes('why') && queryLower.includes('hired')) ||
-      (queryLower.includes('why') && queryLower.includes('hire'));
+      (queryLower.includes('why') && queryLower.includes('hire')) ||
+      queryLower.includes('experience') ||
+      queryLower.includes('background') ||
+      queryLower.includes('career');
 
     // G. Resume Download Query
     const isResumeQuery =
@@ -693,6 +701,44 @@ Suraj Samanta is highly qualified for a Backend Engineering position based on th
    - **RAG & WebSocket Chat**: Engineered **sahai** ([sahai](https://github.com/Suraj-codes1410/Sahai)), a wellness platform using Django, FastAPI, Pinecone-backed RAG chatbot, and WebSockets chat rooms (Smart India Hackathon participant).
 2. **Core Competencies**: Microservices architecture, high-concurrency systems, time-series data indexing, and vector similarity search.
 3. **Core Tech Stack**: Java, Python, Spring Boot, FastAPI, Django, Kafka, gRPC, Pinecone, TimescaleDB, Docker, WebSockets.`;
+      }
+
+      if (
+        queryLower.includes('experience') ||
+        queryLower.includes('background') ||
+        queryLower.includes('career') ||
+        queryLower.includes('work history') ||
+        queryLower.includes('qualifications')
+      ) {
+        console.log('RECRUITER_DIRECT_RESPONSE');
+        console.log('No OpenRouter call required.');
+        return `### Suraj Samanta's Engineering Experience & Background
+
+Suraj Samanta is a **Backend Developer & Distributed Systems Engineer** with hands-on production-grade engineering experience in microservice architectures, high-throughput event queues, and AI platforms:
+
+#### 1. Core Engineering & System Architectures
+- **Patient Management System** (Spring Boot, Kafka, gRPC, Docker, PostgreSQL):
+  - Designed and deployed an asynchronous hospital billing microservices platform handling high-throughput event streams with Kafka partitions and gRPC inter-service communication.
+- **ORBITAIR** (FastAPI, TimescaleDB, GIS, Docker):
+  - Architected an AI-powered geospatial AQI forecasting engine using TimescaleDB hypertables and machine learning models for real-time environmental telemetry.
+  - Recognized in the **National Top 5 out of 823 teams** at the **NASA Space Apps Challenge 2025**.
+- **SAHAI** (Spring Boot, Django, Pinecone, WebSockets, React):
+  - Developed a scalable mental health & lifestyle platform featuring a Pinecone-backed RAG vector retrieval system and real-time WebSocket communication.
+  - Selected as a **Smart India Hackathon (SIH) National Finalist**.
+
+#### 2. Competitive Hackathon Wins & Recognition
+- **NASA Space Apps Challenge 2025**: Top 5 in India.
+- **Smart India Hackathon 2025**: National Finalist.
+- **Paytm × NerdsRoom Hackathon 2026**: Winner (FinTech & high-concurrency systems).
+- **Elastic × Google Cloud Hackathon 2026**: Winner (Distributed search & cloud architectures).
+- **Smart Delhi Ideathon 2025**: Civic Prize Winner.
+
+#### 3. Academic Background
+- **B.Tech in Computer Science Engineering** (2024 – 2028 Expected)
+  - Dr. Akhilesh Das Gupta Institute of Professional Studies (ADGITM), New Delhi.
+  - Ongoing Academic Performance: **9.4 / 10.0 CGPA**.
+
+For detailed project source code and architecture diagrams, check out the **Projects Explorer** or view his active repositories on [GitHub](https://github.com/Suraj-codes1410).`;
       }
 
       // Fallback: query RecruiterInsightEngine for matches

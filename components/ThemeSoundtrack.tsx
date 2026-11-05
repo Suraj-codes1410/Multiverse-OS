@@ -96,13 +96,21 @@ export function ThemeSoundtrack() {
       clearInterval(intervalRef.current);
     }
 
-    // Resume suspended AudioContext on first user interaction
+    // Resume suspended AudioContext on first user interaction and trigger immediate playback
     const unlockAudioContext = () => {
       if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume();
+        audioCtxRef.current
+          .resume()
+          .then(() => {
+            if (stepRef.current === 0) {
+              playThemeSoundtrack();
+            }
+          })
+          .catch(() => {});
       }
     };
 
+    window.addEventListener('click', unlockAudioContext);
     window.addEventListener('pointerdown', unlockAudioContext);
     window.addEventListener('keydown', unlockAudioContext);
     window.addEventListener('touchstart', unlockAudioContext);
@@ -118,15 +126,23 @@ export function ThemeSoundtrack() {
       // 1. DEFAULT/LIGHT: Soothing Ambient (Warm, relaxing major chords with soft sine waves)
       if (themeName === 'default') {
         const chords = [
-          [130.81, 195.99, 261.63, 329.63, 493.88], // Cmaj9
-          [174.61, 261.63, 349.23, 440.0, 523.25], // Fmaj7
-          [146.83, 220.0, 293.66, 349.23, 440.0], // Dmin7
+          [261.63, 329.63, 392.0, 493.88, 523.25], // Cmaj7/9 voicing (C4, E4, G4, B4, C5)
+          [220.0, 261.63, 349.23, 440.0, 523.25], // Fmaj7 voicing (A3, C4, F4, A4, C5)
+          [196.0, 246.94, 293.66, 392.0, 493.88], // Gmaj9 voicing (G3, B3, D4, G4, B4)
         ];
         const activeChord = chords[step % chords.length];
 
         activeChord.forEach((freq, idx) => {
-          // Play with soothing attack and audible warm gain
-          playTone(ctx, freq, 5.2, 'sine', 0.025, 0.4, idx * 0.22);
+          // Play with soothing attack and audible warm gain suited for laptop speakers
+          playTone(
+            ctx,
+            freq,
+            5.2,
+            idx === 0 ? 'triangle' : 'sine',
+            0.06,
+            0.4,
+            idx * 0.22
+          );
         });
 
         stepRef.current++;
@@ -134,13 +150,13 @@ export function ThemeSoundtrack() {
 
       // 2. OBSIDIAN/DARK: Space Drone (Deep triangle bass pad playing dark, slow minor steps)
       else if (themeName === 'dark') {
-        const droneFreqs = [164.81, 196.0, 246.94]; // E3, G3, B3 audible space frequencies
+        const droneFreqs = [196.0, 220.0, 246.94]; // G3, A3, B3 audible space frequencies
         const freq = droneFreqs[step % droneFreqs.length];
 
         // Low deep pad with slow attack and 6-second sustain
-        playTone(ctx, freq, 6.2, 'triangle', 0.035, 0.6, 0);
+        playTone(ctx, freq, 6.2, 'triangle', 0.065, 0.6, 0);
         // Play perfect fifth upper harmonic softly
-        playTone(ctx, freq * 1.5, 6.0, 'sine', 0.018, 0.8, 0.3);
+        playTone(ctx, freq * 1.5, 6.0, 'sine', 0.035, 0.8, 0.3);
 
         stepRef.current++;
       }
@@ -157,7 +173,7 @@ export function ThemeSoundtrack() {
 
         // Schedule 4 fast consecutive plucky notes (synthwave tempo rhythm)
         currentPattern.forEach((freq, idx) => {
-          playTone(ctx, freq, 0.45, 'triangle', 0.03, 0.01, idx * 0.25);
+          playTone(ctx, freq, 0.45, 'triangle', 0.05, 0.01, idx * 0.25);
         });
 
         stepRef.current++;
@@ -173,19 +189,19 @@ export function ThemeSoundtrack() {
         // Play 4 quick, robotic, glitchy square wave plucks
         for (let r = 0; r < 4; r++) {
           const randFreq = scales[Math.floor(Math.random() * scales.length)];
-          playTone(ctx, randFreq, 0.18, 'square', 0.02, 0.002, r * 0.16);
+          playTone(ctx, randFreq, 0.18, 'square', 0.04, 0.002, r * 0.16);
         }
       }
 
       // 5. HIGH CONTRAST: Industrial Clock (Rhythmic gravity clicks and mechanical pulses)
       else if (themeName === 'high-contrast') {
         // Sub-bass heavy heartbeat pulse
-        playTone(ctx, 55.0, 0.4, 'sine', 0.04, 0.02, 0); // Bass beat
+        playTone(ctx, 55.0, 0.4, 'sine', 0.065, 0.02, 0); // Bass beat
 
         // Slow mechanical clockwork tick on the beat
-        playTone(ctx, 3500, 0.05, 'sine', 0.02, 0.002, 0); // Tick
+        playTone(ctx, 3500, 0.05, 'sine', 0.03, 0.002, 0); // Tick
         // Tock offset
-        playTone(ctx, 3000, 0.05, 'sine', 0.015, 0.002, 0.5); // Tock
+        playTone(ctx, 3000, 0.05, 'sine', 0.02, 0.002, 0.5); // Tock
       }
     };
 
@@ -205,6 +221,7 @@ export function ThemeSoundtrack() {
 
     return () => {
       stopAllActiveNodes();
+      window.removeEventListener('click', unlockAudioContext);
       window.removeEventListener('pointerdown', unlockAudioContext);
       window.removeEventListener('keydown', unlockAudioContext);
       window.removeEventListener('touchstart', unlockAudioContext);

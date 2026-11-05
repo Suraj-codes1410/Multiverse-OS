@@ -547,6 +547,13 @@ export class OracleContextSelector {
     output += `Location: ${selected.profile.location}\n`;
     output += `Education: ${selected.profile.education.degree} at ${selected.profile.education.institution} (CGPA: ${selected.profile.education.cgpa}, Expected Graduation: ${selected.profile.education.expectedGraduation})\n\n`;
 
+    // 1.5. Engineering Experience & Career Summary
+    output += `### CANDIDATE EXPERIENCE & BACKGROUND\n`;
+    output += `- Role: Backend Developer & Distributed Systems Engineer\n`;
+    output += `- Focus: Microservices architectures (Spring Boot, Kafka, gRPC), low-latency APIs (FastAPI, Python, Go), RAG pipelines (Pinecone), and time-series geospatial databases (TimescaleDB).\n`;
+    output += `- Key Implementations: Patient Management Service (Spring Boot/Kafka/gRPC hospital billing microservices), ORBITAIR (NASA Space Apps Top 5 in India AQI forecasting platform), SAHAI (Smart India Hackathon Finalist RAG platform).\n`;
+    output += `- Hackathon Achievements: NASA Space Apps National Top 5, SIH National Finalist, Paytm × NerdsRoom Winner, Elastic × GCP Winner, Smart Delhi Ideathon Winner.\n\n`;
+
     // 2. Technical Skills
     if (selected.skills.length > 0) {
       output += `### RELEVANT TECHNICAL SKILLS\n`;

@@ -406,12 +406,12 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
 
   return (
     <div
-      className="fixed bottom-36 right-4 z-[9990] w-full max-w-[calc(100vw-2rem)] md:w-[420px] h-[550px] max-h-[85vh] flex flex-col bg-bg-panel/95 border border-border-subtle rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 pointer-events-auto"
+      className="fixed bottom-36 right-4 z-[9990] w-full max-w-[calc(100vw-2rem)] md:w-[420px] h-[550px] max-h-[85vh] flex flex-col bg-bg-panel border border-border-subtle rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 pointer-events-auto backdrop-blur-2xl"
       role="dialog"
       aria-labelledby="oracle-title"
     >
       {/* Header */}
-      <div className="border-b border-border-subtle bg-bg-panel/90 px-4 py-3 flex items-center justify-between">
+      <div className="border-b border-border-subtle bg-bg-panel px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-accent-purple" />
           <span
@@ -450,7 +450,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       </div>
 
       {/* Main Content Viewport */}
-      <div className="flex-grow overflow-y-auto p-4 space-y-5 flex flex-col scrollbar-thin select-text">
+      <div className="flex-grow overflow-y-auto p-4 space-y-5 flex flex-col scrollbar-thin select-text bg-bg-panel">
         {messages.length === 0 ? (
           /* Empty State Guided Landing Experience Dashboard */
           <div className="space-y-5 py-2 animate-in fade-in duration-300">
@@ -800,7 +800,7 @@ export default function OracleWindow({ isOpen, onClose }: OracleWindowProps) {
       )}
 
       {/* Input Area */}
-      <div className="border-t border-border-subtle bg-bg-panel/90 p-3 flex gap-2">
+      <div className="border-t border-border-subtle bg-bg-panel p-3 flex gap-2">
         <input
           ref={inputRef}
           type="text"

@@ -21,6 +21,9 @@ function getCtx(): AudioContext | null {
       return null;
     }
   }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
   return audioCtx;
 }
 
