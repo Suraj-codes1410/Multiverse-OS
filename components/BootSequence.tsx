@@ -8,6 +8,7 @@ import {
   isReturningVisitor,
   setLandingChoice,
 } from '@/lib/bootPhase';
+import { unlockAudio, playClickSound, playOpenSound } from '@/lib/useOsAudio';
 
 const FULL_MESSAGES = [
   'Initializing Window Manager...',
@@ -35,8 +36,8 @@ type Phase =
 export default function BootSequence() {
   const reducedMotion = useReducedMotion();
 
-  const [isMounted, setIsMounted] = useState(false);
   const [phase, setPhase] = useState<Phase>('mounting');
+  const [isReturning, setIsReturning] = useState(false);
   const [msgIndex, setMsgIndex] = useState(0);
   const [msgOpacity, setMsgOpacity] = useState(1);
   const [progressPct, setProgressPct] = useState(0);
@@ -44,9 +45,8 @@ export default function BootSequence() {
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const animFrame = useRef<number>(0);
-
-  const returning = isMounted ? isReturningVisitor() : false;
-  const messages = returning ? SHORT_MESSAGES : FULL_MESSAGES;
+  const hasStartedRef = useRef<boolean>(false);
+  const isDoneRef = useRef<boolean>(false);
 
   const advance = useCallback((fn: () => void, delay: number) => {
     const id = setTimeout(fn, delay);
@@ -55,6 +55,7 @@ export default function BootSequence() {
   }, []);
 
   const triggerDissolve = useCallback(() => {
+    isDoneRef.current = true;
     setPhase('dissolve');
     setBootPhase('reveal');
     advance(() => {
@@ -65,14 +66,24 @@ export default function BootSequence() {
   }, [advance]);
 
   const handleSelect = (choice: 'home' | 'terminal') => {
+    unlockAudio();
+    playClickSound();
+    playOpenSound();
     setLandingChoice(choice);
     triggerDissolve();
   };
 
   useEffect(() => {
-    setIsMounted(true);
+    if (hasStartedRef.current || isDoneRef.current) return;
+    hasStartedRef.current = true;
+
+    const returning = isReturningVisitor();
+    if (returning) {
+      setIsReturning(true);
+    }
 
     if (reducedMotion) {
+      isDoneRef.current = true;
       setLandingChoice('home');
       setPhase('done');
       setBootPhase('done');
@@ -165,7 +176,9 @@ export default function BootSequence() {
       timers.current = [];
       cancelAnimationFrame(animFrame.current);
     }
-  }, [reducedMotion, triggerDissolve, advance, returning]);
+  }, [reducedMotion, triggerDissolve, advance]);
+
+  const messages = isReturning ? SHORT_MESSAGES : FULL_MESSAGES;
 
   if (phase === 'done') return null;
 

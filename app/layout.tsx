@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import BootSequence from '@/components/BootSequence';
 import ShellProvider from '@/components/ShellProvider';
 import { SharedLayout } from '@/layout';
 import './globals.css';
@@ -39,7 +38,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary">
         <ShellProvider>
           <SharedLayout>
-            <BootSequence />
             <Navbar />
             <main className="flex-grow flex flex-col">{children}</main>
             <Footer />

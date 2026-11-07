@@ -23,7 +23,11 @@ export interface DesktopWindowProps {
  */
 export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
   const [controlsHovered, setControlsHovered] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [aerodynamics, setAerodynamics] = useState<{
+    tiltX: number;
+    tiltY: number;
+    isDragging: boolean;
+  }>({ tiltX: 0, tiltY: 0, isDragging: false });
   const {
     windows,
     activeWindowId,
@@ -76,13 +80,16 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
 
     e.preventDefault();
     focusWindow(id);
-    setIsDragging(true);
+    setAerodynamics((prev) => ({ ...prev, isDragging: true }));
 
     const startX = e.clientX;
     const startY = e.clientY;
     const initialX = windowInst.x;
     const initialY = windowInst.y;
 
+    let lastX = startX;
+    let lastY = startY;
+    let lastTime = performance.now();
     let rafId: number | null = null;
     let latestMoveEvent: MouseEvent | null = null;
 
@@ -92,6 +99,23 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
         rafId = requestAnimationFrame(() => {
           rafId = null;
           if (!latestMoveEvent) return;
+
+          const now = performance.now();
+          const dt = Math.max(8, now - lastTime);
+          const vx = (latestMoveEvent.clientX - lastX) / dt;
+          const vy = (latestMoveEvent.clientY - lastY) / dt;
+
+          lastX = latestMoveEvent.clientX;
+          lastY = latestMoveEvent.clientY;
+          lastTime = now;
+
+          if (!shouldReduceMotion) {
+            // Roll around Y-axis when moving left/right (up to ±10 deg)
+            const tiltY = Math.max(-10, Math.min(10, vx * 6.5));
+            // Pitch around X-axis when moving up/down (up to ±8 deg)
+            const tiltX = Math.max(-8, Math.min(8, -vy * 5.5));
+            setAerodynamics({ tiltX, tiltY, isDragging: true });
+          }
 
           const dx = latestMoveEvent.clientX - startX;
           const dy = latestMoveEvent.clientY - startY;
@@ -115,7 +139,7 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
-      setIsDragging(false);
+      setAerodynamics({ tiltX: 0, tiltY: 0, isDragging: false });
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
@@ -287,22 +311,29 @@ export function DesktopWindow({ id, children, toolbar }: DesktopWindowProps) {
       role="dialog"
       aria-label={windowInst.title}
     >
-      {/* Window Card Shell with Smooth GPU Acceleration */}
+      {/* 3D Aerodynamic Physics Card Shell */}
       <div
         style={{
-          transform: isDragging ? 'scale(1.01)' : 'scale(1)',
-          transition: isDragging
-            ? 'transform 0.08s ease-out, box-shadow 0.12s ease-out'
-            : 'transform 0.22s ease-out, box-shadow 0.22s ease-out',
+          transform: aerodynamics.isDragging
+            ? `perspective(1000px) rotateX(${aerodynamics.tiltX}deg) rotateY(${aerodynamics.tiltY}deg) scale(1.015)`
+            : 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+          transition: aerodynamics.isDragging
+            ? 'transform 0.08s ease-out, box-shadow 0.15s ease-out'
+            : 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease-out',
+          transformStyle: 'preserve-3d',
         }}
-        className={`w-full h-full flex flex-col rounded-2xl overflow-hidden bg-window-bg border transition-shadow duration-200 select-text relative ${
-          isDragging
-            ? 'shadow-2xl ring-1.5 ring-accent-cyan/40 border-accent-cyan/40'
+        className={`w-full h-full flex flex-col rounded-2xl overflow-hidden bg-window-bg border transition-shadow duration-300 select-text relative ${
+          aerodynamics.isDragging
+            ? 'shadow-[0_25px_60px_rgba(0,0,0,0.5),0_0_30px_rgba(0,242,254,0.3)] ring-1.5 ring-accent-cyan/50 border-accent-cyan/50'
             : isActive
               ? 'shadow-xl ring-1 ring-accent-cyan/15 border-window-border'
               : 'opacity-[0.99] border-window-border/70 shadow-md'
         }`}
       >
+        {/* Aerodynamic Speed Glint Light Sheen (Active while dragging) */}
+        {aerodynamics.isDragging && (
+          <div className="absolute inset-0 pointer-events-none rounded-2xl bg-gradient-to-tr from-accent-cyan/10 via-accent-purple/10 to-transparent opacity-90 z-50 animate-pulse border border-accent-cyan/40" />
+        )}
 
         {/* WINDOW HEADER */}
         <div

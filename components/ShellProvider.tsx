@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
+import { unlockAudio } from '@/lib/useOsAudio';
 import {
   Terminal,
   Sparkles,
@@ -81,19 +82,14 @@ export default function ShellProvider({ children }: ShellProviderProps) {
     []
   );
 
-  // HTML5 Web Audio API Synthesizer (Zero asset dependencies arpeggiator)
+  // HTML5 Web Audio API Synthesizer using shared singleton AudioContext
   const playSound = useCallback(
     (soundType: 'startup' | 'notification' | 'click') => {
       if (isAudioMuted) return;
       try {
-        const AudioContextClass =
-          window.AudioContext || (window as any).webkitAudioContext;
-        if (!AudioContextClass) return;
+        const ctx = unlockAudio();
+        if (!ctx || ctx.state !== 'running') return;
 
-        const ctx = new AudioContextClass();
-        if (ctx.state === 'suspended') {
-          ctx.resume();
-        }
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
@@ -104,7 +100,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         if (soundType === 'startup') {
           osc.type = 'sine';
           gain.gain.setValueAtTime(0, now);
-          gain.gain.linearRampToValueAtTime(0.12, now + 0.1);
+          gain.gain.linearRampToValueAtTime(0.14, now + 0.1);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
 
           osc.frequency.setValueAtTime(261.63, now); // C4
@@ -117,7 +113,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         } else if (soundType === 'notification') {
           osc.type = 'triangle';
           gain.gain.setValueAtTime(0, now);
-          gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+          gain.gain.linearRampToValueAtTime(0.1, now + 0.05);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
 
           osc.frequency.setValueAtTime(523.25, now); // C5
@@ -128,7 +124,7 @@ export default function ShellProvider({ children }: ShellProviderProps) {
         } else if (soundType === 'click') {
           osc.type = 'sine';
           gain.gain.setValueAtTime(0, now);
-          gain.gain.linearRampToValueAtTime(0.03, now + 0.01);
+          gain.gain.linearRampToValueAtTime(0.06, now + 0.01);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
 
           osc.frequency.setValueAtTime(800, now);
@@ -136,6 +132,15 @@ export default function ShellProvider({ children }: ShellProviderProps) {
           osc.start(now);
           osc.stop(now + 0.12);
         }
+
+        osc.onended = () => {
+          try {
+            osc.disconnect();
+            gain.disconnect();
+          } catch {
+            // Disconnected
+          }
+        };
       } catch (e) {
         console.warn('Audio arpeggiator failed:', e);
       }

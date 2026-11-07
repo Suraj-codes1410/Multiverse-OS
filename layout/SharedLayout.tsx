@@ -24,6 +24,7 @@ function LayoutSwitcher({ children }: { children: React.ReactNode }) {
 import { SpotlightSearch } from '@/components/SpotlightSearch';
 import { ContextMenu } from '@/components/ContextMenu';
 import { ThemeSoundtrack } from '@/components/ThemeSoundtrack';
+import BootSequence from '@/components/BootSequence';
 
 export function SharedLayout({ children }: SharedLayoutProps) {
   return (
@@ -31,6 +32,7 @@ export function SharedLayout({ children }: SharedLayoutProps) {
       <LayoutProvider>
         <ScrollProvider>
           <ThemeSoundtrack />
+          <BootSequence />
           <LayoutSwitcher>{children}</LayoutSwitcher>
           <SpotlightSearch />
           <ContextMenu />

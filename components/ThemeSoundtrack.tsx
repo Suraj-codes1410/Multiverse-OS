@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useShell } from '@/components/ShellProvider';
 import { useTheme } from '@/providers';
+import { unlockAudio } from '@/lib/useOsAudio';
 
 export function ThemeSoundtrack() {
   const { isAudioMuted } = useShell();
@@ -15,24 +16,19 @@ export function ThemeSoundtrack() {
   const stepRef = useRef<number>(0);
   const isStartedRef = useRef<boolean>(false);
 
-  // Lazy safe AudioContext constructor
+  // Lazy safe AudioContext connector using shared audio manager
   const getOrCreateAudioContext = (): AudioContext | null => {
     if (typeof window === 'undefined') return null;
-    if (!audioCtxRef.current) {
-      const AudioCtxClass =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext;
-      if (AudioCtxClass) {
-        const ctx = new AudioCtxClass();
-        const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(0.85, ctx.currentTime);
-        masterGain.connect(ctx.destination);
-        audioCtxRef.current = ctx;
-        masterGainRef.current = masterGain;
-      }
+    const ctx = unlockAudio();
+    if (!ctx) return null;
+    audioCtxRef.current = ctx;
+    if (!masterGainRef.current) {
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.85, ctx.currentTime);
+      masterGain.connect(ctx.destination);
+      masterGainRef.current = masterGain;
     }
-    return audioCtxRef.current;
+    return ctx;
   };
 
   const stopAllActiveNodes = () => {
@@ -235,6 +231,7 @@ export function ThemeSoundtrack() {
     // Global interaction listener for browser Web Audio autoplay policy
     const handleUserInteraction = () => {
       if (!isStartedRef.current && !isAudioMuted) {
+        unlockAudio();
         startPlayback();
       }
     };
@@ -243,6 +240,7 @@ export function ThemeSoundtrack() {
     window.addEventListener('pointerdown', handleUserInteraction);
     window.addEventListener('keydown', handleUserInteraction);
     window.addEventListener('touchstart', handleUserInteraction);
+    window.addEventListener('multiverse-audio-unlocked', handleUserInteraction);
 
     // If context is already running and unlocked, start playback immediately
     if (audioCtxRef.current?.state === 'running') {
@@ -255,6 +253,7 @@ export function ThemeSoundtrack() {
       window.removeEventListener('pointerdown', handleUserInteraction);
       window.removeEventListener('keydown', handleUserInteraction);
       window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('multiverse-audio-unlocked', handleUserInteraction);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
