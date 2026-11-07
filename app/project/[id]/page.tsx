@@ -13,8 +13,17 @@ export async function generateMetadata({ params }: PageProps) {
   if (!project) return { title: 'Project Not Found' };
 
   return {
-    title: `Mission Briefing: ${project.title} | Suraj Samanta`,
+    title: `${project.title} — Suraj Samanta`,
     description: project.description,
+    alternates: {
+      canonical: `/project/${id}`,
+    },
+    openGraph: {
+      title: `${project.title} | Suraj Samanta`,
+      description: project.description,
+      url: `https://surajdev.indevs.in/project/${id}`,
+      type: 'article',
+    },
   };
 }
 

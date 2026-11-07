@@ -56,15 +56,9 @@ export default function ClientHomePage({
     },
   ];
 
-  // If we are on desktop, we do not draw the scrolling website layout in the background.
-  // The DesktopShell renders the Wallpaper, Icons, Widgets, and Desktop Windows.
-  if (viewportType === 'desktop') {
-    return null;
-  }
-
-  // Mobile viewport: render original scrolling website homepage layout
+  // Semantic SEO content: rendered visibly on mobile and screen-reader/crawler accessible (sr-only) on desktop
   return (
-    <div className="flex-grow">
+    <div className={viewportType === 'desktop' ? 'sr-only' : 'flex-grow'}>
       {/* Hero Section */}
       <div className="border-b border-border-subtle bg-radial-[at_top] from-accent-cyan/5 via-bg-primary/0 to-bg-primary/0 py-20 md:py-28">
         <Container>
