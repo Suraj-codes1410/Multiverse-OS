@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTheme } from '@/providers';
+import { useLayout } from '@/providers/LayoutProvider';
 import { useReducedMotion } from '@/animations';
 import { LetterGlitch } from '@/components/LetterGlitch';
 import { BlackHole } from '@/components/BlackHole';
@@ -11,7 +12,9 @@ import { RisingLines } from '@/components/RisingLines';
 
 export function Wallpaper() {
   const { themeName } = useTheme();
+  const { viewportType } = useLayout();
   const shouldReduceMotion = useReducedMotion();
+  const isMobile = viewportType === 'mobile';
 
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-bg-primary">
@@ -32,6 +35,10 @@ export function Wallpaper() {
       {/* Animated Wallpaper Canvas / WebGL theme renderers */}
       {shouldReduceMotion ? (
         <div className="absolute inset-0 bg-bg-primary" />
+      ) : isMobile && themeName !== 'default' ? (
+        <div className="absolute inset-0 bg-bg-primary">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--wallpaper-glow-primary),transparent_70%)] opacity-40" />
+        </div>
       ) : themeName === 'high-contrast' ? (
         <div className="absolute inset-0 w-full h-full pointer-events-auto">
           <BlackHole />

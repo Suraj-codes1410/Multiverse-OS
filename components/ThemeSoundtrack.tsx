@@ -84,6 +84,18 @@ export function ThemeSoundtrack() {
       osc.start(ctx.currentTime + delay);
       osc.stop(ctx.currentTime + delay + duration + 0.05);
 
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gainNode.disconnect();
+        } catch {
+          // Already disconnected
+        }
+        activeNodesRef.current = activeNodesRef.current.filter(
+          (n) => n !== osc && n !== gainNode
+        );
+      };
+
       activeNodesRef.current.push(osc);
       activeNodesRef.current.push(gainNode);
     } catch {
