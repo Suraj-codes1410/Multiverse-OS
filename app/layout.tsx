@@ -102,6 +102,9 @@ export const metadata: Metadata = {
     icon: '/favicon.ico',
     apple: '/profile.jpg',
   },
+  verification: {
+    google: 'hBxHauBzemlMacZ1SWIuTJ7gn8szA_y0sfOfLopI3cM',
+  },
 };
 
 export default function RootLayout({
