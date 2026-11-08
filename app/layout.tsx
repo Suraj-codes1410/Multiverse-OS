@@ -99,8 +99,12 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/favicon.ico',
-    apple: '/profile.jpg',
+    icon: [
+      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
   verification: {
     google: 'hBxHauBzemlMacZ1SWIuTJ7gn8szA_y0sfOfLopI3cM',
